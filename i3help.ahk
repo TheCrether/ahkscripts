@@ -15,3 +15,7 @@ return
 Send {Media_Prev}
 return
 
+#+q::
+Send !{F4}
+return
+
