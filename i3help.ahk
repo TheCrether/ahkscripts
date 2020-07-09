@@ -25,7 +25,7 @@ WinGetTitle, class, A
 MsgBox, The active window's class is "%class%".
 return
 
-#9::
+#a::
 WinActivate, Discord
 return
 
@@ -67,4 +67,10 @@ return
 
 :?O:ss::
 Send {ASC 0223}
+return
+
+; mute key for discord is numpad minus for me
+^!/::
+Send {NumpadSub}
+Send {BackSpace}
 return
