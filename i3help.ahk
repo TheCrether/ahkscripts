@@ -64,3 +64,7 @@ return
 :?OC:UE::
 Send {ASC 0220}
 return
+
+:?O:ss::
+Send {ASC 0223}
+return
