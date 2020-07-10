@@ -2,17 +2,17 @@
 SetTitleMatchMode, 2
 
 <^>!p::
-^!p::
-Send {Media_Play_Pause}
-return
-
-<^>!Right::
-^!Right::
-Send {Media_Next}
-return
-
-<^>!Left::
-^!Left::
+    ^!p::
+        Send {Media_Play_Pause}
+    return
+    
+    <^>!Right::
+        ^!Right::
+            Send {Media_Next}
+        return
+        
+        <^>!Left::
+            ^!Left::
 Send {Media_Prev}
 return
 
@@ -67,10 +67,4 @@ return
 
 :?O:ss::
 Send {ASC 0223}
-return
-
-; mute key for discord is numpad minus for me
-^!/::
-Send {NumpadSub}
-Send {BackSpace}
 return
