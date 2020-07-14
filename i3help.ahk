@@ -37,7 +37,7 @@ return
 Send, !+d
 return
 
-#Hotstring EndChars -()[]{}:;'"/\,.?!`n`t
+#Hotstring EndChars -()[]{}:;'"/\,.?!t
 
 ; https://web.archive.org/web/20100526232547/http://www.mknoedel.de:80/lexikon_ASCII-Code.htm
 
