@@ -29,9 +29,7 @@ return
 WinActivate, Discord
 return
 
-; #8::WinActivate, Spotify
-
-; #1::WinActivate, Visual Studio Code
+#c::WinActivate, Visual Studio Code
 
 #d::
 Send, !+d
