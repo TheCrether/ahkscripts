@@ -19,7 +19,6 @@ RegisterPostMessageHookProc := GetProc("RegisterPostMessageHook")
 UnregisterPostMessageHookProc := GetProc("UnregisterPostMessageHook")
 IsPinnedProc := DllCall("IsPinnedWindow")
 RestartDesktopDLLProc := DllCall("RestartVirtualDesktopAccessor")
-PinProc := DllCall("RestartVirtualDesktopAccessor")
 GetWinDesktopNumberProc := DllCall("GetWindowDesktopNumberProc")
 activeWindowByDesktop := {}
 
