@@ -47,9 +47,9 @@ GoToDesktopNumber(num) {
 	WinGet, activeHwnd, ID, A
 	current := DllCall(GetCurrentDesktopNumberProc, UInt)
 	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
-	if (isPinned == 0) {
+	; if (isPinned == 0) {
 		activeWindowByDesktop[current] := activeHwnd
-	}
+	; }
 
 	; Try to avoid flashing task bar buttons, deactivate the current window if it is not pinned
 	if (isPinned != 1) {
@@ -67,8 +67,6 @@ OnMessage(0x1400 + 30, "VWMess")
 VWMess(wParam, lParam, msg, hwnd) {
 	global IsWinOnCurrVirtualDesktopProc, IsPinnedProc, activeWindowByDesktop
 
-	desktopNumber := lParam + 1
-
 	; Try to restore active window from memory (if it's still on the desktop and is not pinned)
 	WinGet, activeHwnd, ID, A
 	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
@@ -78,6 +76,7 @@ VWMess(wParam, lParam, msg, hwnd) {
 		WinActivate, ahk_id %oldHwnd%
 	}
 
+	; desktopNumber := lParam + 1
 	; Menu, Tray, Icon, Icons/icon%desktopNumber%.ico
 
 	; When switching to desktop 1, set background pluto.jpg
