@@ -5,4 +5,5 @@ SetWorkingDir %A_ScriptDir%
 
 Run, i3help.ahk
 Run, desktop.ahk
+Run, vowels.ahk
 ExitApp

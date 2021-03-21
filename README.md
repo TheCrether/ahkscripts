@@ -26,4 +26,10 @@ Just a dumb thing that opens Opera lul
 
 Starts my AutoHotkey scripts at once (useful for autostart)
 
+### `vowels.ahk`
+
+Has the hotstrings for when I use the US keyboard layout (most of the time now) instead of the German keyboard layout.
+
+converts stuff like: `ae` to `ä` with the specified hot strings at the top
+
 [1]: https://github.com/Ciantic/VirtualDesktopAccessor
