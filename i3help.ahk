@@ -23,7 +23,8 @@ return
 #x::
   WinGet, name, ProcessName, A
   WinGetClass, class, A
-  MsgBox, The active window's name is "%name%". Class: "%class%"
+  WinGet, id, ID, A
+  MsgBox, The active window's name is "%name%". Class: "%class%"\nID: %id%
 return
 
 #a::

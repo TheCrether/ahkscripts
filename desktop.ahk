@@ -72,7 +72,8 @@ VWMess(wParam, lParam, msg, hwnd) {
 	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
 	oldHwnd := activeWindowByDesktop[lParam]
 	isOnDesktop := DllCall(IsWinOnCurrVirtualDesktopProc, UInt, oldHwnd, Int)
-	if (isOnDesktop == 1 && isPinned != 1) {
+  WinGetClass, class, A
+	if (isOnDesktop == 1 && isPinned != 1 && class == "Shell_TrayWnd") {
 		WinActivate, ahk_id %oldHwnd%
 	}
 
