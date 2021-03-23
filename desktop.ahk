@@ -31,12 +31,17 @@ OnExplorerRestart(wParam, lParam, msg, hwnd) {
 }
 
 MoveCurrentWindowToDesktop(number, move) {
-	global MoveWinToDesktopNumberProc, GoToDesktopNumberProc, activeWindowByDesktop
+	global GetCurrentDesktopNumberProc, MoveWinToDesktopNumberProc, GoToDesktopNumberProc, activeWindowByDesktop
+
+	current := DllCall(GetCurrentDesktopNumberProc, UInt)
+
+
 	WinGet, activeHwnd, ID, A
-	activeWindowByDesktop[number] := 0 ; Do not activate
+	activeWindowByDesktop[number] := activeHwnd ; Do not activate
 	DllCall(MoveWinToDesktopNumberProc, UInt, activeHwnd, UInt, number)
   if (move) {
-	  DllCall(GoToDesktopNumberProc, UInt, number)
+    GoToDesktopNumber(number)
+	  ; DllCall(GoToDesktopNumberProc, UInt, number)
   }
 }
 
