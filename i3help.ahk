@@ -89,3 +89,9 @@ EVENT_OBJECT_LOCATIONCHANGE := 0x800B
   }
 return
 
+!+1::
+  WinGetTitle, title, A
+  WinGetPos, x, y, w, h
+  WinMove, A,, x, y, 1000, 550
+  WinSet, AlwaysOnTop, On
+return
