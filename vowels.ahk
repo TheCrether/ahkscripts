@@ -1,6 +1,10 @@
 #SingleInstance, force
 #Hotstring EndChars -()[]{}\,
 
+; Always use folder where the script is
+SetWorkingDir %A_ScriptDir%
+Menu, Tray, Icon, .\\icons\vowels.ico
+
 ; https://web.archive.org/web/20100526232547/http://www.mknoedel.de:80/lexikon_ASCII-Code.htm
 
 :?OC:ae::

@@ -1,4 +1,9 @@
 #SingleInstance, force
+
+; Always use folder where the script is
+SetWorkingDir %A_ScriptDir%
+Menu, Tray, Icon, .\\icons\i3.ico
+
 SetTitleMatchMode, 2
 
 <^>!p::

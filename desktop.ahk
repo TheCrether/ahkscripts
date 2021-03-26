@@ -1,5 +1,10 @@
 ; this script is based on the example script from here: https://github.com/Ciantic/VirtualDesktopAccessor
 #SingleInstance, force
+
+; Always use folder where the script is
+SetWorkingDir %A_ScriptDir%
+Menu, Tray, Icon, .\\icons\desktop.ico
+
 DetectHiddenWindows, On
 hwnd:=WinExist("ahk_pid " . DllCall("GetCurrentProcessId","Uint"))
 hwnd+=0x1000<<32
