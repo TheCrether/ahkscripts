@@ -1,10 +1,9 @@
 #SingleInstance, force
+SetTitleMatchMode, 2
 
 ; Always use folder where the script is
 SetWorkingDir %A_ScriptDir%
 Menu, Tray, Icon, .\\icons\i3.ico
-
-SetTitleMatchMode, 2
 
 <^>!p::
 ^!p::
@@ -25,15 +24,30 @@ return
   Send !{F4}
 return
 
+#+p::
+; TODO find solution
+  HDesktop := DllCall("User32.dll\GetDesktopWindow", "UPtr")
+  WinGetTitle, TD, ahk_id %HDesktop%
+  WinGet id, ID, ahk_id %HDesktop%
+  ; if (TD || PD)
+    WinActivate, ahk_id %id%
+  ; MsgBox, da %TD%, %PD%
+return
+
+#NoTrayIcon
 #x::
-  WinGet, name, ProcessName, A
-  WinGetClass, class, A
-  WinGet, id, ID, A
-  MsgBox, The active window's name is "%name%". Class: "%class%"\nID: %id%
+  if (A_AhkPath != "") {
+    SplitPath, A_AhkPath,, ahk_dir
+    run %ahk_dir%\WindowSpy.ahk
+  }
 return
 
 #a::
   WinActivate, Discord
+return
+
+#s::
+  WinActivate, ahk_exe Spotify.exe
 return
 
 #c::WinActivate, Visual Studio Code
