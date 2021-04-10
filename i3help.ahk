@@ -52,10 +52,6 @@ return
 
 #c::WinActivate, Visual Studio Code
 
-#d::
-  Send, !+d
-return
-
 PrintScreen::
   Send #+s
 return
