@@ -25,13 +25,8 @@ return
 return
 
 #+p::
-; TODO find solution
-  HDesktop := DllCall("User32.dll\GetDesktopWindow", "UPtr")
-  WinGetTitle, TD, ahk_id %HDesktop%
-  WinGet id, ID, ahk_id %HDesktop%
-  ; if (TD || PD)
-    WinActivate, ahk_id %id%
-  ; MsgBox, da %TD%, %PD%
+  WinActivate, ahk_class Shell_TrayWnd
+  Send !{F4}
 return
 
 #NoTrayIcon
@@ -47,7 +42,10 @@ return
 return
 
 #s::
-  WinActivate, ahk_exe Spotify.exe
+  currMode := A_TitleMatchMode
+  SetTitleMatchMode RegEx
+  WinActivate, .+ ahk_exe Spotify.exe
+  SetTitleMatchMode %currMode%
 return
 
 #c::WinActivate, Visual Studio Code
