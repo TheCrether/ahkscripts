@@ -48,6 +48,8 @@ MoveCurrentWindowToDesktop(number, move) {
     GoToDesktopNumber(number)
 	  ; DllCall(GoToDesktopNumberProc, UInt, number)
   }
+
+  WinActivate, ahk_class Shell_TrayWnd
 }
 
 GoToDesktopNumber(num) {

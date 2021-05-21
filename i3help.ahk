@@ -29,7 +29,6 @@ return
   Send !{F4}
 return
 
-#NoTrayIcon
 #x::
   if (A_AhkPath != "") {
     SplitPath, A_AhkPath,, ahk_dir
