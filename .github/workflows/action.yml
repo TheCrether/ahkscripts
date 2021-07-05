@@ -16,12 +16,16 @@ jobs:
         run: ./.github/scripts/setup.sh
         shell: bash
   compile:
+    needs: setup
     name: Compile all AutoHotkey scripts
     runs-on: windows-latest
-    shell: bash
-    run: .\.github\scripts\compile.sh
+    steps:
+      - name: Execute the compile script
+        shell: bash
+        run: .\.github\scripts\compile.sh
 
   release:
+    needs: compile
     name: Generate a release
     steps:
       - uses: ncipollo/release-action@v1
