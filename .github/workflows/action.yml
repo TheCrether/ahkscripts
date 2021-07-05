@@ -7,19 +7,28 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Install packages
         run: |
           sudo apt -y install curl unzip
       - name: Download AutoHotkey
         run: ./.github/scripts/setup.sh
         shell: bash
+      - name: Upload AutoHotkey download
+        uses: actions/upload-artifact@v2
+        with:
+          name: ahk
+          path: AutoHotkey
   compile:
     needs: setup
     name: Compile all AutoHotkey scripts
     runs-on: windows-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download AutoHotkey download
+        uses: actions/download-artifact@v2
+        with:
+          name: ahk
       - name: Execute the compile script
         shell: bash
         run: |
