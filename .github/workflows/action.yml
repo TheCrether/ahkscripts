@@ -34,8 +34,8 @@ jobs:
       - name: Execute the compile script
         shell: bash
         run: |
-          ls -lah
           .github/scripts/compile.sh
+          ls -lah
       - name: Upload AutoHotkey output
         uses: actions/upload-artifact@v2
         with:
