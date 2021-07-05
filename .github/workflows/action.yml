@@ -25,6 +25,7 @@ jobs:
         run: .\.github\scripts\compile.sh
 
   release:
+    runs-on: ubuntu-latest
     needs: compile
     name: Generate a release
     steps:
