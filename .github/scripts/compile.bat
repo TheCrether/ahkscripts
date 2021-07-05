@@ -1,0 +1,1 @@
+.\AutoHotkey\Compiler\Ahk2Exe.exe /in %1 /out %2 /ahk %3

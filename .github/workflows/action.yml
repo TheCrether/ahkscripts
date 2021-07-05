@@ -1,0 +1,28 @@
+name: Compile AutoHotkey scripts
+on: [push]
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: |
+          sudo apt -y install curl unzip
+      - name: Download AutoHotkey
+        run: ./.github/scripts/setup.sh
+        shell: bash
+  compile:
+    name: Compile all AutoHotkey scripts
+    runs-on: windows-latest
+    shell: bash
+    run: .\.github\scripts\compile.sh
+
+  release:
+    name: Generate a release
+    steps:
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "output/*.exe"
+          bodyFile: "RELEASE.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
