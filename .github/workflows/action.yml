@@ -1,5 +1,8 @@
 name: Compile AutoHotkey scripts
-on: [push]
+on:
+  push:
+    tags:
+      - "*"
 jobs:
   setup:
     runs-on: ubuntu-latest
