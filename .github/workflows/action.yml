@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Execute the compile script
         shell: bash
-        run: .\.github\scripts\compile.sh
+        run: ./.github/scripts/compile.sh
 
   release:
     runs-on: ubuntu-latest
