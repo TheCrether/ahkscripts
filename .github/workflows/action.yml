@@ -56,7 +56,7 @@ jobs:
       - name: zip the output
         shell: bash
         run: |
-          sudo apt -y zip
+          sudo apt install -y zip
           zip -r output.zip output
       - uses: ncipollo/release-action@v1
         with:
