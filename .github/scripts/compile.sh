@@ -1,5 +1,4 @@
 CUR=$(pwd)
-cd "$CUR/../.."
 
 mkdir -p output
 

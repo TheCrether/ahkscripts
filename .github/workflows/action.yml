@@ -31,11 +31,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ahk
+          path: AutoHotkey
       - name: Execute the compile script
         shell: bash
-        run: |
-          .github/scripts/compile.sh
-          ls -lah
+        run: .github/scripts/compile.sh
       - name: Upload AutoHotkey output
         uses: actions/upload-artifact@v2
         with:
@@ -51,6 +50,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: output
+          path: output
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "output/*.exe"
