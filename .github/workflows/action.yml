@@ -35,24 +35,30 @@ jobs:
       - name: Execute the compile script
         shell: bash
         run: .github/scripts/compile.sh
+      - name: zip the output
+        shell: bash
+        run: |
+          sudo apt -y zip
+          zip -r output.zip output
       - name: Upload AutoHotkey output
         uses: actions/upload-artifact@v2
         with:
-          name: output
-          path: output
-
+          name: outputzip
+          path: output.zip
   release:
     runs-on: ubuntu-latest
     needs: compile
     name: Generate a release
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Download AutoHotkey output
         uses: actions/download-artifact@v2
         with:
-          name: output
-          path: output
+          name: outputzip
+          path: output.zip
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "output/*.exe"
+          artifacts: "output.zip"
           bodyFile: "RELEASE.md"
           token: ${{ secrets.GITHUB_TOKEN }}
