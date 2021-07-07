@@ -56,6 +56,8 @@ jobs:
       - name: zip the output
         shell: bash
         run: |
+          mv icons output
+          cp VirtualDesktopAccessor.dll output
           sudo apt install -y zip
           zip -r output.zip output
       - uses: ncipollo/release-action@v1

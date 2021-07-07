@@ -3,7 +3,7 @@ SetTitleMatchMode, 2
 
 ; Always use folder where the script is
 SetWorkingDir %A_ScriptDir%
-Menu, Tray, Icon, .\\icons\i3.ico
+Menu, Tray, Icon, .\\icons\i3help.ico
 
 <^>!p::
 ^!p::
