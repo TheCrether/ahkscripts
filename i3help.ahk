@@ -21,6 +21,7 @@ return
 return
 
 #+q::
+#q::
   Send !{F4}
 return
 
