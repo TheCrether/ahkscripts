@@ -9,6 +9,11 @@ DetectHiddenWindows, On
 hwnd:=WinExist("ahk_pid " . DllCall("GetCurrentProcessId","Uint"))
 hwnd+=0x1000<<32
 
+if (FileExist(".\VirtualDesktopAccessor.dll") == "") {
+	MsgBox, I couldn't find a VirtualDesktopAccessor.dll in the same directory as the script! `n Exiting!
+	Return
+}
+
 hDesktopDLL := DllCall("LoadLibrary", Str, ".\VirtualDesktopAccessor.dll", "Ptr")
 
 getProc(funcname) {
@@ -201,4 +206,9 @@ RestartExplorer( WaitSecs:=10 ) { ; requires OS Vista+    ; v2.10 by SKAN on CSC
 #+r::
   RestartExplorer()
 	; Reload ; so the new explorer process is in the new script ; not needed anymore, since the automatic reload from above works again
+return
+
+#^r::
+	global GenerateDynamicHotkeys
+	GenerateDynamicHotkeys()
 return

@@ -1,5 +1,7 @@
 # ahkscripts
 
+[![Compile AutoHotkey scripts](https://github.com/TheCrether/ahkscripts/actions/workflows/action.yml/badge.svg)](https://github.com/TheCrether/ahkscripts/actions/workflows/action.yml)
+
 I press my i3 shortcuts too often Windows without a result. That's the one of the reasons I made this repo.
 
 ## What each file does
