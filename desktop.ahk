@@ -37,8 +37,9 @@ activeWindowByDesktop := {}
 explorerRestartMsg := DllCall("user32\RegisterWindowMessage", "Str", "TaskbarCreated")
 OnMessage(explorerRestartMsg, "OnExplorerRestart")
 OnExplorerRestart(wParam, lParam, msg, hwnd) {
-    global RestartDesktopDLLProc
-    DllCall(RestartDesktopDLLProc, UInt, result)
+  global RestartDesktopDLLProc, GenerateDynamicHotkeys
+	GenerateDynamicHotkeys()
+  DllCall(RestartDesktopDLLProc, UInt, result)
 }
 
 MoveCurrentWindowToDesktop(number, move) {
@@ -205,10 +206,10 @@ RestartExplorer( WaitSecs:=10 ) { ; requires OS Vista+    ; v2.10 by SKAN on CSC
 
 #+r::
   RestartExplorer()
-	; Reload ; so the new explorer process is in the new script ; not needed anymore, since the automatic reload from above works again
+  ; Reload ; so the new explorer process is in the new script
 return
 
 #^r::
-	global GenerateDynamicHotkeys
-	GenerateDynamicHotkeys()
+  global GenerateDynamicHotkeys
+  GenerateDynamicHotkeys()
 return
