@@ -1,5 +1,6 @@
 ; this script is based on the example script from here: https://github.com/Ciantic/VirtualDesktopAccessor
 #SingleInstance, force
+#InstallKeybdHook
 
 ; Always use folder where the script is
 SetWorkingDir %A_ScriptDir%
