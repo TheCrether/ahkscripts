@@ -8,9 +8,9 @@ I press my i3 shortcuts too often Windows without a result. That's the one of th
 
 ### `desktop.ahk`
 
-This uses [Ciantic/VirtualDesktopAccessor][1], a DLL from where you can access Windows Desktop functions. I just put an already built [./VirtualDesktopAccessor.dll](./VirtualDesktopAccessor.dll) in this repository, but you can of course build one yourself.
+This uses [Ciantic/VirtualDesktopAccessor][1], a DLL from where you can access Windows Desktop functions. I just put an already built [./VirtualDesktopAccessor.dll](./VirtualDesktopAccessor.dll) in this repository, but you free to build one yourself.
 
-I will refer to `n` as the desktop number, which is limited to 4 in my script, but you can easily use more by duplicating the necessary line at the bottom of the file
+I will refer to `n` as the desktop number, which is limited to 10 in my script because the hotkeys are dynamically created for the number of available desktops (on startup and on addition/removal of desktops) and I can only create shortcuts for 1-9 (key 1 to key 9).
 
 - `Win + n` to switch between desktop
 - `Win + Shift + n` to move a window to a desktop
