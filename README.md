@@ -10,7 +10,7 @@ I press my i3 shortcuts too often Windows without a result. That's the one of th
 
 This uses [Ciantic/VirtualDesktopAccessor][1], a DLL from where you can access Windows Desktop functions. I just put an already built [./VirtualDesktopAccessor.dll](./VirtualDesktopAccessor.dll) in this repository, but you free to build one yourself.
 
-I will refer to `n` as the desktop number, which is limited to 10 in my script because the hotkeys are dynamically created for the number of available desktops (on startup and on addition/removal of desktops) and I can only create shortcuts for 1-9 (key 1 to key 9).
+I will refer to `n` as the desktop number, which is limited to 9 in my script because the hotkeys are dynamically created for the number of available desktops (on startup and on addition/removal of desktops) and I can only create shortcuts for 1-9 automatically (key 1 to key 9).
 
 - `Win + n` to switch between desktop
 - `Win + Shift + n` to move a window to a desktop
@@ -19,10 +19,6 @@ I will refer to `n` as the desktop number, which is limited to 10 in my script b
 ### `i3help.ahk`
 
 It has the general shortcuts that I use. Example: `Win + a` to activate Discord
-
-### `lulz.ahk`
-
-Just a dumb thing that opens Opera lul
 
 ### `startall.ahk`
 

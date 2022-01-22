@@ -1,5 +1,5 @@
 #SingleInstance, force
-#Hotstring EndChars -()[]{}\,
+#Hotstring EndChars -\
 
 ; Always use folder where the script is
 SetWorkingDir %A_ScriptDir%
