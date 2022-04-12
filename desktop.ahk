@@ -141,6 +141,8 @@ GenerateDynamicHotkeys() {
 		Hotkey, %keyAlt%, dynamicKey
 		i := i + 1
 	}
+
+	TrayTip, (Re-)Generated Desktop Hotkeys, Generated Hotkeys for %i% desktops
 }
 
 GenerateDynamicHotkeys() ; initalisation
