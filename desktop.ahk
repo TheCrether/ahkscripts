@@ -66,6 +66,12 @@ GoToDesktopNumber(num) {
 	; Store the active window of old desktop, if it is not pinned
 	WinGet, activeHwnd, ID, A
 	current := DllCall(GetCurrentDesktopNumberProc, UInt)
+
+	; stop if the desktop is already active
+	if (current == num) {
+		return
+	}
+
 	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
 	; if (isPinned == 0) {
 		activeWindowByDesktop[current] := activeHwnd
