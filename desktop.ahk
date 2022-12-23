@@ -18,8 +18,8 @@ if (FileExist(".\VirtualDesktopAccessor.dll") == "") {
 hDesktopDLL := DllCall("LoadLibrary", Str, ".\VirtualDesktopAccessor.dll", "Ptr")
 
 getProc(funcname) {
-  global hDesktopDLL
-  return DllCall("GetProcAddress", Ptr, hDesktopDLL, AStr, funcname, "Ptr")
+	global hDesktopDLL
+	return DllCall("GetProcAddress", Ptr, hDesktopDLL, AStr, funcname, "Ptr")
 }
 
 GoToDesktopNumberProc := getProc("GoToDesktopNumber")
@@ -38,9 +38,9 @@ activeWindowByDesktop := {}
 explorerRestartMsg := DllCall("user32\RegisterWindowMessage", "Str", "TaskbarCreated")
 OnMessage(explorerRestartMsg, "OnExplorerRestart")
 OnExplorerRestart(wParam, lParam, msg, hwnd) {
-  global RestartDesktopDLLProc, GenerateDynamicHotkeys
+	global RestartDesktopDLLProc, GenerateDynamicHotkeys
 	GenerateDynamicHotkeys()
-  DllCall(RestartDesktopDLLProc, UInt, result)
+	DllCall(RestartDesktopDLLProc, UInt, result)
 }
 
 MoveCurrentWindowToDesktop(number, move) {
@@ -48,16 +48,15 @@ MoveCurrentWindowToDesktop(number, move) {
 
 	current := DllCall(GetCurrentDesktopNumberProc, UInt)
 
-
 	WinGet, activeHwnd, ID, A
 	activeWindowByDesktop[number] := activeHwnd ; Do not activate
 	DllCall(MoveWinToDesktopNumberProc, UInt, activeHwnd, UInt, number)
-  if (move) {
-    GoToDesktopNumber(number)
-	  ; DllCall(GoToDesktopNumberProc, UInt, number)
-  }
+	if (move) {
+		GoToDesktopNumber(number)
+		; DllCall(GoToDesktopNumberProc, UInt, number)
+	}
 
-  WinActivate, ahk_class Shell_TrayWnd
+	WinActivate, ahk_class Shell_TrayWnd
 }
 
 GoToDesktopNumber(num) {
@@ -74,7 +73,7 @@ GoToDesktopNumber(num) {
 
 	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
 	; if (isPinned == 0) {
-		activeWindowByDesktop[current] := activeHwnd
+	activeWindowByDesktop[current] := activeHwnd
 	; }
 
 	; Try to avoid flashing task bar buttons, deactivate the current window if it is not pinned
@@ -102,12 +101,12 @@ VWMess(wParam, lParam, msg, hwnd) { ; wParam is the old desktop and lParam is th
 	}
 
 	if (wParam == lParam) return ; no reason to try to focus any window if the desktop stayed the same
-	; Try to restore active window from memory (if it's still on the desktop and is not pinned)
-	WinGet, activeHwnd, ID, A
+		; Try to restore active window from memory (if it's still on the desktop and is not pinned)
+		WinGet, activeHwnd, ID, A
 	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
 	oldHwnd := activeWindowByDesktop[lParam]
 	isOnDesktop := DllCall(IsWinOnCurrVirtualDesktopProc, UInt, oldHwnd, Int)
-  WinGetClass, class, A
+	WinGetClass, class, A
 	if (isOnDesktop == 1 && isPinned != 1 && class == "Shell_TrayWnd") {
 		WinActivate, ahk_id %oldHwnd%
 	}
@@ -171,9 +170,9 @@ dynamicKey:
 
 	desktop := desktop - 1 ; subtract one because desktop programatically is 0-indexed
 	Switch method {
-		case "goto": GoToDesktopNumber(desktop)
-		case "move": MoveCurrentWindowToDesktop(desktop, false)
-		case "move-goto": MoveCurrentWindowToDesktop(desktop, true)
+	case "goto": GoToDesktopNumber(desktop)
+	case "move": MoveCurrentWindowToDesktop(desktop, false)
+	case "move-goto": MoveCurrentWindowToDesktop(desktop, true)
 	}
 Return
 
@@ -202,23 +201,53 @@ Return
 
 ; restart the windows explorer if the desktop does not react correctly and set the
 RestartExplorer( WaitSecs:=10 ) { ; requires OS Vista+    ; v2.10 by SKAN on CSC7/D39N
-  Local PID, Explorer, ID:=WinExist("ahk_class Progman")  ; @ tiny.cc/restartexplorer2
-  WinGet, PID, PID
-  WinGet, Explorer, ProcessPath
-  PostMessage, 0x5B4, 0, 0,, ahk_class Shell_TrayWnd ; WM_USER+436
-  Process, WaitClose, %PID%, % ( PID ? WaitSecs : (WaitSecs:=0) )
-  If (PID && !Errorlevel)
-    Run, %Explorer%
-  WinWait, ahk_class Progman,, %WaitSecs%
-  Return (WinExist()!=ID)
+	Local PID, Explorer, ID:=WinExist("ahk_class Progman") ; @ tiny.cc/restartexplorer2
+	WinGet, PID, PID
+	WinGet, Explorer, ProcessPath
+	PostMessage, 0x5B4, 0, 0,, ahk_class Shell_TrayWnd ; WM_USER+436
+	Process, WaitClose, %PID%, % ( PID ? WaitSecs : (WaitSecs:=0) )
+	If (PID && !Errorlevel)
+		Run, %Explorer%
+	WinWait, ahk_class Progman,, %WaitSecs%
+	Return (WinExist()!=ID)
 }
 
 #+r::
-  RestartExplorer()
-  ; Reload ; so the new explorer process is in the new script
+	RestartExplorer()
+; Reload ; so the new explorer process is in the new script
 return
 
 #^r::
-  global GenerateDynamicHotkeys
-  GenerateDynamicHotkeys()
+	global GenerateDynamicHotkeys
+	GenerateDynamicHotkeys()
 return
+
+; Rotate screen to 0 degrees (normal horizontal), 90 degrees (vertical), 180 degrees (horizontal upside down), 270 degrees (vertical upside down)
+#F1::scrRotate(0)
+#F2::scrRotate(90)
+#F3::scrRotate(180)
+#F4::scrRotate(270)
+
+scrRotate(param:="") {
+	if param not in 0,3,6,9,12,90,180,270,360,default,d,t,r,b,l
+		MsgBox % "Valid parameters are: 0,3/6/9/12/90/180/270/360/default/d/t/r/b/l"
+	else {
+		mode:=	(param=0) || (param=12) || (param=360) || (param=t)?	DMDO_DEFAULT:=0
+			:	(param=9) || (param=90)	 || (param=r)				?	DMDO_90		:=1
+			:	(param=6) || (param=180) || (param=b)				?	DMDO_180	:=2
+			:	(param=3) || (param=270) || (param=l)				?	DMDO_270	:=3
+			:	(param=default)										?	DMDO_DEFAULT:=0
+			:	(param=d)											?	DMDO_DEFAULT:=0
+		VarSetCapacity(DEVMODE, 220, 0)
+		NumPut(220, DEVMODE, 68, "short")										; dmSize
+		DllCall("EnumDisplaySettingsW", "ptr", 0, "int", -1, "ptr", &DEVMODE)
+
+		width	:= NumGet(DEVMODE, 172, "uint")
+		height	:= NumGet(DEVMODE, 176, "uint")
+
+		NumPut(width, DEVMODE, 176, "int")
+		NumPut(height, DEVMODE, 172, "int")
+		NumPut(mode, DEVMODE, 84, "int")										; dmDisplayOrientation
+		DllCall("ChangeDisplaySettingsW", "ptr", &DEVMODE, "uint", 0)
+	}
+}
