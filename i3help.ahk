@@ -48,8 +48,6 @@ return
 	SetTitleMatchMode %currMode%
 return
 
-#c::WinActivate, Visual Studio Code
-
 PrintScreen::
 	Send #+s
 return
@@ -58,22 +56,6 @@ return
 	processName := "WindowsTerminal.exe"
 	Run, wt --window 0 nt ; create new tab in terminal, if no terminal is opened yet, open one
 return
-
-drawDot(id) {
-	OutputDebug, AAAA
-	WinGetPos, WinX, WinY, WinW, WinH, A ; get the stats of the active window
-	Gui, Draw%id%:New, +ToolWindow +AlwaysOnTop -SysMenu -Caption +Border
-	Gui, Color, cFFF0F0
-
-	; variables
-	DrawW := 10
-	DrawH := 10
-	DrawX := (WinX - 1)
-	DrawY := (WinY - 1)
-
-	; show the gui
-	Gui, Draw%id%:Show, NoActivate W%DrawW% H%DrawH% X%DrawX% Y%DrawY%, "Draw%id%"
-}
 
 EVENT_OBJECT_LOCATIONCHANGE := 0x800B
 

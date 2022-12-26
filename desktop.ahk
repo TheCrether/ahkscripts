@@ -71,12 +71,10 @@ GoToDesktopNumber(num) {
 		return
 	}
 
-	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
-	; if (isPinned == 0) {
 	activeWindowByDesktop[current] := activeHwnd
-	; }
 
 	; Try to avoid flashing task bar buttons, deactivate the current window if it is not pinned
+	isPinned := DllCall(IsPinnedProc, UInt, activeHwnd)
 	if (isPinned != 1) {
 		WinActivate, ahk_class Shell_TrayWnd
 	}
@@ -181,23 +179,14 @@ Return
 ; Switching desktops:
 ; Win + n = Switch to desktop n
 ; #1::GoToDesktopNumber(0)
-; #2::GoToDesktopNumber(1)
-; #3::GoToDesktopNumber(2)
-; #4::GoToDesktopNumber(3)
 
 ; Moving windows:
 ; Win + Shift + n = Move current window to desktop n
 ; #+1::MoveCurrentWindowToDesktop(0, false)
-; #+2::MoveCurrentWindowToDesktop(1, false)
-; #+3::MoveCurrentWindowToDesktop(2, false)
-; #+4::MoveCurrentWindowToDesktop(3, false)
 
 ; move windows and move to desktop
 ; Win + Ctrl + n = move window to desktop n and move to desktop n
 ; #^1::MoveCurrentWindowToDesktop(0, true)
-; #^2::MoveCurrentWindowToDesktop(1, true)
-; #^3::MoveCurrentWindowToDesktop(2, true)
-; #^4::MoveCurrentWindowToDesktop(3, true)
 
 ; restart the windows explorer if the desktop does not react correctly and set the
 RestartExplorer( WaitSecs:=10 ) { ; requires OS Vista+    ; v2.10 by SKAN on CSC7/D39N
@@ -232,12 +221,12 @@ scrRotate(param:="") {
 	if param not in 0,3,6,9,12,90,180,270,360,default,d,t,r,b,l
 		MsgBox % "Valid parameters are: 0,3/6/9/12/90/180/270/360/default/d/t/r/b/l"
 	else {
-		mode:=	(param=0) || (param=12) || (param=360) || (param=t)?	DMDO_DEFAULT:=0
-			:	(param=9) || (param=90)	 || (param=r)				?	DMDO_90		:=1
-			:	(param=6) || (param=180) || (param=b)				?	DMDO_180	:=2
-			:	(param=3) || (param=270) || (param=l)				?	DMDO_270	:=3
-			:	(param=default)										?	DMDO_DEFAULT:=0
-			:	(param=d)											?	DMDO_DEFAULT:=0
+		mode:=	(param=0) || (param=12) || (param=360) || (param=t)?	DMDO_DEFAULT:=0 ; normal horizontal
+			:	(param=9) || (param=90)	 || (param=r)				?	DMDO_90		:=1 ; 90° counterclockwise
+			:	(param=6) || (param=180) || (param=b)				?	DMDO_180	:=2 ; 180° counterclockwise
+			:	(param=3) || (param=270) || (param=l)				?	DMDO_270	:=3 ; 270° counterclockwise
+			:	(param=default)										?	DMDO_DEFAULT:=0 ; normal horizontal
+			:	(param=d)											?	DMDO_DEFAULT:=0 ; normal horizontal
 		VarSetCapacity(DEVMODE, 220, 0)
 		NumPut(220, DEVMODE, 68, "short")										; dmSize
 		DllCall("EnumDisplaySettingsW", "ptr", 0, "int", -1, "ptr", &DEVMODE)

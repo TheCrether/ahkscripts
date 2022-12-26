@@ -16,9 +16,16 @@ I will refer to `n` as the desktop number, which is limited to 9 in my script be
 - `Win + Shift + n` to move a window to a desktop
 - `Win + Alt + n` to move a window to a desktop and also switch to the desktop
 
+Additionally, it can restart the explorer with `Win + Shift + r` and can rotate your main display:
+
+- `Win + F1` for a normal horizontal display
+- `Win + F2` to rotate 90° degrees counterclockwise (normal vertical display)
+- `Win + F3` to rotate 180° degrees counterclockwise (flipped horizontal display)
+- `Win + F4` to rotate 270° degrees counterclockwise (flipped vertical display)
+
 ### `i3help.ahk`
 
-It has the general shortcuts that I use. Example: `Win + a` to activate Discord
+It has the general shortcuts that I use like media control, focusing windows, setting windows to be always-on-top. Example: `Win + a` to activate Discord
 
 ### `startall.ahk`
 
