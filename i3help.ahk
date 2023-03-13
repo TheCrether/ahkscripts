@@ -53,6 +53,7 @@ PrintScreen::
 return
 
 #Enter::
+^!t::
 	processName := "WindowsTerminal.exe"
 	Run, wt --window 0 nt ; create new tab in terminal, if no terminal is opened yet, open one
 return
