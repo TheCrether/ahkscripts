@@ -1,5 +1,7 @@
+#Include ./reloadOnEnvChange.ahk
 #SingleInstance, force
 SetTitleMatchMode, 2
+setupReloadOnEnvChange()
 
 ; Always use folder where the script is
 SetWorkingDir %A_ScriptDir%
