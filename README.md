@@ -4,6 +4,11 @@
 
 I press my i3 shortcuts too often Windows without a result. That's the one of the reasons I made this repo.
 
+## Prerequisites
+
+- [AutoHotkey](https://www.autohotkey.com/)
+  - Version: **1.x**
+
 ## What each file does
 
 ### `desktop.ahk`
