@@ -1,9 +1,10 @@
-#SingleInstance, force
+#Requires AutoHotkey v2
+#SingleInstance force
 
 ; Always use folder where the script is
-SetWorkingDir %A_ScriptDir%
+SetWorkingDir(A_ScriptDir)
 
-Run, i3help.ahk
-Run, desktop.ahk
-Run, vowels.ahk
+Run(".\i3help.ahk")
+Run(".\desktop.ahk")
+Run(".\vowels.ahk")
 ExitApp

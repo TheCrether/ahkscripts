@@ -2,12 +2,12 @@
 
 [![Compile AutoHotkey scripts](https://github.com/TheCrether/ahkscripts/actions/workflows/action.yml/badge.svg)](https://github.com/TheCrether/ahkscripts/actions/workflows/action.yml)
 
-I press my i3 shortcuts too often Windows without a result. That's the one of the reasons I made this repo.
+I press my i3 shortcuts too often on my Windows machines without a result. That's the one of the reasons I made this repo.
 
 ## Prerequisites
 
 - [AutoHotkey](https://www.autohotkey.com/)
-  - Version: **1.x**
+  - Version: any **v2** version
 
 ## What each file does
 
@@ -40,7 +40,7 @@ Starts my AutoHotkey scripts at once (useful for autostart)
 
 Has the hotstrings for when I use the US keyboard layout (most of the time now) instead of the German keyboard layout.
 
-converts stuff like: `ae` to `ä` with the specified hot strings at the top
+converts stuff like: `ae` to `ä` with the specified hot strings triggers at the top
 
 ## `winhook.ahk`
 

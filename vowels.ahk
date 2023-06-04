@@ -1,48 +1,59 @@
-#SingleInstance, force
-#Hotstring EndChars -\
+#Requires AutoHotkey v2
+#SingleInstance force
+#HotString EndChars -\
 
 ; Always use folder where the script is
-SetWorkingDir %A_ScriptDir%
-Menu, Tray, Icon, .\\icons\vowels.ico
+SetWorkingDir(A_ScriptDir)
+TraySetIcon(".\icons\vowels.ico")
 
-; https://web.archive.org/web/20100526232547/http://www.mknoedel.de:80/lexikon_ASCII-Code.htm
+; https://www.compart.com/de/unicode/block
 
 :?OC:ae::
-  Send {ASC 0228}
-return
+{
+	Send("{U+00E4}")
+}
 
 :?OC:oe::
-  Send {ASC 0246}
-return
+{
+	Send("{U+00F6}")
+}
 
 :?OC:ue::
-  Send {ASC 0252}
-return
+{
+	Send("{U+00FC}")
+}
 
 :?OC:Ae::
-  Send {ASC 0196}
-return
+{
+	Send("{U+00C4}")
+}
 
 :?OC:Oe::
-  Send {ASC 0214}
-return
+{
+	Send("{U+00D6}")
+}
 
 :?OC:Ue::
-  Send {ASC 0220}
-return
+{
+	Send("{U+00DC}")
+}
 
 :?OC:AE::
-  Send {ASC 0196}
-return
+{
+	Send("{U+00C4}")
+}
 
 :?OC:OE::
-  Send {ASC 0214}
-return
+{
+	Send("{U+00D6}")
+}
 
 :?OC:UE::
-  Send {ASC 0220}
-return
+{
+	Send("{U+00DC}")
+}
 
 :?O:ss::
-  Send {ASC 0223}
-return
+{
+	Send("{U+00DF}")
+}
