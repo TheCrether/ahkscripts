@@ -28,6 +28,45 @@ Additionally, it can restart the explorer with `Win + Shift + r` and can rotate 
 - `Win + F3` to rotate 180° degrees counterclockwise (flipped horizontal display)
 - `Win + F4` to rotate 270° degrees counterclockwise (flipped vertical display)
 
+### `explorer.ah2`
+
+#### Windows 10
+
+You can use this script to define a list of shortcuts which can open one folder in explorer.
+
+Path for JSON: `YOUR-HOME\explorer-shortcuts.json`
+
+Example JSON:
+
+```json
+{
+  "shortcuts": {
+    "work": "C:\\work",
+    "temp": "C:\\Temp"
+  }
+}
+```
+
+#### **For Windows 11 only**
+
+This script can open an W11 explorer with multiple tabs through a JSON configuration in your user folder  (scripts look in the environment variables `USERPROFILE` and `HOME` in order).
+
+Path for JSON: `YOUR-HOME\explorer-shortcuts.json`
+
+Example JSON:
+
+```json
+{
+  "shortcuts": {
+    "work": [
+      "C:\\work",
+      "C:\\Users\\user\\another-work-folder"
+    ],
+    "temp": "C:\\Temp"
+  }
+}
+```
+
 ### `i3help.ahk`
 
 It has the general shortcuts that I use like media control, focusing windows, setting windows to be always-on-top. Example: `Win + a` to activate Discord
@@ -47,5 +86,10 @@ converts stuff like: `ae` to `ä` with the specified hot strings triggers at the
 This script comes from the AutoHotkey forums. It's a really cool script for listening to all kinds of window messages.
 [Forum Link][2]
 
+## Used Resources
+
+- [TheArkive/JXON_ahk2][3]
+
 [1]: https://github.com/Ciantic/VirtualDesktopAccessor
 [2]: https://www.autohotkey.com/boards/viewtopic.php?f=6&t=59149
+[3]: https://github.com/TheArkive/JXON_ahk2
