@@ -5,7 +5,9 @@ InstallKeybdHook()
 
 ; Always use folder where the script is
 SetWorkingDir(A_ScriptDir)
-TraySetIcon(".\icons\desktop.ico")
+try {
+	TraySetIcon(".\icons\desktop.ico")
+}
 
 DetectHiddenWindows(true)
 hwnd := WinExist("ahk_pid " . DllCall("GetCurrentProcessId", "Uint"))
@@ -16,7 +18,21 @@ if (FileExist(".\VirtualDesktopAccessor.dll") == "") {
 	Return
 }
 
+hDesktopDLL := ""
+; try windows 10 virtual desktop accessor first and if that fails, try windows 11
 hDesktopDLL := DllCall("LoadLibrary", "Str", ".\VirtualDesktopAccessor.dll", "Ptr")
+try {
+	desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
+} catch Error as e {
+	hDesktopDLL := DllCall("LoadLibrary", "Str", ".\VirtualDesktopAccessor11.dll", "Ptr")
+	try {
+		desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
+	} catch Error as e {
+		MsgBox("can't load VirtualDesktopAccessor.ddl, tried windows 10 and windows 11 version")
+		Return
+	}
+}
+
 
 GetProc(funcname) {
 	global hDesktopDLL
@@ -103,7 +119,9 @@ VWMess(wParam, lParam, msg, hwnd) { ; wParam is the old desktop and lParam is th
 	isOnDesktop := DllCall(IsWinOnCurrVirtualDesktopProc, "Int", oldHwnd, "Int")
 	winClass := WinGetClass("A")
 	if (isOnDesktop == 1 && isPinned != 1 && winClass == "Shell_TrayWnd" && oldHwnd != -1) {
-		WinActivate("ahk_id " . oldHwnd)
+		try {
+			WinActivate("ahk_id " . oldHwnd)
+		}
 	}
 }
 
@@ -231,8 +249,8 @@ scrRotate(param := "") {
 	mode := (param = 0) || (param = 12) || (param = 360) || (param = "t") ? 0 ; normal horizontal
 		: (param = 9) || (param = 90) || (param = "r") ? 1 ; 90° counterclockwise
 			: (param = 6) || (param = 180) || (param = "b") ? 2 ; 180° counterclockwise
-				: (param = 3) || (param = 270) || (param = "l") ? 3 ; 270° counterclockwise
-					: (param = "default") || (param = "d") ? 0 : 0 ; normal horizontal
+			: (param = 3) || (param = 270) || (param = "l") ? 3 ; 270° counterclockwise
+			: (param = "default") || (param = "d") ? 0 : 0 ; normal horizontal
 	DEVMODE := Buffer(220, 0)
 	NumPut("short", 220, DEVMODE, 68)										; dmSize
 	DllCall("EnumDisplaySettingsW", "ptr", 0, "int", -1, "ptr", DEVMODE)

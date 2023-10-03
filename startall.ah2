@@ -4,7 +4,7 @@
 ; Always use folder where the script is
 SetWorkingDir(A_ScriptDir)
 
-Run(".\i3help.ahk")
-Run(".\desktop.ahk")
-Run(".\vowels.ahk")
+Run(".\i3help.ah2")
+Run(".\desktop.ah2")
+Run(".\vowels.ah2")
 ExitApp

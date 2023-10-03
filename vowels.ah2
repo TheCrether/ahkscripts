@@ -4,7 +4,9 @@
 
 ; Always use folder where the script is
 SetWorkingDir(A_ScriptDir)
-TraySetIcon(".\icons\vowels.ico")
+try {
+	TraySetIcon(".\icons\vowels.ico")
+}
 
 ; https://www.compart.com/de/unicode/block
 

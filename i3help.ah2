@@ -6,7 +6,9 @@ setupReloadOnEnvChange()
 
 ; Always use folder where the script is
 SetWorkingDir(A_ScriptDir)
-TraySetIcon(".\icons\i3help.ico")
+try {
+	TraySetIcon(".\icons\i3help.ico")
+}
 
 <^>!p::
 ^!p::
@@ -61,8 +63,8 @@ PrintScreen:: Send("#+s")
 #Enter::
 ^!t::
 {
-	processName := "WindowsTerminal.exe"
-	Run("wt --window 0 nt") ; create new tab in terminal, if no terminal is opened yet, open one
+	; processName := "WindowsTerminal.exe"
+	Run("wt") ; create new tab in terminal, if no terminal is opened yet, open one
 }
 
 #t::
