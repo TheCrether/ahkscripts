@@ -1,6 +1,5 @@
-#Requires AutoHotkey v2
+#Include <Base>
 ; this script is based on the example script from here: https://github.com/Ciantic/VirtualDesktopAccessor
-#SingleInstance force
 InstallKeybdHook()
 
 ; Always use folder where the script is
@@ -28,7 +27,7 @@ try {
 	try {
 		desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
 	} catch Error as e {
-		MsgBox("can't load VirtualDesktopAccessor.ddl, tried windows 10 and windows 11 version")
+		TrayTip("can't load VirtualDesktopAccessor.ddl, tried windows 10 and windows 11 version", "", "Mute")
 		Return
 	}
 }

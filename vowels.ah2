@@ -1,5 +1,4 @@
-#Requires AutoHotkey v2
-#SingleInstance force
+#Include <Base>
 #HotString EndChars -\
 
 ; Always use folder where the script is
