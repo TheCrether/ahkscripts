@@ -57,14 +57,9 @@ OpenShortcut(name, itemPos, menuObj) {
 		Run("C:\Windows\explorer.exe " . paths[1])
 		Return
 	}
-	try {
-		Send("#e")
-		WinWaitNotActive WinExist("A")
-	} catch {
-		Send("#e")
-		WinWaitActive("ahk_exe explorer.exe")
-	}
-	; TODO add check if there is only one path, to launch explorer through command
+	Send("#e")
+	WinWaitActive("ahk_exe explorer.exe")
+	Sleep(200)
 	Loop paths.Length {
 		if A_Index > 1 {
 			Send("^t")

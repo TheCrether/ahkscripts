@@ -41,7 +41,7 @@ PostMessage(0x5555, 0, 1, , "ahk_id " . desktop) ; 0 is to send a change desktop
 
 You can use this script to define a list of shortcuts which can open one folder in explorer or start a AutoHotkey script (path has to end with .ahk or .ah2).
 
-Path for JSON: `YOUR-HOME\explorer-shortcuts.json`
+Path for JSON: `YOUR-HOME\shortcuts\shortcuts.json`
 
 Example JSON:
 
@@ -60,7 +60,7 @@ Example JSON:
 
 This script can open an W11 explorer with multiple tabs through a JSON configuration in your user folder  (scripts look in the environment variables `USERPROFILE` and `HOME` in order).
 
-Path for JSON: `YOUR-HOME\explorer-shortcuts.json`
+Path for JSON: `YOUR-HOME\shortcuts\shortcuts.json`
 
 Example JSON:
 
