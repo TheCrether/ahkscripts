@@ -12,9 +12,9 @@ DetectHiddenWindows(true)
 hwnd := WinExist("ahk_pid " . DllCall("GetCurrentProcessId", "Uint"))
 hwnd += 0x1000 << 32
 
-if (FileExist(".\VirtualDesktopAccessor.dll") == "") {
+if not FileExist(".\VirtualDesktopAccessor.dll") or not FileExist(".\VirtualDesktopAccessor11.dll") {
 	MsgBox("I couldn't find a VirtualDesktopAccessor.dll in the same directory as the script! `n Exiting!")
-	Return
+	ExitApp()
 }
 
 hDesktopDLL := ""
@@ -28,7 +28,7 @@ try {
 		desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
 	} catch Error as e {
 		TrayTip("can't load VirtualDesktopAccessor.dll, tried windows 10 and windows 11 version", "", "Mute")
-		Return
+		ExitApp()
 	}
 }
 
@@ -53,17 +53,17 @@ activeWindowByDesktop := Map()
 MoveCurrentWindowToDesktop(number, move) {
 	global GetCurrentDesktopNumberProc, MoveWinToDesktopNumberProc, GoToDesktopNumberProc, activeWindowByDesktop
 
-	current := DllCall(GetCurrentDesktopNumberProc, "UInt")
+	try {
+		activeHwnd := WinGetID("A")
+		activeWindowByDesktop[number] := activeHwnd ; Do not activate
+		DllCall(MoveWinToDesktopNumberProc, "UInt", activeHwnd, "UInt", number)
+		if (move) {
+			GoToDesktopNumber(number)
+			; DllCall(GoToDesktopNumberProc, UInt, number)
+		}
 
-	activeHwnd := WinGetID("A")
-	activeWindowByDesktop[number] := activeHwnd ; Do not activate
-	DllCall(MoveWinToDesktopNumberProc, "UInt", activeHwnd, "UInt", number)
-	if (move) {
-		GoToDesktopNumber(number)
-		; DllCall(GoToDesktopNumberProc, UInt, number)
+		WinActivate("ahk_class Shell_TrayWnd")
 	}
-
-	WinActivate("ahk_class Shell_TrayWnd")
 }
 
 GoToDesktopNumber(num) {

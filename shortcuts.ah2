@@ -8,7 +8,7 @@ if home == "" {
 filePath := home . "\shortcuts\shortcuts.json"
 if not FileExist(filePath) {
 	TrayTip(Format("no explorer-shortcuts.json found in {1} directory, not configuring any shortcuts", home), "", "Mute")
-	Return
+	ExitApp()
 }
 
 setupReloadPaths(filePath)
@@ -20,11 +20,11 @@ try {
 	shortcuts := json["shortcuts"]
 	if not shortcuts is Map {
 		TrayTip("'shortcuts' isn't an object/map")
-		Return
+		ExitApp()
 	}
 } catch {
 	TrayTip("no 'shortcuts' field defined in " . filePath)
-	Return
+	ExitApp()
 }
 
 shortcutMenu := Menu()
