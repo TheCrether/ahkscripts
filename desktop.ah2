@@ -27,7 +27,7 @@ try {
 	try {
 		desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
 	} catch Error as e {
-		TrayTip("can't load VirtualDesktopAccessor.ddl, tried windows 10 and windows 11 version", "", "Mute")
+		TrayTip("can't load VirtualDesktopAccessor.dll, tried windows 10 and windows 11 version", "", "Mute")
 		Return
 	}
 }
@@ -83,7 +83,9 @@ GoToDesktopNumber(num) {
 	; Try to avoid flashing task bar buttons, deactivate the current window if it is not pinned
 	isPinned := DllCall(IsPinnedProc, "UInt", activeHwnd)
 	if (isPinned != 1) {
-		WinActivate("ahk_class Shell_TrayWnd")
+		try {
+			WinActivate("ahk_class Shell_TrayWnd")
+		}
 	}
 
 	; Change desktop
@@ -261,6 +263,16 @@ scrRotate(param := "") {
 	NumPut("int", height, DEVMODE, 172)
 	NumPut("int", mode, DEVMODE, 84)										; dmDisplayOrientation
 	DllCall("ChangeDisplaySettingsW", "ptr", DEVMODE, "uint", 0)
+}
+
+OnMessage(0x5555, DesktopMessage)
+
+DesktopMessage(wParam, lParam, msg, hwnd) {
+	; TrayTip(Format("Message {1} arrived:`nWPARAM: {2}`nLPARAM: {3}", msg, wParam, lParam))
+	; change desktop
+	if wParam == 0 {
+		GoToDesktopNumber(lParam)
+	}
 }
 
 ; Restart the virtual desktop accessor when Explorer.exe crashes, or restarts (e.g. when coming from fullscreen game)

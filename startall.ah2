@@ -10,5 +10,5 @@ Run(".\desktop.ah2")
 Sleep(100)
 Run(".\vowels.ah2")
 Sleep(100)
-Run(".\explorer.ah2")
+Run(".\shortcuts.ah2")
 ExitApp

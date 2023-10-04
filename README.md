@@ -28,11 +28,18 @@ Additionally, it can restart the explorer with `Win + Shift + r` and can rotate 
 - `Win + F3` to rotate 180° degrees counterclockwise (flipped horizontal display)
 - `Win + F4` to rotate 270° degrees counterclockwise (flipped vertical display)
 
-### `explorer.ah2`
+You can also send a message from other AutoHotkey scripts, like this:
+
+```autohotkey
+desktop := WinExist("desktop.ah2 ahk_class AutoHotkey")
+PostMessage(0x5555, 0, 1, , "ahk_id " . desktop) ; 0 is to send a change desktop request, 1 is to change it the 2nd desktop (index starts at 0)
+```
+
+### `shortcuts.ah2`
 
 #### Windows 10
 
-You can use this script to define a list of shortcuts which can open one folder in explorer.
+You can use this script to define a list of shortcuts which can open one folder in explorer or start a AutoHotkey script (path has to end with .ahk or .ah2).
 
 Path for JSON: `YOUR-HOME\explorer-shortcuts.json`
 
@@ -42,7 +49,9 @@ Example JSON:
 {
   "shortcuts": {
     "work": "C:\\work",
-    "temp": "C:\\Temp"
+    "temp": "C:\\Temp",
+    "my-script-ah2": "C:\\scripts\\hello-world.ah2",
+    "my-script-ahk": "C:\\scripts\\hello-world.ahk"
   }
 }
 ```
@@ -62,7 +71,9 @@ Example JSON:
       "C:\\work",
       "C:\\Users\\user\\another-work-folder"
     ],
-    "temp": "C:\\Temp"
+    "temp": "C:\\Temp",
+    "my-script-ah2": "C:\\scripts\\hello-world.ah2",
+    "my-script-ahk": "C:\\scripts\\hello-world.ahk"
   }
 }
 ```

@@ -5,12 +5,13 @@ if home == "" {
 	home := EnvGet("HOME")
 }
 
-filePath := home . "\explorer-shortcuts.json"
-
+filePath := home . "\shortcuts\shortcuts.json"
 if not FileExist(filePath) {
 	TrayTip(Format("no explorer-shortcuts.json found in {1} directory, not configuring any shortcuts", home), "", "Mute")
 	Return
 }
+
+setupReloadPaths(filePath)
 
 jsonFile := FileRead(filePath)
 json := Jxon_Load(&jsonFile)
@@ -43,7 +44,12 @@ OpenShortcut(name, itemPos, menuObj) {
 	paths := shortcuts[name]
 
 	if paths is String {
-		Run("C:\Windows\explorer.exe " . paths)
+		Found := RegExMatch(paths, ".*(ah2|ahk)$")
+		if Found > 0 { ; run ahkscript
+			Run(paths)
+		} else {
+			Run("C:\Windows\explorer.exe " . paths)
+		}
 		Return
 	}
 
@@ -52,9 +58,8 @@ OpenShortcut(name, itemPos, menuObj) {
 		Return
 	}
 	try {
-		a := WinGetID("A")
 		Send("#e")
-		WinWaitActive("ahk_exe explorer.exe", , , "ahk_id " . String(a))
+		WinWaitNotActive WinExist("A")
 	} catch {
 		Send("#e")
 		WinWaitActive("ahk_exe explorer.exe")
