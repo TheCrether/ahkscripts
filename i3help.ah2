@@ -1,14 +1,9 @@
-#Requires AutoHotkey v2
+#Include <Base>
 #Include "./reloadOnEnvChange.ahk"
-#SingleInstance force
 SetTitleMatchMode(2)
 setupReloadOnEnvChange()
 
-; Always use folder where the script is
-SetWorkingDir(A_ScriptDir)
-try {
-	TraySetIcon(".\icons\i3help.ico")
-}
+SetIcon(".\icons\i3help.ico")
 
 <^>!p::
 ^!p::

@@ -5,7 +5,10 @@ if A_IsCompiled {
 	ExitApp
 }
 
+SetIcon(".\icons\check_for_updates.ico")
+
 CheckForGitUpdate() {
+	; TODO add check/switch for public http remote because to circumvent ssh auth problems
 	SetWorkingDir(A_ScriptDir)
 	RunWait(A_ComSpec . ' /c ".\check_for_updates.bat"', , "Hide")
 	; https://stackoverflow.com/a/3278427 checking git status

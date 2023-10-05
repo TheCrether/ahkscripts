@@ -1,5 +1,8 @@
 #Include <Base>
 #Include <JXON>
+
+SetIcon(".\icons\shortcuts.ico")
+
 home := EnvGet("USERPROFILE")
 if home == "" {
 	home := EnvGet("HOME")

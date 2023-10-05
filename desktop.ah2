@@ -2,11 +2,7 @@
 ; this script is based on the example script from here: https://github.com/Ciantic/VirtualDesktopAccessor
 InstallKeybdHook()
 
-; Always use folder where the script is
-SetWorkingDir(A_ScriptDir)
-try {
-	TraySetIcon(".\icons\desktop.ico")
-}
+SetIcon(".\icons\desktop.ico")
 
 DetectHiddenWindows(true)
 hwnd := WinExist("ahk_pid " . DllCall("GetCurrentProcessId", "Uint"))

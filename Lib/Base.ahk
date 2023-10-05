@@ -1,6 +1,16 @@
 #Requires AutoHotkey v2
 #SingleInstance Force
 
+; Always use folder where the script is
+SetWorkingDir(A_ScriptDir)
+
+SetIcon(path) {
+	; TODO if this is needed for compiled scripts or if you can skip it
+	try {
+		TraySetIcon(path)
+	}
+}
+
 reloadPaths := Map()
 
 try {
