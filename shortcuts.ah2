@@ -28,35 +28,87 @@ try {
 }
 
 shortcutMenu := Menu()
+generateSubmenu(prev, subShortcuts) {
+	submenu := Menu()
+	for shortcut in subShortcuts {
+		if subShortcuts[shortcut] is Array {
+			if subShortcuts[shortcut].Length == 0 {
+				continue
+			}
+			submenu.Add(shortcut, OpenShortcut.Bind(prev))
+		} else if subShortcuts[shortcut] is String {
+			if StrLen(subShortcuts[shortcut]) <= 1 {
+				continue
+			}
+			submenu.Add(shortcut, OpenShortcut.Bind(prev))
+		} else if subShortcuts[shortcut] is Map {
+			submenu.Add(
+				shortcut,
+				generateSubmenu(
+					Format("{1}.{2}", prev, shortcut),
+					subShortcuts[shortcut]
+				)
+			)
+		}
+	}
+	return submenu
+}
+
 for shortcut in shortcuts {
 	if shortcuts[shortcut] is Array {
 		if shortcuts[shortcut].Length == 0 {
 			continue
 		}
+		shortcutMenu.Add(shortcut, OpenShortcut.Bind(""))
 	} else if shortcuts[shortcut] is String {
 		if StrLen(shortcuts[shortcut]) <= 1 {
 			continue
 		}
+		shortcutMenu.Add(shortcut, OpenShortcut.Bind(""))
+	} else if shortcuts[shortcut] is Map {
+		shortcutMenu.Add(
+			shortcut,
+			generateSubmenu(shortcut, shortcuts[shortcut])
+		)
 	}
-	shortcutMenu.Add(shortcut, OpenShortcut)
 }
-OpenShortcut(name, itemPos, menuObj) {
-	paths := shortcuts[name]
+
+RunPath(path, skipExplorerCheck := false) {
+	AhkFound := RegExMatch(path, ".*\.(ah2|ahk)$")
+	Batch := RegExMatch(path, ".*\.bat$")
+	Powershell := RegExMatch(path, ".*\.ps1$")
+	if AhkFound > 0 {
+		Run(path)
+	} else if Batch > 0 {
+		Run(Format("{1} /c '{2}'", A_ComSpec, path))
+	} else if Powershell > 0 {
+		Run(Format("powershell {1}", path))
+	} else if not skipExplorerCheck {
+		Run("C:\Windows\explorer.exe " . path)
+	}
+}
+
+OpenShortcut(parentPath, name, itemPos, menuObj) {
+	global shortcuts
+
+	parentShortcuts := shortcuts
+	split := StrSplit(parentPath, ".")
+	for parent in split {
+		parentShortcuts := parentShortcuts[parent]
+	}
+
+	paths := parentShortcuts[name]
 
 	if paths is String {
-		Found := RegExMatch(paths, ".*(ah2|ahk)$")
-		if Found > 0 { ; run ahkscript
-			Run(paths)
-		} else {
-			Run("C:\Windows\explorer.exe " . paths)
-		}
+		RunPath(paths)
 		Return
 	}
 
 	if paths.Length == 1 {
-		Run("C:\Windows\explorer.exe " . paths[1])
+		RunPath(paths[1])
 		Return
 	}
+
 	Send("#e")
 	WinWaitActive("ahk_exe explorer.exe")
 	Sleep(200)
