@@ -37,6 +37,10 @@ PostMessage(0x5555, 0, 1, , "ahk_id " . desktop) ; 0 is to send a change desktop
 
 ### `shortcuts.ah2`
 
+This is a script to launch shortcuts configured through a JSON file. You can put folders you want to open, Batch/Powershell/Autohotkey scripts to launch and also put them into submenus.
+
+Because of Windows-version specific limitations, some features may not be available. (described after this)
+
 #### Windows 10
 
 You can use this script to define a list of shortcuts which can open one folder in explorer or start a AutoHotkey script (path has to end with .ahk or .ah2).
@@ -51,7 +55,13 @@ Example JSON:
     "work": "C:\\work",
     "temp": "C:\\Temp",
     "my-script-ah2": "C:\\scripts\\hello-world.ah2",
-    "my-script-ahk": "C:\\scripts\\hello-world.ahk"
+    "my-script-ahk": "C:\\scripts\\hello-world.ahk",
+    "submenu": {
+      "home": "C:\\Users\\user",
+      "goingDown": {
+        "wow": "C:\\"
+      }
+    }
   }
 }
 ```
@@ -73,7 +83,13 @@ Example JSON:
     ],
     "temp": "C:\\Temp",
     "my-script-ah2": "C:\\scripts\\hello-world.ah2",
-    "my-script-ahk": "C:\\scripts\\hello-world.ahk"
+    "my-script-ahk": "C:\\scripts\\hello-world.ahk",
+    "submenu": {
+      "home": "C:\\Users\\user",
+      "goingDown": {
+        "wow": "C:\\"
+      }
+    }
   }
 }
 ```
