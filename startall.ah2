@@ -11,4 +11,6 @@ Sleep(100)
 Run(".\vowels.ah2")
 Sleep(100)
 Run(".\shortcuts.ah2")
+Sleep(100)
+Run(".\check_for_updates.ah2")
 ExitApp
