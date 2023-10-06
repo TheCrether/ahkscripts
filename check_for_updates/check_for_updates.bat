@@ -1,5 +1,8 @@
 @ECHO off
 git rev-parse @ > .local.tmp
+for /f "delims=" %%a in ('type .local.tmp') do (
+	set local=%%a
+)
 
 RMDIR /S /Q temp-ahkscripts
 git clone "https://github.com/TheCrether/ahkscripts" temp-ahkscripts 2> .error
@@ -12,14 +15,6 @@ IF "%ERRORLEVEL%" NEQ "0" (
 
 cd temp-ahkscripts
 git rev-parse @ > ..\.remote.tmp
+git merge-base %local% @ > ..\.base.tmp
 cd ..
 RMDIR /S /Q temp-ahkscripts
-
-for /f "delims=" %%a in ('type .remote.tmp') do (
-	set remote=%%a
-)
-
-@REM for some reason the output wouldn't work otherwise
->.base.tmp (
-	git merge-base @ %remote%
-)
