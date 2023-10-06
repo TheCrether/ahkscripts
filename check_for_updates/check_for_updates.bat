@@ -1,31 +1,23 @@
 @ECHO off
-@REM call git ls-remote --exit-code http-origin 2> NUL
-call git remote get-url http-origin 2> .error
+git rev-parse @ > .local.tmp
+
+RMDIR /S /Q temp-ahkscripts
+git clone "https://github.com/TheCrether/ahkscripts" temp-ahkscripts 2> .error
 IF "%ERRORLEVEL%" NEQ "0" (
-	echo === 'git remote get-url http-origin' ended here === >> .error
-	git remote add http-origin "https://github.com/TheCrether/ahkscripts"
-) ELSE (
-	del .error
-)
-git fetch http-origin 2>> .error
-IF "%ERRORLEVEL%" NEQ "0" (
-	echo === 'git fetch http-origin' ended here >> .error
+	echo === 'git clone "https://github.com/TheCrether/ahkscripts" temp-ahkscripts' ended here === >> .error
 	exit
 ) ELSE (
 	del .error
 )
-git checkout -b http-origin-master http-origin/master || git checkout http-origin-master
-git pull --rebase http-origin master
-git checkout master
 
-git rev-parse @ > .local.tmp
-git rev-parse --remotes=http-origin "@{upstream}" > .remote.tmp
+cd temp-ahkscripts
+git rev-parse @ > ..\.remote.tmp
+cd ..
+RMDIR /S /Q temp-ahkscripts
 
 for /f "delims=" %%a in ('type .remote.tmp') do (
 	set remote=%%a
 )
-@REM clean up .remote.tmp while we're at it
-echo %remote% > .remote.tmp
 
 @REM for some reason the output wouldn't work otherwise
 >.base.tmp (
