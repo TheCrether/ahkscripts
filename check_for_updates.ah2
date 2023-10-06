@@ -18,10 +18,12 @@ CheckForGitUpdate() {
 	; https://stackoverflow.com/a/3278427 checking git status
 
 	if FileExist(".\.error") && Trim(FileRead(".\.error")) {
-		Result := MsgBox("There was an error while checking for updates.`nDo you want to look at the logs or should they be deleted?", "ahkscripts", "Y/N")
+		Result := MsgBox("There was an error while checking for updates.`nDo you want to look at the logs?", "ahkscripts", "Y/N")
 		if Result == "Yes" {
 			; TODO open .error file with the default editor
 			; with RunWait?
+			RunWait("notepad .error")
+			FileDelete(".\.error")
 			Return
 		} else {
 			FileDelete(".\.error")
