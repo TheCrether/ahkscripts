@@ -7,9 +7,9 @@ IF "%ERRORLEVEL%" NEQ "0" (
 ) ELSE (
 	del .error
 )
-git fetch --all 2> .error
+git fetch http-origin 2>> .error
 IF "%ERRORLEVEL%" NEQ "0" (
-	echo === 'git fetch --all' ended here >> .error
+	echo === 'git fetch http-origin' ended here >> .error
 	exit
 ) ELSE (
 	del .error
