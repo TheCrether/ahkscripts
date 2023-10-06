@@ -39,6 +39,9 @@ CheckForGitUpdate() {
 	if FileExist(".\error") {
 		FileDelete(".\.error") ; .error gets created even if no error is thrown (thank batch?)
 	}
+	if DirExist(".\temp-ahkscripts") {
+		DirDelete(".\temp-ahkscripts")
+	}
 
 	if localRev == remoteRev {
 		Return
