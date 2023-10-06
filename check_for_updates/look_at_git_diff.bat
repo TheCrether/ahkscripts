@@ -4,4 +4,3 @@ pause
 cd temp-ahkscripts
 git diff %1 %2
 cd ..
-RMDIR /S /Q temp-ahkscripts

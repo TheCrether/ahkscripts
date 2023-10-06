@@ -8,3 +8,4 @@ icons/work.ico
 # temporary files of check_for_updates.ah2
 *.tmp
 .error
+temp-ahkscripts
