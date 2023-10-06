@@ -10,7 +10,7 @@ if home == "" {
 
 filePath := home . "\shortcuts\shortcuts.json"
 if not FileExist(filePath) {
-	TrayTip(Format("no explorer-shortcuts.json found in {1} directory, not configuring any shortcuts", home), "", "Mute")
+	Notification(Format("no explorer-shortcuts.json found in {1} directory, not configuring any shortcuts", home), "", "Mute")
 	ExitApp()
 }
 
@@ -22,11 +22,11 @@ json := Jxon_Load(&jsonFile)
 try {
 	shortcuts := json["shortcuts"]
 	if not shortcuts is Map {
-		TrayTip("'shortcuts' isn't an object/map")
+		Notification("'shortcuts' isn't an object/map")
 		ExitApp()
 	}
 } catch {
-	TrayTip("no 'shortcuts' field defined in " . filePath)
+	Notification("no 'shortcuts' field defined in " . filePath)
 	ExitApp()
 }
 
@@ -83,7 +83,7 @@ RunPath(path, skipExplorerCheck := false) {
 	if AhkFound > 0 {
 		Run(path)
 	} else if Batch > 0 {
-		Run(Format("{1} /c '{2}'", A_ComSpec, path))
+		Run(Format('{1} /c "{2}"', A_ComSpec, path))
 	} else if Powershell > 0 {
 		Run(Format("powershell {1}", path))
 	} else if not skipExplorerCheck {

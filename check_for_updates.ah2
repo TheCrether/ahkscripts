@@ -28,7 +28,7 @@ CheckForGitUpdate() {
 			RunWait(A_ComSpec . ' /c "git pull & pause"')
 		}
 	} else if remoteRev == baseRev {
-		TrayTip("You need to push your changes`nRun 'git push' to update", "ahkscripts")
+		Notification("You need to push your changes`nRun 'git push' to update", "ahkscripts")
 	}
 }
 

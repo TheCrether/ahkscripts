@@ -11,6 +11,10 @@ SetIcon(path) {
 	}
 }
 
+Notification(Text := '', Title := A_ScriptName, Options := 0) {
+	TrayTip(Text, Title, Options)
+}
+
 reloadPaths := Map()
 
 try {
@@ -27,16 +31,16 @@ CheckTime() {
 		ModTime2 := FileGetTime(A_ScriptFullPath, "M")
 		ModTimeBase2 := FileGetTime(baseAHKPath, "M")
 		if DateDiff(ModTimeBase2, ModTimeBase, "Seconds") {
-			; don't output TrayTip when reloading Base because this reloads mutliple scripts
+			; don't output Notification when reloading Base because this reloads mutliple scripts
 			Reload
 		} else if DateDiff(ModTime2, ModTime, "Seconds") > 1 {
-			TrayTip("reloading " . A_ScriptName, , "Mute")
+			Notification("reloading " . A_ScriptName, A_ScriptName)
 			Reload
 		}
 		for path, time in reloadPaths {
 			time2 := FileGetTime(path, "M")
 			if DateDiff(time2, time, "Seconds") {
-				TrayTip(Format("Reloading {1} because of {2}", A_ScriptName, path))
+				Notification(Format("Reloading {1} because of {2}", A_ScriptName, path), A_ScriptName)
 				Reload
 			}
 		}

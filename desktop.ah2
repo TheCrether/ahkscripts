@@ -23,7 +23,7 @@ try {
 	try {
 		desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
 	} catch Error as e {
-		TrayTip("can't load VirtualDesktopAccessor.dll, tried windows 10 and windows 11 version", "", "Mute")
+		Notification("can't load VirtualDesktopAccessor.dll, tried windows 10 and windows 11 version", "", "Mute")
 		ExitApp()
 	}
 }
@@ -187,7 +187,7 @@ GenerateDynamicHotkeys() {
 		i := i + 1
 	}
 
-	TrayTip("(Re-)Generated Desktop Hotkeys", "Generated Hotkeys for " i " desktops", "Mute")
+	Notification("(Re-)Generated Desktop Hotkeys", "Generated Hotkeys for " i " desktops")
 }
 
 GenerateDynamicHotkeys() ; initalisation
@@ -264,7 +264,7 @@ scrRotate(param := "") {
 OnMessage(0x5555, DesktopMessage)
 
 DesktopMessage(wParam, lParam, msg, hwnd) {
-	; TrayTip(Format("Message {1} arrived:`nWPARAM: {2}`nLPARAM: {3}", msg, wParam, lParam))
+	; Notification(Format("Message {1} arrived:`nWPARAM: {2}`nLPARAM: {3}", msg, wParam, lParam))
 	; change desktop
 	if wParam == 0 {
 		GoToDesktopNumber(lParam)
