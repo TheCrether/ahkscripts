@@ -34,7 +34,9 @@ CheckForGitUpdate() {
 	remoteRev := CleanString(FileRead(".\.remote.tmp"))
 	baseRev := CleanString(FileRead(".\.base.tmp"))
 	FileDelete(".\*.tmp")
-	FileDelete(".\.error") ; .error gets created even if no error is thrown (thank batch?)
+	if FileExist(".\error") {
+		FileDelete(".\.error") ; .error gets created even if no error is thrown (thank batch?)
+	}
 
 	if localRev == remoteRev {
 		Return
