@@ -43,16 +43,16 @@ CheckForGitUpdate() {
 	}
 
 	if localRev == baseRev {
-		Result := MsgBox("There is an update for ahkscripts available.`nDo you want to 'git pull' and update?", "ahkscripts update available", "YesNo")
+		Result := MsgBox("There is an update for ahkscripts available.`nDo you want to look at the update?", "ahkscripts update available", "YesNo")
 		if Result == "Yes" {
 			Result := MsgBox("Do you want to look at the changes before updating?", "Have a look?", "YesNo")
-			if Result := "No" {
-				RunWait(A_ComSpec . ' /c "git pull & pause"')
-				Return
+			if Result := "Yes" {
+				RunWait(Format('{1} /c "echo To quit the difference view, press `'Q`'. You can navigate with your arrow buttons or with VIM-like bindings (hjkl) & pause & git diff {2} {3}', A_ComSpec, localRev, remoteRev))
 			}
-			; TODO display list of changes
-			; RunWait(A_ComSpec . ' /c ".\check_for_updates\look_at_git_diff"')
-			RunWait(Format('{1} /c "echo To quit the difference view, press `'Q`'. You can navigate with your arrow buttons or with VIM-like bindings (hjkl) & pause & git diff {2} {3}', A_ComSpec, localRev, remoteRev))
+			Result := MsgBox("Do you want to update?", "ahkscripts", "YesNo")
+			if Result := "Yes" {
+				RunWait(A_ComSpec . ' /c "git pull & pause"')
+			}
 		}
 	} else if remoteRev == baseRev {
 		Notification("You need to push your changes`nRun 'git push' to update", "ahkscripts")
