@@ -6,7 +6,7 @@ if A_IsCompiled {
 }
 
 SetIcon(".\icons\check_for_updates.ico")
-; setupReloadPaths("./check_for_updates.bat")
+setupReloadPaths(".\check_for_updates\check_for_updates.bat", ".\check_for_updates\look_at_git_diff.bat")
 
 CleanString(str) {
 	return Trim(RegExReplace(str, "[`r`n]+", ""))

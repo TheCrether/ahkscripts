@@ -8,18 +8,18 @@ DetectHiddenWindows(true)
 hwnd := WinExist("ahk_pid " . DllCall("GetCurrentProcessId", "Uint"))
 hwnd += 0x1000 << 32
 
-if not FileExist(".\VirtualDesktopAccessor.dll") or not FileExist(".\VirtualDesktopAccessor11.dll") {
-	MsgBox("I couldn't find a VirtualDesktopAccessor.dll in the same directory as the script! `n Exiting!")
+if not FileExist(".\Lib\VirtualDesktopAccessor.dll") or not FileExist(".\Lib\VirtualDesktopAccessor11.dll") {
+	MsgBox("I couldn't find a VirtualDesktopAccessor.dll in the Lib directory! `n Exiting!")
 	ExitApp()
 }
 
 hDesktopDLL := ""
 ; try windows 10 virtual desktop accessor first and if that fails, try windows 11
-hDesktopDLL := DllCall("LoadLibrary", "Str", ".\VirtualDesktopAccessor.dll", "Ptr")
+hDesktopDLL := DllCall("LoadLibrary", "Str", ".\Lib\VirtualDesktopAccessor.dll", "Ptr")
 try {
 	desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
 } catch Error as e {
-	hDesktopDLL := DllCall("LoadLibrary", "Str", ".\VirtualDesktopAccessor11.dll", "Ptr")
+	hDesktopDLL := DllCall("LoadLibrary", "Str", ".\Lib\VirtualDesktopAccessor11.dll", "Ptr")
 	try {
 		desktopCount := DllCall(GetProc("GetDesktopCount"), "Int")
 	} catch Error as e {
