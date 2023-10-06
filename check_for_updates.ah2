@@ -39,9 +39,6 @@ CheckForGitUpdate() {
 	if FileExist(".\error") {
 		FileDelete(".\.error") ; .error gets created even if no error is thrown (thank batch?)
 	}
-	if DirExist(".\temp-ahkscripts") {
-		DirDelete(".\temp-ahkscripts")
-	}
 
 	if localRev == remoteRev {
 		Return
@@ -61,6 +58,11 @@ CheckForGitUpdate() {
 		}
 	} else if remoteRev == baseRev {
 		Notification("You need to push your changes`nRun 'git push' to update", "ahkscripts")
+	}
+
+	; cleanup
+	if DirExist(".\temp-ahkscripts") {
+		DirDelete(".\temp-ahkscripts")
 	}
 }
 

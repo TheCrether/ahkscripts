@@ -16,5 +16,3 @@ IF "%ERRORLEVEL%" NEQ "0" (
 cd temp-ahkscripts
 git rev-parse @ > ..\.remote.tmp
 git merge-base %local% @ > ..\.base.tmp
-cd ..
-RMDIR /S /Q temp-ahkscripts
