@@ -4,11 +4,15 @@ call git remote get-url http-origin 2> .error
 IF "%ERRORLEVEL%" NEQ "0" (
 	echo === 'git remote get-url http-origin' ended here === >> .error
 	git remote add http-origin "https://github.com/TheCrether/ahkscripts"
+) ELSE (
+	del .error
 )
-git fetch --all 2>> .error
+git fetch --all 2> .error
 IF "%ERRORLEVEL%" NEQ "0" (
 	echo === 'git fetch --all' ended here >> .error
 	exit
+) ELSE (
+	del .error
 )
 git rev-parse @ > .local.tmp
 git rev-parse --remotes=http-origin "@{upstream}" > .remote.tmp
