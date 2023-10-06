@@ -35,24 +35,22 @@ CheckForGitUpdate() {
 	localRev := CleanString(FileRead(".\.local.tmp"))
 	remoteRev := CleanString(FileRead(".\.remote.tmp"))
 	baseRev := CleanString(FileRead(".\.base.tmp"))
-	FileDelete(".\*.tmp")
-	if FileExist(".\error") {
-		FileDelete(".\.error") ; .error gets created even if no error is thrown (thank batch?)
-	}
 
 	if localRev == remoteRev {
 		Return
 	}
 
 	if localRev == baseRev {
-		Result := MsgBox("There is an update for ahkscripts available.`nDo you want to look at the update?", "ahkscripts update available", "YesNo")
+		Result := MsgBox("There is an update for ahkscripts available.`nDo you want to update?", "ahkscripts update available", "YesNo")
 		if Result == "Yes" {
-			Result := MsgBox("Do you want to look at the changes before updating?", "Have a look?", "YesNo")
+			Result := MsgBox("Do you want to look at the changes before updating?", "ahkscripts update", "YesNo")
 			if Result := "Yes" {
-				RunWait(Format('{1} /c "echo To quit the difference view, press `'Q`'. You can navigate with your arrow buttons or with VIM-like bindings (hjkl) & pause & git diff {2} {3}', A_ComSpec, localRev, remoteRev))
-			}
-			Result := MsgBox("Do you want to update?", "ahkscripts", "YesNo")
-			if Result := "Yes" {
+				RunWait(Format('{1} /c ".\check_for_updates\look_at_git_diff.bat {2} {3}"', A_ComSpec, localRev, remoteRev))
+				Result := MsgBox("Do you want to update?", "ahkscripts", "YesNo")
+				if Result := "Yes" {
+					RunWait(A_ComSpec . ' /c "git pull & pause"')
+				}
+			} else {
 				RunWait(A_ComSpec . ' /c "git pull & pause"')
 			}
 		}
@@ -61,6 +59,10 @@ CheckForGitUpdate() {
 	}
 
 	; cleanup
+	FileDelete(".\*.tmp")
+	if FileExist(".\error") {
+		FileDelete(".\.error") ; .error gets created even if no error is thrown (thank batch?)
+	}
 	if DirExist(".\temp-ahkscripts") {
 		DirDelete(".\temp-ahkscripts")
 	}
