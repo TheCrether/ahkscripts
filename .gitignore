@@ -4,3 +4,7 @@ work.ah2
 icons/work.ico
 
 .vscode
+
+# temporary files of check_for_updates.ah2
+*.tmp
+.error
