@@ -5,9 +5,9 @@ IF "%ERRORLEVEL%" NEQ "0" (
 	echo === 'git remote get-url http-origin' ended here === >> .error
 	git remote add http-origin "https://github.com/TheCrether/ahkscripts"
 )
-git fetch --all 2>> .error
+git fetch http-origin 2>> .error
 IF "%ERRORLEVEL%" NEQ "0" (
-	echo === 'git fetch --all' ended here >> .error
+	echo === 'git fetch http-origin' ended here >> .error
 	exit
 )
 git rev-parse @ > .local.tmp
