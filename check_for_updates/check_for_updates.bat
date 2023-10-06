@@ -14,7 +14,9 @@ IF "%ERRORLEVEL%" NEQ "0" (
 ) ELSE (
 	del .error
 )
+git checkout -b http-origin-master http-origin/master || git checkout http-origin-master
 git pull --rebase http-origin master
+git checkout master
 
 git rev-parse @ > .local.tmp
 git rev-parse --remotes=http-origin "@{upstream}" > .remote.tmp
