@@ -76,18 +76,29 @@ for shortcut in shortcuts {
 	}
 }
 
-RunPath(path, skipExplorerCheck := false) {
+RunPath(path, skipExplorer := false) {
+	if DirExist(path) and not skipExplorer {
+		Run("C:\Windows\explorer.exe " . path)
+		Return
+	}
+
 	AhkFound := RegExMatch(path, ".*\.(ah2|ahk)$")
 	Batch := RegExMatch(path, ".*\.bat$")
 	Powershell := RegExMatch(path, ".*\.ps1$")
+
+	if not FileExist(path) {
+		Notification("'" . path . "' doesn't exist. Stopping shortcut execution")
+		Return
+	}
+
 	if AhkFound > 0 {
 		Run(path)
 	} else if Batch > 0 {
 		Run(Format('{1} /c "{2}"', A_ComSpec, path))
 	} else if Powershell > 0 {
 		Run(Format("powershell {1}", path))
-	} else if not skipExplorerCheck {
-		Run("C:\Windows\explorer.exe " . path)
+	} else {
+		Run(Format('{1} /c "start {2}"', A_ComSpec, path))
 	}
 }
 
