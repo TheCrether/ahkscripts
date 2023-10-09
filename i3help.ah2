@@ -58,6 +58,12 @@ PrintScreen:: Send("#+s")
 #Enter::
 ^!t::
 {
+	wtPath := RegRead("HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wt.exe", "Path", "")
+	if wtPath != "" {
+		path := EnvGet("Path")
+		path := wtPath . ";" . path
+		EnvSet("Path", path)
+	}
 	; processName := "WindowsTerminal.exe"
 	Run("wt") ; create new tab in terminal, if no terminal is opened yet, open one
 }
