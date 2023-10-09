@@ -14,6 +14,14 @@ CleanString(str) {
 
 CheckForGitUpdate() {
 	SetWorkingDir(A_ScriptDir)
+
+	httpOriginCode := RunWait("git remote get-url http-origin", , "Hide")
+	if not httpOriginCode { ; httpOriginCode != 0
+		RunWait('git remote add http-origin "https://github.com/TheCrether/ahkscripts"', , "Hide")
+	}
+
+	RunWait('git fetch -a', , "Hide")
+
 	RunWait(A_ComSpec . ' /c ".\check_for_updates\check_for_updates.bat"', , "Hide")
 	; https://stackoverflow.com/a/3278427 checking git status
 
@@ -22,7 +30,7 @@ CheckForGitUpdate() {
 		if Result == "Yes" {
 			; TODO open .error file with the default editor
 			; with RunWait?
-			RunWait("notepad .error")
+			RunWait(Format('{1} /c "start .error"', A_ComSpec))
 			FileDelete(".\.error")
 			Return
 		} else {
@@ -52,10 +60,10 @@ CheckForGitUpdate() {
 				RunWait(Format('{1} /c ".\check_for_updates\look_at_git_diff.bat {2} {3}"', A_ComSpec, localRev, remoteRev))
 				Result := MsgBox("Do you want to update?", "ahkscripts", "YesNo")
 				if Result := "Yes" {
-					RunWait(A_ComSpec . ' /c "git pull & pause"')
+					RunWait(A_ComSpec . ' /c "git pull http-origin master & pause"')
 				}
 			} else {
-				RunWait(A_ComSpec . ' /c "git pull & pause"')
+				RunWait(A_ComSpec . ' /c "git pull http-origin master & pause"')
 			}
 		}
 	} else if remoteRev == baseRev {
