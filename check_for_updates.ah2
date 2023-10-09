@@ -30,8 +30,6 @@ CheckForGitUpdate() {
 	if FileExist(".\.error") && Trim(FileRead(".\.error")) {
 		Result := MsgBox("There was an error while checking for updates.`nDo you want to look at the logs?", "ahkscripts", "Y/N")
 		if Result == "Yes" {
-			; TODO open .error file with the default editor
-			; with RunWait?
 			RunWait(Format('{1} /c "start .error"', A_ComSpec))
 			FileDelete(".\.error")
 			Return
