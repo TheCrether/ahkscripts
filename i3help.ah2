@@ -66,6 +66,9 @@ PrintScreen:: Send("#+s")
 	}
 	; processName := "WindowsTerminal.exe"
 	Run("wt") ; create new tab in terminal, if no terminal is opened yet, open one
+	WinWait("ahk_exe WindowsTerminal.exe")
+	Sleep(400)
+	tryToActivate("ahk_exe WindowsTerminal.exe")
 }
 
 #t::
