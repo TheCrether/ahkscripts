@@ -16,7 +16,7 @@ CheckForGitUpdate() {
 	SetWorkingDir(A_ScriptDir)
 
 	httpOriginCode := RunWait("git remote get-url http-origin", , "Hide")
-	if not httpOriginCode { ; httpOriginCode != 0
+	if httpOriginCode != 0 {
 		RunWait('git remote add http-origin "https://github.com/TheCrether/ahkscripts"', , "Hide")
 	} else {
 		RunWait('git remote set-url http-origin "https://github.com/TheCrether/ahkscripts"', , "Hide")
