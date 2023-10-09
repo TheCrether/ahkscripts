@@ -7,12 +7,12 @@ for /f "delims=" %%a in ('type .local.tmp') do (
 @REM RMDIR /S /Q temp-ahkscripts
 if exist temp-ahkscripts\ (
 	cd temp-ahkscripts
-	git pull 2> .error
+	git pull 2> ..\.error
 	IF "%ERRORLEVEL%" NEQ "0" (
-		echo === 'git pull' in temp-ahkscripts\ ended here === >> .error
+		echo === 'git pull' in temp-ahkscripts\ ended here === >> ..\.error
 		exit
 	) ELSE (
-		del .error
+		del ..\.error
 	)
 	cd ..
 ) else (
