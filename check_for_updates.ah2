@@ -25,7 +25,6 @@ CheckForGitUpdate() {
 	RunWait('git fetch http-origin', , "Hide")
 
 	RunWait(A_ComSpec . ' /c ".\check_for_updates\check_for_updates.bat"', , "Hide")
-	; https://stackoverflow.com/a/3278427 checking git status
 
 	if FileExist(".\.error") && Trim(FileRead(".\.error")) {
 		Result := MsgBox("There was an error while checking for updates.`nDo you want to look at the logs?", "ahkscripts", "Y/N")
@@ -40,9 +39,15 @@ CheckForGitUpdate() {
 	}
 
 
-	localRev := CleanString(FileRead(".\.local.tmp"))
-	remoteRev := CleanString(FileRead(".\.remote.tmp"))
-	baseRev := CleanString(FileRead(".\.base.tmp"))
+	try {
+		localRev := CleanString(FileRead(".\.local.tmp"))
+		remoteRev := CleanString(FileRead(".\.remote.tmp"))
+		baseRev := CleanString(FileRead(".\.base.tmp"))
+	} catch {
+		Notification("ahkscripts was not able to write temporary files. Aborting update-check")
+		FileDelete(".\*.tmp")
+		Return
+	}
 	FileDelete(".\*.tmp")
 	if FileExist(".\error") {
 		FileDelete(".\.error") ; .error gets created even if no error is thrown (thank batch?)
