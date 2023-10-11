@@ -66,7 +66,10 @@ GoToDesktopNumber(num) {
 	global GetCurrentDesktopNumberProc, GoToDesktopNumberProc, IsPinnedProc, activeWindowByDesktop
 
 	; Store the active window of old desktop, if it is not pinned
-	activeHwnd := WinGetID("A")
+	try {
+		activeHwnd := WinGetID("A")
+		activeWindowByDesktop[current] := activeHwnd
+	}
 	current := DllCall(GetCurrentDesktopNumberProc, "UInt")
 
 	; stop if the desktop is already active
@@ -74,10 +77,12 @@ GoToDesktopNumber(num) {
 		return
 	}
 
-	activeWindowByDesktop[current] := activeHwnd
 
 	; Try to avoid flashing task bar buttons, deactivate the current window if it is not pinned
-	isPinned := DllCall(IsPinnedProc, "UInt", activeHwnd)
+	isPinned := 0
+	try {
+		isPinned := DllCall(IsPinnedProc, "UInt", activeHwnd)
+	}
 	if (isPinned != 1) {
 		try {
 			WinActivate("ahk_class Shell_TrayWnd")
