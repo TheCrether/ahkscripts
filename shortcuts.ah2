@@ -76,6 +76,12 @@ for shortcut in shortcuts {
 	}
 }
 
+; add edit shortcuts.json
+name := "edit shortcuts.json"
+shortcuts[name] := filePath
+shortcutMenu.Add() ; add separator
+shortcutMenu.Add(name, OpenShortcut.Bind(""))
+
 RunPath(path, skipExplorer := false) {
 	if DirExist(path) and not skipExplorer {
 		Run("C:\Windows\explorer.exe " . path)
