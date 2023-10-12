@@ -100,7 +100,7 @@ RunFile(path) {
 	} else if Powershell > 0 {
 		Run(Format("powershell {1}", path))
 	} else {
-		RunWait(Format('{1} /c "start `'`' /wait {2}"', A_ComSpec, path))
+		Run(Format('{1} /c "start {2}"', A_ComSpec, path))
 	}
 
 	Return true
