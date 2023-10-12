@@ -82,20 +82,16 @@ shortcuts[name] := filePath
 shortcutMenu.Add() ; add separator
 shortcutMenu.Add(name, OpenShortcut.Bind(""))
 
-RunPath(path, skipExplorer := false) {
-	if DirExist(path) and not skipExplorer {
-		Run("C:\Windows\explorer.exe " . path)
-		Return
+RunFile(path) {
+	if not FileExist(path) {
+		Return false
 	}
+
+	; TODO add directives to skip to specific launch types/launch with specific programs?
 
 	AhkFound := RegExMatch(path, ".*\.(ah2|ahk)$")
 	Batch := RegExMatch(path, ".*\.bat$")
 	Powershell := RegExMatch(path, ".*\.ps1$")
-
-	if not FileExist(path) {
-		Notification("'" . path . "' doesn't exist. Stopping shortcut execution")
-		Return
-	}
 
 	if AhkFound > 0 {
 		Run(path)
@@ -104,8 +100,23 @@ RunPath(path, skipExplorer := false) {
 	} else if Powershell > 0 {
 		Run(Format("powershell {1}", path))
 	} else {
-		Run(Format('{1} /c "start {2}"', A_ComSpec, path))
+		RunWait(Format('{1} /c "start `'`' /wait {2}"', A_ComSpec, path))
 	}
+
+	Return true
+}
+
+RunPath(path, notificationOnError := true) {
+	if DirExist(path) {
+		Run("C:\Windows\explorer.exe " . path)
+		Return true
+	}
+
+	successful := RunFile(path)
+	if not successful and notificationOnError {
+		Notification("'" . path . "' doesn't exist. Stopping shortcut execution for this path")
+	}
+	return successful
 }
 
 OpenShortcut(parentPath, name, itemPos, menuObj) {
@@ -129,20 +140,47 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 		Return
 	}
 
+	folders := []
+	files := []
+	nonExist := []
+	for path in paths {
+		if DirExist(path) {
+			folders.Push(path)
+		} else if FileExist(path) {
+			files.Push(path)
+		} else {
+			nonExist.Push(path)
+		}
+	}
+
 	Send("#e")
 	WinWaitActive("ahk_exe explorer.exe")
 	Sleep(200)
-	Loop paths.Length {
+	Loop folders.Length {
+		folder := folders[A_Index]
 		if A_Index > 1 {
 			Send("^t")
 			Sleep(500)
 		}
 		Send("^l")
 		Sleep(300)
-		SendText(paths[A_Index])
+		SendText(folder)
 		Sleep(400)
 		Send("{Enter}")
 		Sleep(300)
+	}
+
+	for file in files {
+		; TODO workout a way to wait until file is opened
+		; RunFile(file, false)
+	}
+
+	if nonExist.Length > 0 {
+		txt := 'The following paths are non existent:`n'
+		Loop nonExist.Length {
+			txt := Format("{1}`n{2}", txt, nonExist[A_Index])
+		}
+		MsgBox(txt, Format("shortcuts.ah2 - {1}.{2}", parentPath, name))
 	}
 }
 
