@@ -92,3 +92,13 @@ PrintScreen:: Send("#+s")
 	WinMove(x, y, 1000, 550, "A")
 	WinSetAlwaysOnTop(1)
 }
+
+#Include <WinHook>
+
+FortiTray(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
+	; MsgBox(Format("{1}`n{2}`n{3}`n{4}`n{5}", Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event))
+	Sleep(100)
+	tryToActivate("ahk_id " . Win_Hwnd)
+}
+
+WinHook.Shell.Add(FortiTray, "Security Alert", , "FortiTray.exe", 1)

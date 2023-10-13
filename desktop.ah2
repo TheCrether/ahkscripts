@@ -46,19 +46,26 @@ GetWinDesktopNumberProc := GetProc("GetWindowDesktopNumber")
 GetDesktopCountProc := GetProc("GetDesktopCount")
 activeWindowByDesktop := Map()
 
-MoveCurrentWindowToDesktop(number, move) {
-	global GetCurrentDesktopNumberProc, MoveWinToDesktopNumberProc, GoToDesktopNumberProc, activeWindowByDesktop
-
+MoveWindowToDesktop(hwnd, number, moveWith := false) {
 	try {
-		activeHwnd := WinGetID("A")
-		activeWindowByDesktop[number] := activeHwnd ; Do not activate
-		DllCall(MoveWinToDesktopNumberProc, "UInt", activeHwnd, "UInt", number)
-		if (move) {
+		DllCall(MoveWinToDesktopNumberProc, "UInt", hwnd, "UInt", number)
+		if (moveWith) {
 			GoToDesktopNumber(number)
 			; DllCall(GoToDesktopNumberProc, UInt, number)
 		}
 
 		WinActivate("ahk_class Shell_TrayWnd")
+	}
+}
+
+MoveCurrentWindowToDesktop(number, moveWith := false) {
+	global GetCurrentDesktopNumberProc, MoveWinToDesktopNumberProc, GoToDesktopNumberProc, activeWindowByDesktop
+
+	try {
+		activeHwnd := WinGetID("A")
+		activeWindowByDesktop[number] := activeHwnd ; Do not activate
+
+		MoveWindowToDesktop(activeHwnd, number, moveWith)
 	}
 }
 
@@ -276,6 +283,74 @@ DesktopMessage(wParam, lParam, msg, hwnd) {
 	}
 }
 
+#Include <WinHook>
+
+
+MoveToDesktopHook(desktop, Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
+	Sleep(100)
+	MoveWindowToDesktop(Win_Hwnd, desktop)
+}
+
+defaultMoveLock := A_Temp . "\ahkscripts.default-move.done"
+hooks := []
+
+AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", host := "", extraEvents := Map()) {
+	if not host or InStr(A_ComputerName, host) {
+		hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
+	}
+}
+
+SetupDefaultMoveHooks() {
+	if not FileExist(defaultMoveLock) {
+		for hook in hooks {
+			title := ""
+			if hook.wTitle {
+				title := hook.wTitle . " "
+			}
+			if hook.wClass {
+				title := Trim(title) . " ahk_class " . hook.wClass . " "
+			}
+			if hook.wExe {
+				title := Trim(title) . " ahk_exe " . hook.wExe . " "
+			}
+			if hwnd := WinExist(Trim(title), , ,) {
+				MoveWindowToDesktop(hwnd, hook.desktop)
+			}
+		}
+		FileAppend("done", defaultMoveLock)
+	}
+
+	for hook in hooks {
+		WinHook.Shell.Add(MoveToDesktopHook.Bind(hook.desktop), hook.wTitle, hook.wClass, hook.wExe, 1)
+		for extraEvent, Fn in hook.extraEvents {
+			WinHook.Shell.Add(Fn, hook.wTitle, hook.wClass, hook.wExe, extraEvent)
+		}
+	}
+}
+
+DebugWindowEvent(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
+	OutputDebug(Format("a{1}`n{2}`n{3}`n{4}`n{5}", Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event))
+}
+
+AddDefaultMoveHook(2, , , "Discord.exe")
+AddDefaultMoveHook(2, , , "Spotify.exe")
+; WORK
+AddDefaultMoveHook(1, , , "Element.exe", "DIM")
+AddDefaultMoveHook(1, , "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
+AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
+;WORK end
+;own pcs
+AddDefaultMoveHook(1, , "TscShellContainerClass", "mstsc.exe", "CRETHER")
+;own pcs end
+
+SetupDefaultMoveHooks()
+#Include <logoff_shutdown_hook>
+onLogOff() {
+	try {
+		FileDelete(defaultMoveLock)
+	}
+}
+SetupShutdownLogoffHook(onLogOff, "logoff")
 ; Restart the virtual desktop accessor when Explorer.exe crashes, or restarts (e.g. when coming from fullscreen game)
 ; explorerRestartMsg := DllCall("user32\RegisterWindowMessage", "Str", "TaskbarCreated")
 ; OnMessage(explorerRestartMsg, OnExplorerRestart)
