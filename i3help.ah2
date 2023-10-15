@@ -1,5 +1,5 @@
 #Include <Base>
-#Include "./reloadOnEnvChange.ahk"
+#Include <reload_env_on_change>
 SetTitleMatchMode(2)
 setupReloadOnEnvChange()
 
