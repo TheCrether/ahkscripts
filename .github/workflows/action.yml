@@ -10,8 +10,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install packages
-        run: |
-          sudo apt -y install curl unzip
+        run: sudo apt -y install curl unzip jq dos2unix
+      - name: Convert setup.sh to LF to be sure
+        run: dos2unix ./.github/scripts/setup.sh
+        shell: bash
       - name: Download AutoHotkey
         run: ./.github/scripts/setup.sh
         shell: bash
@@ -57,7 +59,9 @@ jobs:
         shell: bash
         run: |
           mv icons output
-          cp VirtualDesktopAccessor.dll output
+          mkdir -p output/Lib
+          cp Lib/VirtualDesktopAccessor.dll output/Lib
+          cp Lib/VirtualDesktopAccessor11.dll output/Lib
           sudo apt install -y zip
           zip -r output.zip output
       - uses: ncipollo/release-action@v1
