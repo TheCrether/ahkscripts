@@ -38,4 +38,4 @@ fi
 curl "$url" --output Ahk2Exe.zip -L
 unzip Ahk2Exe.zip -d Ahk2Exe
 mkdir -p AutoHotkey/Compiler
-cp Ahk2Exe/Ahk2Exe.zip AutoHotkey/Compiler
+cp Ahk2Exe/Ahk2Exe.exe AutoHotkey/Compiler
