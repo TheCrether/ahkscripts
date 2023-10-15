@@ -1,5 +1,5 @@
 ;@Ahk2Exe-SetMainIcon .\icons\shortcuts.ico
-;@Ahk2Exe-SetDescription shortcuts enables you to open folders, files and scripts quickly
+;@Ahk2Exe-SetDescription shortcuts enables you to open folders files and scripts quickly
 
 #Include <Base>
 #Include <JXON>
