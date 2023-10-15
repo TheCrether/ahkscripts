@@ -1,3 +1,6 @@
+;@Ahk2Exe-SetMainIcon .\icons\vowels.ico
+;@Ahk2Exe-SetDescription vowels allows you to write german vowels on any keyboard layout
+
 #Include <Base>
 #HotString EndChars -\
 InstallKeybdHook()

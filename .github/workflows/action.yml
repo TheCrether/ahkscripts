@@ -63,6 +63,7 @@ jobs:
           cp Lib/VirtualDesktopAccessor.dll output/Lib
           cp Lib/VirtualDesktopAccessor11.dll output/Lib
           sudo apt install -y zip
+          echo "${GITHUB_REF#refs/*/}" > output/version.txt
           zip -r output.zip output
       - uses: ncipollo/release-action@v1
         with:

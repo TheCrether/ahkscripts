@@ -1,3 +1,6 @@
+;@Ahk2Exe-SetMainIcon .\icons\desktop.ico
+;@Ahk2Exe-SetDescription desktop.ah2 for managing your desktops
+
 #Include <Base>
 ; this script is based on the example script from here: https://github.com/Ciantic/VirtualDesktopAccessor
 InstallKeybdHook()

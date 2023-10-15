@@ -1,3 +1,6 @@
+;@Ahk2Exe-SetMainIcon .\icons\check_for_updates.ico
+;@Ahk2Exe-SetDescription check_for_updates checks for updates to ahkscripts
+
 #Include <Base>
 
 if A_IsCompiled {

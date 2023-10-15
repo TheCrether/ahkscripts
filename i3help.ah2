@@ -1,3 +1,6 @@
+;@Ahk2Exe-SetMainIcon .\icons\i3help.ico
+;@Ahk2Exe-SetDescription i3help provides some useful shortcuts
+
 #Include <Base>
 #Include <reload_env_on_change>
 SetTitleMatchMode(2)
