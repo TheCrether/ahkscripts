@@ -297,8 +297,11 @@ defaultMoveLock := A_Temp . "\ahkscripts.default-move.done"
 hooks := []
 
 AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map()) {
-	if Type(hosts) = "String"
+	if Type(hosts) = "String" {
+		if hosts = ""
+			Return
 		hosts := [hosts]
+	}
 	if hosts.Length == 0 {
 		hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
 	}
@@ -342,18 +345,18 @@ DebugWindowEvent(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 	OutputDebug(Format("a{1}`n{2}`n{3}`n{4}`n{5}", Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event))
 }
 
-AddDefaultMoveHook(2, , , "Discord.exe")
-AddDefaultMoveHook(2, , , "Spotify.exe")
+AddDefaultMoveHook(2, "", "", "Discord.exe")
+AddDefaultMoveHook(2, "", "", "Spotify.exe")
 ; WORK
-AddDefaultMoveHook(1, , , "Element.exe", "DIM")
-AddDefaultMoveHook(1, , "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
+AddDefaultMoveHook(1, "", "", "Element.exe", "DIM")
+AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
 AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
 ;WORK end
 ;own pcs
-AddDefaultMoveHook(1, , "TscShellContainerClass", "mstsc.exe", "CRETHER")
-AddDefaultMoveHook(1, , , "Element.exe", "DIM")
-AddDefaultMoveHook(1, , "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
-AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
+AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", "CRETHER")
+AddDefaultMoveHook(0, "", "", "Element.exe", "DIM")
+AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
+AddDefaultMoveHook(0, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
 ;own pcs end
 
 SetupDefaultMoveHooks()
