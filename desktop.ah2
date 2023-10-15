@@ -285,7 +285,6 @@ DesktopMessage(wParam, lParam, msg, hwnd) {
 
 #Include <WinHook>
 
-
 MoveToDesktopHook(desktop, Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 	Sleep(100)
 	MoveWindowToDesktop(Win_Hwnd, desktop)
@@ -294,9 +293,14 @@ MoveToDesktopHook(desktop, Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 defaultMoveLock := A_Temp . "\ahkscripts.default-move.done"
 hooks := []
 
-AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", host := "", extraEvents := Map()) {
-	if not host or InStr(A_ComputerName, host) {
-		hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
+AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map()) {
+	if Type(hosts) = "String"
+		hosts := [hosts]
+	for host in hosts {
+		if InStr(A_ComputerName, host) {
+			hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
+			break
+		}
 	}
 }
 
@@ -341,6 +345,9 @@ AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
 ;WORK end
 ;own pcs
 AddDefaultMoveHook(1, , "TscShellContainerClass", "mstsc.exe", "CRETHER")
+AddDefaultMoveHook(1, , , "Element.exe", "DIM")
+AddDefaultMoveHook(1, , "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
+AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
 ;own pcs end
 
 SetupDefaultMoveHooks()
@@ -350,7 +357,7 @@ onLogOff() {
 		FileDelete(defaultMoveLock)
 	}
 }
-SetupShutdownLogoffHook(onLogOff, "logoff")
+SetupShutdownLogoffHook(onLogOff, "both")
 ; Restart the virtual desktop accessor when Explorer.exe crashes, or restarts (e.g. when coming from fullscreen game)
 ; explorerRestartMsg := DllCall("user32\RegisterWindowMessage", "Str", "TaskbarCreated")
 ; OnMessage(explorerRestartMsg, OnExplorerRestart)
