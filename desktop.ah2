@@ -299,6 +299,9 @@ hooks := []
 AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map()) {
 	if Type(hosts) = "String"
 		hosts := [hosts]
+	if hosts.Length == 0 {
+		hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
+	}
 	for host in hosts {
 		if InStr(A_ComputerName, host) {
 			hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
