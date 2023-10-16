@@ -52,9 +52,9 @@ tryToActivate(title) {
 	}
 }
 
-^#a:: tryToActivate("Discord")
+#a:: tryToActivate("Discord")
 
-^#s:: tryToActivate("ahk_exe Spotify.exe")
+#s:: tryToActivate("ahk_exe Spotify.exe")
 
 PrintScreen:: Send("#+s")
 

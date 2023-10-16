@@ -2,7 +2,7 @@
 ;@Ahk2Exe-SetDescription vowels allows you to write german vowels on any keyboard layout
 
 #Include <Base>
-#HotString EndChars -\
+#HotString EndChars -
 InstallKeybdHook()
 
 ; Always use folder where the script is
@@ -13,55 +13,60 @@ try {
 
 ; https://www.compart.com/de/unicode/block
 
-; :?OC:ae::
-; {
-; 	Send("{U+00E4}")
-; }
+Hotstring(replacement) {
+	OutputDebug(A_ThisHotkey)
+	oldVal := SubStr(A_ThisHotkey, InStr(A_ThisHotkey, ":", , , 2) + 1)
 
-; :?OC:oe::
-; {
-; 	Send("{U+00F6}")
-; }
+	Send(replacement)
+	ih := InputHook("L1 T1", "{Backspace}")
+	ih.Start()
+	; maybe add listener if window was changed?
+	ih.Wait()
+	if ih.EndReason = "EndKey" {
+		Send(oldVal . "-")
 
-; :?OC:ue::
-; {
-; 	Send("{U+00FC}")
-; }
+		Return
+	}
 
-; :?OC:Ae::
-; {
-; 	Send("{U+00C4}")
-; }
+	Send(ih.Input)
+}
 
-; :?OC:Oe::
-; {
-; 	Send("{U+00D6}")
-; }
-
-; :?OC:Ue::
-; {
-; 	Send("{U+00DC}")
-; }
-
-; :?OC:AE::
-; {
-; 	Send("{U+00C4}")
-; }
-
-; :?OC:OE::
-; {
-; 	Send("{U+00D6}")
-; }
-
-; :?OC:UE::
-; {
-; 	Send("{U+00DC}")
-; }
-
-; :?O:ss::
-; {
-; 	Send("{U+00DF}")
-; }
+:?OC:ae:: {
+	Hotstring("ä")
+}
+:?OC:oe:: {
+	Hotstring("ö")
+}
+:?OC:ue:: {
+	Hotstring("ü")
+}
+:?OC:Ae:: {
+	Hotstring("Ä")
+}
+:?OC:Oe:: {
+	Hotstring("Ö")
+}
+:?OC:Ue:: {
+	Hotstring("Ü")
+}
+:?OC:AE:: {
+	Hotstring("Ä")
+}
+:?OC:OE:: {
+	Hotstring("Ö")
+}
+:?OC:UE:: {
+	Hotstring("Ü")
+}
+:?OC:ss:: {
+	Hotstring("ß")
+}
+:?OC:Ss:: {
+	Hotstring("ẞ")
+}
+:?OC:SS:: {
+	Hotstring("ẞ")
+}
 
 umlaute := Map("u", "ü", "a", "ä", "o", "ö", "s", "ß", "U", "Ü", "U", "Ä", "O", "Ö", "S", "ẞ")
 
@@ -70,13 +75,17 @@ umlaute := Map("u", "ü", "a", "ä", "o", "ö", "s", "ß", "U", "Ü", "U", "Ä",
 	try {
 		active := WinGetID("A")
 	}
-	Send("{U+00A8}+{Left}")
-	ih := InputHook("L1")
+	Send("{U+00A8}")
+	ih := InputHook("L1", "{Enter}{Esc}{Backspace}")
 	ih.Start()
 	; maybe add listener if window was changed?
 	ih.Wait()
 	if ih.EndReason = "Stopped" {
 		Return
+	}
+	if ih.EndReason = "EndKey" {
+		if ih.EndKey != "Backspace"
+			Send("{Backspace}")
 	}
 	nowActive := ""
 	try {
@@ -85,11 +94,13 @@ umlaute := Map("u", "ü", "a", "ä", "o", "ö", "s", "ß", "U", "Ü", "U", "Ä",
 	if active != nowActive {
 		Return
 	}
+	OutputDebug(ih.Input . " " . Ord(ih.Input))
 	umlaut := umlaute.Get(ih.Input, "")
 	; Send("{Backspace}")
 	if umlaut {
+		Send("{Backspace}")
 		SendText(umlaut)
 	} else {
-		SendText(ih.Input)
+		Send(ih.Input)
 	}
 }
