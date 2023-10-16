@@ -44,7 +44,6 @@ MoveWinToDesktopNumberProc := GetProc("MoveWindowToDesktopNumber")
 RegisterPostMessageHookProc := GetProc("RegisterPostMessageHook")
 UnregisterPostMessageHookProc := GetProc("UnregisterPostMessageHook")
 IsPinnedProc := GetProc("IsPinnedWindow")
-; RestartDesktopDLLProc := GetProc("RestartVirtualDesktopAccessor")
 GetWinDesktopNumberProc := GetProc("GetWindowDesktopNumber")
 GetDesktopCountProc := GetProc("GetDesktopCount")
 activeWindowByDesktop := Map()
@@ -54,7 +53,6 @@ MoveWindowToDesktop(hwnd, number, moveWith := false) {
 		DllCall(MoveWinToDesktopNumberProc, "UInt", hwnd, "UInt", number)
 		if (moveWith) {
 			GoToDesktopNumber(number)
-			; DllCall(GoToDesktopNumberProc, UInt, number)
 		}
 
 		WinActivate("ahk_class Shell_TrayWnd")
@@ -67,7 +65,6 @@ MoveCurrentWindowToDesktop(number, moveWith := false) {
 	try {
 		activeHwnd := WinGetID("A")
 		activeWindowByDesktop[number] := activeHwnd ; Do not activate
-
 		MoveWindowToDesktop(activeHwnd, number, moveWith)
 	}
 }
@@ -76,17 +73,14 @@ GoToDesktopNumber(num) {
 	global GetCurrentDesktopNumberProc, GoToDesktopNumberProc, IsPinnedProc, activeWindowByDesktop
 
 	; Store the active window of old desktop, if it is not pinned
-	try {
-		activeHwnd := WinGetID("A")
-		activeWindowByDesktop[current] := activeHwnd
-	}
 	current := DllCall(GetCurrentDesktopNumberProc, "UInt")
+	activeHwnd := WinGetID("A")
+	activeWindowByDesktop[current] := activeHwnd
 
 	; stop if the desktop is already active
 	if (current == num) {
 		return
 	}
-
 
 	; Try to avoid flashing task bar buttons, deactivate the current window if it is not pinned
 	isPinned := 0
@@ -118,9 +112,10 @@ VWMess(wParam, lParam, msg, hwnd) { ; wParam is the old desktop and lParam is th
 		GenerateDynamicHotkeys()
 	}
 
+	; no reason to try to focus any window if the desktop stayed the same
 	if (wParam == lParam) {
 		return
-	} ; no reason to try to focus any window if the desktop stayed the same
+	}
 	if (lParam == "__Item") {
 		lParam := DllCall(GetCurrentDesktopNumberProc, "Int")
 	}
