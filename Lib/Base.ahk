@@ -55,3 +55,24 @@ setupReloadPaths(paths*) {
 		reloadPaths[path] := time
 	}
 }
+
+GetCommandOutput(cmd) {
+	before := A_DetectHiddenWindows
+	DetectHiddenWindows(1)
+	pid := 0
+	Run(A_ComSpec, , "Hide", &pid)
+	WinWait("ahk_pid " . pid)
+	DllCall("AttachConsole", "UInt", pid)
+	WshShell := ComObject("Wscript.Shell")
+	exec := WshShell.Exec(cmd)
+	output := exec.StdOut.ReadAll()
+	DllCall("FreeConsole")
+	ProcessClose(pid)
+	DetectHiddenWindows(before)
+	return output
+}
+
+global IsWindows11 := 0
+if InStr(GetCommandOutput('powershell -WindowStyle Hidden -Command "(Get-WmiObject Win32_OperatingSystem).Caption"'), "Windows 11") {
+	IsWindows11 := 1
+}

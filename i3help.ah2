@@ -37,8 +37,7 @@ SetIcon(".\icons\i3help.ico")
 	Send("!{F4}")
 }
 
-#x::
-{
+#x:: {
 	if (A_AhkPath != "") {
 		SplitPath(A_AhkPath, , &ahk_dir)
 		ahk_dir := StrReplace(ahk_dir, "\v2", "")
@@ -74,8 +73,7 @@ PrintScreen:: Send("#+s")
 	tryToActivate("ahk_exe WindowsTerminal.exe")
 }
 
-#t::
-{
+#t:: {
 	WinSetAlwaysOnTop(-1, "A")
 	ExStyle := WinGetExStyle("A")
 	id := WinGetID("A")
@@ -88,12 +86,19 @@ PrintScreen:: Send("#+s")
 	}
 }
 
-!+1::
-{
+!+1:: {
 	title := WinGetTitle("A")
 	WinGetPos(&x, &y, &w, &h)
 	WinMove(x, y, 1000, 550, "A")
 	WinSetAlwaysOnTop(1)
+}
+
+#+a:: {
+	if IsWindows11 {
+		ControlClick("TrayNotifyWnd1", "ahk_class Shell_TrayWnd")
+		return
+	}
+	ControlClick("TrayButton2", "ahk_class Shell_TrayWnd")
 }
 
 #Include <WinHook>
