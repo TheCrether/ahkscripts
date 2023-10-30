@@ -87,10 +87,10 @@ PrintScreen:: Send("#+s")
 }
 
 !+1:: {
-	title := WinGetTitle("A")
-	WinGetPos(&x, &y, &w, &h)
+	; title := WinGetTitle("A")
+	WinGetPos(&x, &y, &w, &h, "A")
 	WinMove(x, y, 1000, 550, "A")
-	WinSetAlwaysOnTop(1)
+	WinSetAlwaysOnTop(1, "A")
 }
 
 #+a:: {
