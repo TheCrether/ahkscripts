@@ -101,6 +101,16 @@ PrintScreen:: Send("#+s")
 	ControlClick("TrayButton2", "ahk_class Shell_TrayWnd")
 }
 
+#m:: {
+	; check if window was already minimized
+	style := WinGetStyle("A")
+	if style & 0x20000000 {
+		WinActivate("A")
+	} else {
+		WinMinimize("A")
+	}
+}
+
 #Include <WinHook>
 
 FortiTray(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
