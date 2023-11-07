@@ -27,8 +27,10 @@ Hotstring(replacement) {
 
 		Return
 	}
-
+	; switch SendLevel so that things like ue-ss- work (because otherwise the first s wouldn't be recognized)
+	SendLevel(1)
 	Send(ih.Input)
+	SendLevel(0)
 }
 
 :?OC:ae:: {

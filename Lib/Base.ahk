@@ -72,6 +72,15 @@ GetCommandOutput(cmd) {
 	return output
 }
 
+ChangeDesktop(desktop) {
+	beforeHiddenWindows := A_DetectHiddenWindows
+	DetectHiddenWindows(1)
+	desktopId := WinExist("desktop.ah2 ahk_class AutoHotkey")
+	PostMessage(0x5555, 0, desktop, , "ahk_id " . desktopId)
+	Sleep(500)
+	DetectHiddenWindows(beforeHiddenWindows)
+}
+
 global IsWindows11 := 0
 if InStr(GetCommandOutput('powershell -WindowStyle Hidden -Command "(Get-WmiObject Win32_OperatingSystem).Caption"'), "Windows 11") {
 	IsWindows11 := 1

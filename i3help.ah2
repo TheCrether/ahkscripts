@@ -45,15 +45,21 @@ SetIcon(".\icons\i3help.ico")
 	}
 }
 
-tryToActivate(title) {
+tryToActivate(title, desktop := -1) {
+	if desktop > 0 {
+		if !WinExist(title) {
+			ChangeDesktop(desktop)
+			Sleep(100)
+		}
+	}
 	try {
 		WinActivate(title)
 	}
 }
 
-#a:: tryToActivate("Discord")
+#a:: tryToActivate("Discord", 2)
 
-#s:: tryToActivate("ahk_exe Spotify.exe")
+#s:: tryToActivate("ahk_exe Spotify.exe", 2)
 
 PrintScreen:: Send("#+s")
 
@@ -95,7 +101,16 @@ PrintScreen:: Send("#+s")
 
 #+a:: {
 	if IsWindows11 {
-		ControlClick("TrayNotifyWnd1", "ahk_class Shell_TrayWnd")
+		primary := MonitorGetPrimary()
+		bottom := -1
+		right := -1
+		MonitorGet(primary, , , &right, &bottom)
+
+		bottomClick := bottom - 10
+		rightClick := right - 20
+		beforeCoordMode := CoordMode("Mouse", "Screen")
+		Click(rightClick . " " . bottomClick)
+		CoordMode("Mouse", beforeCoordMode)
 		return
 	}
 	ControlClick("TrayButton2", "ahk_class Shell_TrayWnd")
