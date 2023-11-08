@@ -2,7 +2,7 @@
 ;@Ahk2Exe-SetDescription vowels allows you to write german vowels on any keyboard layout
 
 #Include <Base>
-#HotString EndChars -
+#HotString EndChars -_
 InstallKeybdHook()
 
 ; Always use folder where the script is
