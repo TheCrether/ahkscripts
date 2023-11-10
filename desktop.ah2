@@ -347,15 +347,15 @@ DebugWindowEvent(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 AddDefaultMoveHook(2, "", "", "Discord.exe")
 AddDefaultMoveHook(2, "", "", "Spotify.exe")
 ; WORK
-AddDefaultMoveHook(1, "", "", "Element.exe", "DIM")
-AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
-AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
+AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
+AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IMD")
+AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "IMD")
 ;WORK end
 ;own pcs
 AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", "CRETHER")
-AddDefaultMoveHook(0, "", "", "Element.exe", "DIM")
-AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "DIM")
-AddDefaultMoveHook(0, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "DIM")
+AddDefaultMoveHook(0, "", "", "Element.exe", "CRETHER")
+AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "CRETHER")
+AddDefaultMoveHook(0, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "CRETHER")
 ;own pcs end
 
 SetupDefaultMoveHooks()
