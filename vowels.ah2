@@ -18,13 +18,15 @@ Hotstring(replacement) {
 	oldVal := SubStr(A_ThisHotkey, InStr(A_ThisHotkey, ":", , , 2) + 1)
 
 	Send(replacement)
-	ih := InputHook("L1 T1", "{Backspace}")
+	ih := InputHook("L1 T3", "{Backspace}{Left}{Up}{Down}{Right}{End}{Home}{PgUp}{PgDn}{Enter}{Space}{Tab}")
 	ih.Start()
 	; maybe add listener if window was changed?
 	ih.Wait()
 	if ih.EndReason = "EndKey" {
-		Send(oldVal . "-")
-
+		OutputDebug(ih.EndKey)
+		if ih.EndKey = "Backspace" {
+			Send(oldVal . "-")
+		}
 		Return
 	}
 	; switch SendLevel so that things like ue-ss- work (because otherwise the first s wouldn't be recognized)
@@ -33,42 +35,18 @@ Hotstring(replacement) {
 	SendLevel(0)
 }
 
-:?OC:ae:: {
-	Hotstring("ä")
-}
-:?OC:oe:: {
-	Hotstring("ö")
-}
-:?OC:ue:: {
-	Hotstring("ü")
-}
-:?OC:Ae:: {
-	Hotstring("Ä")
-}
-:?OC:Oe:: {
-	Hotstring("Ö")
-}
-:?OC:Ue:: {
-	Hotstring("Ü")
-}
-:?OC:AE:: {
-	Hotstring("Ä")
-}
-:?OC:OE:: {
-	Hotstring("Ö")
-}
-:?OC:UE:: {
-	Hotstring("Ü")
-}
-:?OC:ss:: {
-	Hotstring("ß")
-}
-:?OC:Ss:: {
-	Hotstring("ẞ")
-}
-:?OC:SS:: {
-	Hotstring("ẞ")
-}
+:?OCX:ae:: Hotstring("ä")
+:?OCX:oe:: Hotstring("ö")
+:?OCX:ue:: Hotstring("ü")
+:?OCX:Ae:: Hotstring("Ä")
+:?OCX:Oe:: Hotstring("Ö")
+:?OCX:Ue:: Hotstring("Ü")
+:?OCX:AE:: Hotstring("Ä")
+:?OCX:OE:: Hotstring("Ö")
+:?OCX:UE:: Hotstring("Ü")
+:?OCX:ss:: Hotstring("ß")
+:?OCX:Ss:: Hotstring("ẞ")
+:?OCX:SS:: Hotstring("ẞ")
 
 umlaute := Map("u", "ü", "a", "ä", "o", "ö", "s", "ß", "U", "Ü", "U", "Ä", "O", "Ö", "S", "ẞ")
 
