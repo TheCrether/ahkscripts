@@ -8,12 +8,14 @@
     "url-https": "https://google.com",
     "url-file": "file://{A_ahkscripts_slash}/README.md",
     "else-block-working": "{A_ahkscripts}\\README.md",
-    "else-block-failing": "non-existent.txt"
+    "else-block-failing": "non-existent.txt",
+    "np": "np:{A_ahkscripts}\\README.md",
+    "np++": "np++:{A_ahkscripts}\\README.md"
   },
   "handlers": [
     {
       "name": "Run Command",
-      "match": "^run:.*$"
+      "protocols": ["run"]
     },
     {
       "name": "URL",
@@ -23,7 +25,7 @@
     {
       "name": "CMD/Batch",
       "fileMatch": "^.*\\.bat$",
-      "formatStr": "{A_ComSpec} /c \"{1}\"",
+      "formatStr": "{A_ComSpec} /c {1}",
       "protocols": ["cmd", "bat", "batch"]
     },
     {
@@ -40,6 +42,16 @@
       "name": "Powershell Command(s) with -NoExit",
       "formatStr": "powershell -NoExit -Command \"& {1}\"",
       "protocols": ["psn"]
+    },
+    {
+      "name": "Notepad",
+      "formatStr": "notepad \"{1}\"",
+      "protocols": ["np", "notepad"]
+    },
+    {
+      "name": "Notepad++",
+      "formatStr": "C:\\Program Files (x86)\\Notepad++\\notepad++.exe {1}",
+      "protocols": ["np++"]
     }
   ]
 }

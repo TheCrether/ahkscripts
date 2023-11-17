@@ -101,6 +101,11 @@ for handler in handlers {
 		MsgBox("a handler is missing a name property")
 		ExitApp(1)
 	}
+	if handler.Has("workingDir") {
+		handler["workingDir"] := StrReplace(handler["workingDir"], "{A_ahkscripts}", A_ScriptDir)
+	} else {
+		handler["workingDir"] := ""
+	}
 	if not (handler.Has("match") or handler.Has("fileMatch") or (handler.Has("protocols") and handler["protocols"] is Array)) {
 		MsgBox(Format("{1} handler wrongly configured", handler.Name))
 		ExitApp(1)
@@ -113,6 +118,7 @@ RunFile(path) {
 		if handler.Has("protocols") {
 			protocolMatcher := "^("
 			for protocol in handler["protocols"] {
+				protocol := RegExReplace(protocol, "([-[\]{}()*+?.,\\^$|#\s])", "\$1")
 				protocolMatcher .= protocol . "|"
 			}
 			protocolMatcher := SubStr(protocolMatcher, 1, -1)
@@ -138,9 +144,9 @@ RunFile(path) {
 		}
 
 		if handler["formatStr"] {
-			Run(Format(handler["formatStr"], path))
+			Run(Format(handler["formatStr"], path), handler["workingDir"]) ; TODO figure out how to start vs code without admin rights??
 		} else {
-			Run(path)
+			Run(path, handler["workingDir"])
 		}
 		Return true
 	}
