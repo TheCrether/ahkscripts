@@ -2,7 +2,7 @@
 ;@Ahk2Exe-SetDescription shortcuts enables you to open folders files and scripts quickly
 
 #Include <Base>
-#Include <JXON>
+#Include <Jsons>
 
 SetIcon(".\icons\shortcuts.ico")
 
@@ -20,7 +20,7 @@ if not FileExist(filePath) {
 setupReloadPaths(filePath)
 
 jsonFile := FileRead(filePath)
-json := Jxon_Load(&jsonFile)
+json := Jsons.Load(&jsonFile)
 
 try {
 	shortcuts := json["shortcuts"]
