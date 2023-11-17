@@ -1,0 +1,45 @@
+{
+  "shortcuts": {
+    "cmd": "cmd:.\\tests\\shortcuts\\handler-batch",
+    "ps": ".\\tests\\shortcuts\\handler-powershell.ps1",
+    "psc": "psc:{Get-NetAdapter > $env:USERPROFILE\\test.txt}",
+    "psn": "psn:{Get-NetAdapter}",
+    "url-http": "http://neverssl.com/",
+    "url-https": "https://google.com",
+    "url-file": "file://{A_ahkscripts_slash}/README.md",
+    "else-block-working": "{A_ahkscripts}\\README.md",
+    "else-block-failing": "non-existent.txt"
+  },
+  "handlers": [
+    {
+      "name": "Run Command",
+      "match": "^run:.*$"
+    },
+    {
+      "name": "URL",
+      "match": "(https?|file):\\/\\/?[-a-zA-Z0-9@:%._\\+~#=]{1,256}(\\.[a-zA-Z0-9()]{1,6})?\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+    },
+    { "name": "AHK", "fileMatch": ".*\\.(ah2|ahk)$" },
+    {
+      "name": "CMD/Batch",
+      "fileMatch": "^.*\\.bat$",
+      "formatStr": "{A_ComSpec} /c \"{1}\"",
+      "protocols": ["cmd", "bat", "batch"]
+    },
+    {
+      "name": "Powershell",
+      "fileMatch": "^.*\\.ps1$",
+      "formatStr": "powershell -ExecutionPolicy Bypass -File \"{1}\""
+    },
+    {
+      "name": "Powershell Command(s)",
+      "formatStr": "powershell -Command \"& {1}\"",
+      "protocols": ["psc"]
+    },
+    {
+      "name": "Powershell Command(s) with -NoExit",
+      "formatStr": "powershell -NoExit -Command \"& {1}\"",
+      "protocols": ["psn"]
+    }
+  ]
+}

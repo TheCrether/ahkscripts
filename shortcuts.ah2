@@ -13,8 +13,8 @@ if home == "" {
 
 filePath := home . "\shortcuts\shortcuts.json"
 if not FileExist(filePath) {
-	Notification(Format("no explorer-shortcuts.json found in {1} directory, not configuring any shortcuts", home), "", "Mute")
-	ExitApp()
+	Notification(Format("no explorer-shortcuts.json normalMatch in {1} directory, not configuring any shortcuts", home), "", "Mute")
+	ExitApp(1)
 }
 
 setupReloadPaths(filePath)
@@ -26,10 +26,16 @@ try {
 	shortcuts := json["shortcuts"]
 	if not shortcuts is Map {
 		Notification("'shortcuts' isn't an object/map")
-		ExitApp()
+		ExitApp(1)
+	}
+
+	handlers := json["handlers"]
+	if not handlers is Array {
+		Notification("'handlers' isn't an object/map")
+		ExitApp(1)
 	}
 } catch {
-	Notification("no 'shortcuts' field defined in " . filePath)
+	Notification("no 'shortcuts' or 'handlers' field defined in " . filePath)
 	ExitApp()
 }
 
@@ -85,31 +91,72 @@ shortcuts[name] := filePath
 shortcutMenu.Add() ; add separator
 shortcutMenu.Add(name, OpenShortcut.Bind(""))
 
-RunFile(path) {
-	if not FileExist(path) {
-		Return false
-	}
-
-	; TODO add directives to skip to specific launch types/launch with specific programs?
-
-	AhkFound := RegExMatch(path, ".*\.(ah2|ahk)$")
-	Batch := RegExMatch(path, ".*\.bat$")
-	Powershell := RegExMatch(path, ".*\.ps1$")
-
-	if AhkFound > 0 {
-		Run(path)
-	} else if Batch > 0 {
-		Run(Format('{1} /c "{2}"', A_ComSpec, path))
-	} else if Powershell > 0 {
-		Run(Format("powershell {1}", path))
+for handler in handlers {
+	if handler.Has("formatStr") {
+		handler["formatStr"] := StrReplace(handler["formatStr"], "{A_ComSpec}", A_ComSpec, false)
 	} else {
-		Run(Format('{1} /c "start {2}"', A_ComSpec, path))
+		handler["formatStr"] := ""
+	}
+	if not handler.Has("name") {
+		MsgBox("a handler is missing a name property")
+		ExitApp(1)
+	}
+	if not (handler.Has("match") or handler.Has("fileMatch") or (handler.Has("protocols") and handler["protocols"] is Array)) {
+		MsgBox(Format("{1} handler wrongly configured", handler.Name))
+		ExitApp(1)
+	}
+}
+
+RunFile(path) {
+	for handler in handlers {
+		match := 0
+		if handler.Has("protocols") {
+			protocolMatcher := "^("
+			for protocol in handler["protocols"] {
+				protocolMatcher .= protocol . "|"
+			}
+			protocolMatcher := SubStr(protocolMatcher, 1, -1)
+			protocolMatcher .= "):"
+			protocolMatch := RegExMatch(path, protocolMatcher)
+
+			if protocolMatch {
+				path := RegExReplace(path, protocolMatcher, "")
+			}
+			match := match + protocolMatch
+		}
+		if handler.Has("fileMatch") {
+			if FileExist(path) {
+				match := match + RegExMatch(path, handler["fileMatch"])
+			}
+		}
+		if handler.Has("match") {
+			match := match + RegExMatch(path, handler["match"])
+		}
+
+		if not match {
+			continue
+		}
+
+		if handler["formatStr"] {
+			Run(Format(handler["formatStr"], path))
+		} else {
+			Run(path)
+		}
+		Return true
 	}
 
-	Return true
+	; try opening path with start if nothing else works
+	if FileExist(path) {
+		Run(Format("{1} /c `"start {2}`"", A_ComSpec, path))
+		Return true
+	}
+
+	Return false
 }
 
 RunPath(path, notificationOnError := true) {
+	path := StrReplace(path, "{A_ahkscripts}", A_ScriptDir)
+	path := StrReplace(path, "{A_ahkscripts_slash}", StrReplace(A_ScriptDir, "\", "/")) ; TODO dynamic replacement of global variables
 	if DirExist(path) {
 		Run("C:\Windows\explorer.exe " . path)
 		Return true
@@ -140,6 +187,11 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 
 	if paths.Length == 1 {
 		RunPath(paths[1])
+		Return
+	}
+
+	if not IsWindows11 {
+		MsgBox("PC isn't Windows 11`nOpening multiple folders isn't currently supported")
 		Return
 	}
 
