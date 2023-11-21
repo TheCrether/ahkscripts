@@ -85,3 +85,13 @@ global IsWindows11 := 0
 if InStr(GetCommandOutput('powershell -WindowStyle Hidden -Command "(Get-WmiObject Win32_OperatingSystem).Caption"'), "Windows 11") {
 	IsWindows11 := 1
 }
+
+; taken from AutoHotkey ShellRun.ahk
+; runs a process through the explorer which splits it off from AutoHotkey
+; For documentation about the parameters, refer to:
+;  https://learn.microsoft.com/en-us/windows/win32/shell/shell-shellexecute
+ShellRun(filePath, arguments?, directory?, operation?, show?) {
+	static VT_UI4 := 0x13, SWC_DESKTOP := ComValue(VT_UI4, 0x8)
+	ComObject("Shell.Application").Windows.Item(SWC_DESKTOP).Document.Application
+		.ShellExecute(filePath, arguments?, directory?, operation?, show?)
+}

@@ -144,7 +144,12 @@ RunFile(path) {
 		}
 
 		if handler["formatStr"] {
-			Run(Format(handler["formatStr"], path), handler["workingDir"]) ; TODO figure out how to start vs code without admin rights??
+			formatted := StrSplit(Format(handler["formatStr"], path), " ", , 2)
+			if formatted.Length > 1 {
+				ShellRun(formatted[1], formatted[2], handler["workingDir"]) ; TODO figure out how to start vs code without admin rights??
+			} else {
+				ShellRun(formatted[1], handler["workingDir"]) ; TODO figure out how to start vs code without admin rights??
+			}
 		} else {
 			Run(path, handler["workingDir"])
 		}
@@ -153,7 +158,7 @@ RunFile(path) {
 
 	; try opening path with start if nothing else works
 	if FileExist(path) {
-		Run(Format("{1} /c `"start {2}`"", A_ComSpec, path))
+		ShellRun(A_ComSpec, Format("/c `"start {1}`"", path))
 		Return true
 	}
 

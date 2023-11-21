@@ -52,6 +52,11 @@
       "name": "Notepad++",
       "formatStr": "C:\\Program Files (x86)\\Notepad++\\notepad++.exe {1}",
       "protocols": ["np++"]
+    },
+    {
+      "name": "code",
+      "formatStr": "code {1}",
+      "protocols": ["code"]
     }
   ]
 }
