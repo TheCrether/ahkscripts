@@ -210,7 +210,9 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 		} else if FileExist(path) {
 			files.Push(path)
 		} else {
-			nonExist.Push(path)
+			if not RunPath(path, false) {
+				nonExist.Push(path)
+			}
 		}
 	}
 
