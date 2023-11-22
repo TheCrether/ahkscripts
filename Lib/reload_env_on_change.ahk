@@ -34,23 +34,18 @@ recv_WM_SETTINGCHANGE(wParam, lParam, msg, hwnd)
 }
 
 resolve_env_variables(env_value, resolve_user := false) {
-	regex := "%[a-zA-Z_()\{\}\[\]\$*+\-\/`"#',;.@!?]+%"
+	regex := "%([a-zA-Z_()\{\}\[\]\$*+\-\/`"#',;.@!?]+)%"
 	Found := RegExMatch(env_value, regex, &match)
-	While Found > 0 {
-		withoutPercent := StrReplace(match[0], "%", "")
-		normal := EnvGet(withoutPercent)
-		resolved := ""
+	While Found > 0 and match.Count > 0 {
+		normal := EnvGet(match[1])
+		resolved := match[0]
 		if resolve_user {
-			resolved := RegRead(UserEnvPath, withoutPercent, RegRead(SysEnvPath, withoutPercent, normal))
+			resolved := RegRead(UserEnvPath, match[1], RegRead(SysEnvPath, match[1], normal))
 		} else {
-			resolved := RegRead(SysEnvPath, withoutPercent, normal)
+			resolved := RegRead(SysEnvPath, match[1], normal)
 		}
-		if resolved != "" { ; even normal environment read does not work
-			env_value := StrReplace(env_value, match[0], resolved)
-			Found := RegExMatch(env_value, regex, &match, match.Pos + StrLen(resolved))
-		} else {
-			Found := RegExMatch(env_value, regex, &match, match.Pos + match.Len)
-		}
+		env_value := StrReplace(env_value, match[0], resolved)
+		Found := RegExMatch(env_value, regex, &match, match.Pos + StrLen(resolved))
 	}
 	return env_value
 }

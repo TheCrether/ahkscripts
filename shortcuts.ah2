@@ -31,7 +31,7 @@ try {
 
 	handlers := json["handlers"]
 	if not handlers is Array {
-		Notification("'handlers' isn't an object/map")
+		Notification("'handlers' isn't an array")
 		ExitApp(1)
 	}
 } catch {
@@ -39,8 +39,8 @@ try {
 	ExitApp(1)
 }
 
-addFromWildcards(subShortcuts, submenu, prev) {
-	wildcards := subShortcuts["_wildcards"]
+addFromWildcards(shortcuts, submenu, prev) {
+	wildcards := shortcuts["_wildcards"]
 	if wildcards is String {
 		wildcards := [wildcards]
 	}
@@ -60,52 +60,52 @@ addFromWildcards(subShortcuts, submenu, prev) {
 			; get shortcut name
 			content := FileRead(A_LoopFileFullPath, "UTF-8 m1024 `n")
 			matchOutput := ""
-			if not RegExMatch(content, "sh-name:([^;`n]+)", &matchOutput) and matchOutput.Count > 0 {
-				continue
+			if RegExMatch(content, "sh-name:([^;`n]+)", &matchOutput) and matchOutput.Count > 0 {
+				name := matchOutput[1]
+			} else {
+				name := StrReplace(A_LoopFileName, "." . A_LoopFileExt, "")
 			}
-			name := matchOutput[1]
 
 			; add to shortcuts
-			subShortcuts[name] := A_LoopFileFullPath
+			shortcuts[name] := A_LoopFileFullPath
 			submenu.Add(name, OpenShortcut.Bind(prev))
 		}
 	}
 }
 
-generateSubmenu(prev, subShortcuts) {
+generateSubmenu(prev, shortcuts) {
 	submenu := Menu()
 	wildcards := false
-	for subShortcutName in subShortcuts {
-		subShortcut := subShortcuts[subShortcutName]
-		if subShortcutName = "_wildcards" {
+	for name, shortcut in shortcuts {
+		if name = "_wildcards" {
 			wildcards := true
 		}
-		else if subShortcut is Array and subShortcut.Length > 0 {
-			submenu.Add(subShortcutName, OpenShortcut.Bind(prev))
+		else if shortcut is Array and shortcut.Length > 0 {
+			submenu.Add(name, OpenShortcut.Bind(prev))
 		}
-		else if subShortcut is String and StrLen(subShortcut) > 1 {
-			submenu.Add(subShortcutName, OpenShortcut.Bind(prev))
+		else if shortcut is String and StrLen(shortcut) > 1 {
+			submenu.Add(name, OpenShortcut.Bind(prev))
 		}
-		else if subShortcut is Map {
+		else if shortcut is Map {
 			newPrev := prev
 			if InStr(prev, ".") {
 				prev .= "."
 			}
-			newPrev .= subShortcutName
+			newPrev .= name
 			submenu.Add(
-				subShortcutName,
+				name,
 				generateSubmenu(
 					newPrev,
-					subShortcut
+					shortcut
 				)
 			)
 		} else {
-			MsgBox(Format('"{1}.{2}" is not a valid shortcut definition', prev, subShortcutName))
+			MsgBox(Format('"{1}.{2}" is not a valid shortcut definition', prev, name))
 			ExitApp(1)
 		}
 	}
 	if wildcards {
-		addFromWildcards(subShortcuts, submenu, prev)
+		addFromWildcards(shortcuts, submenu, prev)
 	}
 	return submenu
 }
@@ -178,9 +178,9 @@ RunFile(path) {
 		if handler["formatStr"] {
 			formatted := StrSplit(Format(handler["formatStr"], path), " ", , 2)
 			if formatted.Length > 1 {
-				ShellRun(formatted[1], formatted[2], handler["workingDir"]) ; TODO figure out how to start vs code without admin rights??
+				ShellRun(formatted[1], formatted[2], handler["workingDir"])
 			} else {
-				ShellRun(formatted[1], handler["workingDir"]) ; TODO figure out how to start vs code without admin rights??
+				ShellRun(formatted[1], handler["workingDir"])
 			}
 		} else {
 			Run(path, handler["workingDir"])
