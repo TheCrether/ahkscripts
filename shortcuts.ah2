@@ -36,54 +36,81 @@ try {
 	}
 } catch {
 	Notification("no 'shortcuts' or 'handlers' field defined in " . filePath)
-	ExitApp()
+	ExitApp(1)
 }
 
-shortcutMenu := Menu()
+addFromWildcards(subShortcuts, submenu, prev) {
+	wildcards := subShortcuts["_wildcards"]
+	if wildcards is String {
+		wildcards := [wildcards]
+	}
+	if not wildcards is Array {
+		MsgBox(Format('"{1}._wildcards" is not an array or string', prev))
+		ExitApp(1)
+	}
+
+	prevPath := home . "\shortcuts\" . StrReplace(prev, ".", "\") . "\*"
+	loop files prevPath {
+		fileName := A_LoopFileName
+		for wildcard in wildcards {
+			if not RegExMatch(fileName, wildcard) {
+				continue
+			}
+
+			; get shortcut name
+			content := FileRead(A_LoopFileFullPath, "UTF-8 m1024 `n")
+			matchOutput := ""
+			if not RegExMatch(content, "sh-name:([^;`n]+)", &matchOutput) and matchOutput.Count > 0 {
+				continue
+			}
+			name := matchOutput[1]
+
+			; add to shortcuts
+			subShortcuts[name] := A_LoopFileFullPath
+			submenu.Add(name, OpenShortcut.Bind(prev))
+		}
+	}
+}
+
 generateSubmenu(prev, subShortcuts) {
 	submenu := Menu()
-	for shortcut in subShortcuts {
-		if subShortcuts[shortcut] is Array {
-			if subShortcuts[shortcut].Length == 0 {
-				continue
+	wildcards := false
+	for subShortcutName in subShortcuts {
+		subShortcut := subShortcuts[subShortcutName]
+		if subShortcutName = "_wildcards" {
+			wildcards := true
+		}
+		else if subShortcut is Array and subShortcut.Length > 0 {
+			submenu.Add(subShortcutName, OpenShortcut.Bind(prev))
+		}
+		else if subShortcut is String and StrLen(subShortcut) > 1 {
+			submenu.Add(subShortcutName, OpenShortcut.Bind(prev))
+		}
+		else if subShortcut is Map {
+			newPrev := prev
+			if InStr(prev, ".") {
+				prev .= "."
 			}
-			submenu.Add(shortcut, OpenShortcut.Bind(prev))
-		} else if subShortcuts[shortcut] is String {
-			if StrLen(subShortcuts[shortcut]) <= 1 {
-				continue
-			}
-			submenu.Add(shortcut, OpenShortcut.Bind(prev))
-		} else if subShortcuts[shortcut] is Map {
+			newPrev .= subShortcutName
 			submenu.Add(
-				shortcut,
+				subShortcutName,
 				generateSubmenu(
-					Format("{1}.{2}", prev, shortcut),
-					subShortcuts[shortcut]
+					newPrev,
+					subShortcut
 				)
 			)
+		} else {
+			MsgBox(Format('"{1}.{2}" is not a valid shortcut definition', prev, subShortcutName))
+			ExitApp(1)
 		}
+	}
+	if wildcards {
+		addFromWildcards(subShortcuts, submenu, prev)
 	}
 	return submenu
 }
 
-for shortcut in shortcuts {
-	if shortcuts[shortcut] is Array {
-		if shortcuts[shortcut].Length == 0 {
-			continue
-		}
-		shortcutMenu.Add(shortcut, OpenShortcut.Bind(""))
-	} else if shortcuts[shortcut] is String {
-		if StrLen(shortcuts[shortcut]) <= 1 {
-			continue
-		}
-		shortcutMenu.Add(shortcut, OpenShortcut.Bind(""))
-	} else if shortcuts[shortcut] is Map {
-		shortcutMenu.Add(
-			shortcut,
-			generateSubmenu(shortcut, shortcuts[shortcut])
-		)
-	}
-}
+shortcutMenu := generateSubmenu("", shortcuts)
 
 ; add edit shortcuts.json
 name := "edit shortcuts.json"
