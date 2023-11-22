@@ -118,6 +118,11 @@ shortcuts[name] := filePath
 shortcutMenu.Add() ; add separator
 shortcutMenu.Add(name, OpenShortcut.Bind(""))
 
+ReloadProc(name, pos, menu) {
+	Reload
+}
+shortcutMenu.Add("reload", ReloadProc)
+
 for handler in handlers {
 	if handler.Has("formatStr") {
 		handler["formatStr"] := StrReplace(handler["formatStr"], "{A_ComSpec}", A_ComSpec, false)
