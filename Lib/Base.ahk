@@ -95,3 +95,35 @@ ShellRun(filePath, arguments?, directory?, operation?, show?) {
 	ComObject("Shell.Application").Windows.Item(SWC_DESKTOP).Document.Application
 		.ShellExecute(filePath, arguments?, directory?, operation?, show?)
 }
+
+ReplaceVariables(text, replaceMap := Map(), allowGlobalVariables := true) {
+	if not replaceMap is Map {
+		throw ValueError("replaceMap is not a map")
+	}
+	for key, val in replaceMap {
+		; TODO add this?
+		; if not InStr(key, "{") = 1 {
+		; 	key := "{" . key
+		; }
+		; if not InStr(key, "}") = StrLen(key) {
+		; 	key .= "}"
+		; }
+		text := StrReplace(text, key, val)
+	}
+	if allowGlobalVariables {
+		regex := "\{(\w[A-Za-z0-9_]+)\}"
+		Found := RegExMatch(text, regex, &match)
+		While Found > 0 and match.Count > 0 {
+			try {
+				varName := match[1]
+				val := match[0]
+				try val := %varName%
+
+				text := StrReplace(text, match[0], val)
+
+				Found := RegExMatch(text, regex, &match, match.Pos + StrLen(val))
+			}
+		}
+	}
+	return text
+}

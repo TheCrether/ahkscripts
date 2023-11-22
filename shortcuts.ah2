@@ -198,8 +198,7 @@ RunFile(path) {
 }
 
 RunPath(path, notificationOnError := true) {
-	path := StrReplace(path, "{A_ahkscripts}", A_ScriptDir)
-	path := StrReplace(path, "{A_ahkscripts_slash}", StrReplace(A_ScriptDir, "\", "/")) ; TODO dynamic replacement of global variables
+	path := ReplaceVariables(path)
 	if DirExist(path) {
 		Run("C:\Windows\explorer.exe " . path)
 		Return true
