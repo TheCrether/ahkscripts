@@ -5,7 +5,6 @@
 SetWorkingDir(A_ScriptDir)
 
 SetIcon(path) {
-	; TODO if this is needed for compiled scripts or if you can skip it
 	try {
 		TraySetIcon(path)
 	}
@@ -101,17 +100,17 @@ ReplaceVariables(text, replaceMap := Map(), allowGlobalVariables := true) {
 		throw ValueError("replaceMap is not a map")
 	}
 	for key, val in replaceMap {
-		; TODO add this?
-		; if not InStr(key, "{") = 1 {
-		; 	key := "{" . key
-		; }
-		; if not InStr(key, "}") = StrLen(key) {
-		; 	key .= "}"
-		; }
+		if not InStr(key, "{") = 1 {
+			key := "{" . key
+		}
+		if not InStr(key, "}") = StrLen(key) {
+			key .= "}"
+		}
 		text := StrReplace(text, key, val)
 	}
 	if allowGlobalVariables {
 		regex := "\{(\w[A-Za-z0-9_]+)\}"
+		; TODO add support for indexed values?
 		Found := RegExMatch(text, regex, &match)
 		While Found > 0 and match.Count > 0 {
 			try {
@@ -127,3 +126,5 @@ ReplaceVariables(text, replaceMap := Map(), allowGlobalVariables := true) {
 	}
 	return text
 }
+
+f := ReplaceVariables

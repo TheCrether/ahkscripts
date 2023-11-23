@@ -10,6 +10,9 @@ home := EnvGet("USERPROFILE")
 if home == "" {
 	home := EnvGet("HOME")
 }
+if home == "" {
+	home := "C:\Users\" . A_UserName
+}
 
 filePath := home . "\shortcuts\shortcuts.json"
 if not FileExist(filePath) {
@@ -18,6 +21,11 @@ if not FileExist(filePath) {
 }
 
 setupReloadPaths(filePath)
+
+; Variables for use in templates
+A_ahkscripts := A_ScriptDir
+A_ahkscripts_slash := StrReplace(A_ScriptDir, "\", "/")
+A_Home := home
 
 jsonFile := FileRead(filePath)
 json := Jsons.Load(&jsonFile)
@@ -190,7 +198,8 @@ RunFile(path) {
 
 	; try opening path with start if nothing else works
 	if FileExist(path) {
-		ShellRun(A_ComSpec, Format("/c `"start {1}`"", path))
+		; ShellRun(A_ComSpec, Format("/c `"start {1}`"", path))
+		Run("open " . path)
 		Return true
 	}
 
@@ -232,15 +241,16 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 		Return
 	}
 
-	if not IsWindows11 {
-		MsgBox("PC isn't Windows 11`nOpening multiple folders isn't currently supported")
-		Return
-	}
+	; if not IsWindows11 {
+	; 	MsgBox("PC isn't Windows 11`nOpening multiple folders isn't currently supported")
+	; 	Return
+	; }
 
 	folders := []
 	files := []
 	nonExist := []
 	for path in paths {
+		path := ReplaceVariables(path)
 		if DirExist(path) {
 			folders.Push(path)
 		} else if FileExist(path) {
@@ -252,32 +262,38 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 		}
 	}
 
-	Send("#e")
-	WinWaitActive("ahk_exe explorer.exe")
-	Sleep(200)
-	Loop folders.Length {
-		folder := folders[A_Index]
-		if A_Index > 1 {
-			Send("^t")
-			Sleep(500)
+	if IsWindows11 {
+		Send("#e")
+		WinWaitActive("ahk_exe explorer.exe")
+		Sleep(200)
+		Loop folders.Length {
+			folder := folders[A_Index]
+			if A_Index > 1 {
+				Send("^t")
+				Sleep(500)
+			}
+			Send("^l")
+			Sleep(300)
+			SendText(folder)
+			Sleep(400)
+			Send("{Enter}")
+			Sleep(300)
 		}
-		Send("^l")
-		Sleep(300)
-		SendText(folder)
-		Sleep(400)
-		Send("{Enter}")
-		Sleep(300)
+	} else {
+		for folder in folders {
+			ShellRun("explorer.exe", folder, folder)
+		}
 	}
 
 	for file in files {
 		; TODO workout a way to wait until file is opened
-		; RunFile(file, false)
+		RunFile(file)
 	}
 
 	if nonExist.Length > 0 {
 		txt := 'The following paths are non existent:`n'
-		Loop nonExist.Length {
-			txt := Format("{1}`n{2}", txt, nonExist[A_Index])
+		for path in nonExist {
+			txt .= Format("`n{1}", path)
 		}
 		MsgBox(txt, Format("shortcuts.ah2 - {1}.{2}", parentPath, name))
 	}
