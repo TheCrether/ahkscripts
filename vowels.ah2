@@ -2,7 +2,6 @@
 ;@Ahk2Exe-SetDescription vowels allows you to write german vowels on any keyboard layout
 
 #Include <Base>
-#HotString EndChars -_
 InstallKeybdHook()
 
 ; Always use folder where the script is
@@ -14,7 +13,8 @@ try {
 ; https://www.compart.com/de/unicode/block
 
 Hotstring(replacement) {
-	OutputDebug(A_ThisHotkey)
+	OutputDebug(A_ThisHotkey . " ")
+	OutputDebug(A_PriorKey . "`n")
 	oldVal := SubStr(A_ThisHotkey, InStr(A_ThisHotkey, ":", , , 2) + 1)
 
 	Send(replacement)
@@ -23,9 +23,8 @@ Hotstring(replacement) {
 	; maybe add listener if window was changed?
 	ih.Wait()
 	if ih.EndReason = "EndKey" {
-		OutputDebug(ih.EndKey)
 		if ih.EndKey = "Backspace" {
-			Send(oldVal . "-")
+			Send(oldVal)
 		}
 		Return
 	}
@@ -35,18 +34,23 @@ Hotstring(replacement) {
 	SendLevel(0)
 }
 
-:?OCX:ae:: Hotstring("ä")
-:?OCX:oe:: Hotstring("ö")
-:?OCX:ue:: Hotstring("ü")
-:?OCX:Ae:: Hotstring("Ä")
-:?OCX:Oe:: Hotstring("Ö")
-:?OCX:Ue:: Hotstring("Ü")
-:?OCX:AE:: Hotstring("Ä")
-:?OCX:OE:: Hotstring("Ö")
-:?OCX:UE:: Hotstring("Ü")
-:?OCX:ss:: Hotstring("ß")
-:?OCX:Ss:: Hotstring("ẞ")
-:?OCX:SS:: Hotstring("ẞ")
+:?OCX*:ae-:: Hotstring("ä")
+:?OCX*:oe-:: Hotstring("ö")
+:?OCX*:ue-:: Hotstring("ü")
+:?OCX*:Ae-:: Hotstring("Ä")
+:?OCX*:Oe-:: Hotstring("Ö")
+:?OCX*:Ue-:: Hotstring("Ü")
+:?OCX*:ss-:: Hotstring("ß")
+:?OCX*:Ss-:: Hotstring("ẞ")
+
+:?OCX*:AE-:: Hotstring("Ä")
+:?OCX*:OE-:: Hotstring("Ö")
+:?OCX*:UE-:: Hotstring("Ü")
+:?OCX*:SS-:: Hotstring("ẞ")
+:?OCX*:AE_:: Hotstring("Ä")
+:?OCX*:OE_:: Hotstring("Ö")
+:?OCX*:UE_:: Hotstring("Ü")
+:?OCX*:SS_:: Hotstring("ẞ")
 
 umlaute := Map("u", "ü", "a", "ä", "o", "ö", "s", "ß", "U", "Ü", "U", "Ä", "O", "Ö", "S", "ẞ")
 
