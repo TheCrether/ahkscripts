@@ -17,6 +17,7 @@
 ;;;
 SysEnvPath := "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
 UserEnvPath := "HKEY_CURRENT_USER\Environment"
+ENV_VAR_REGEX := "%([a-zA-Z0-9_()\{\}\[\]\$*+\-\/`"#',;.@!?]+)%"
 
 setupReloadOnEnvChange() {
 	OnMessage((WM_SETTINGCHANGE := 0x1A), recv_WM_SETTINGCHANGE)
@@ -33,19 +34,34 @@ recv_WM_SETTINGCHANGE(wParam, lParam, msg, hwnd)
 	reset_env_from_registry()
 }
 
-resolve_env_variables(env_value, resolve_user := false) {
-	regex := "%([a-zA-Z_()\{\}\[\]\$*+\-\/`"#',;.@!?]+)%"
-	Found := RegExMatch(env_value, regex, &match)
+; recursively resolve environment variable
+resolve_env_variable(env_name, resolveUser := false) {
+	resolved := ""
+	default := EnvGet(env_name)
+	if default = "" {
+		default := "%" . env_name . "%"
+	}
+	if resolveUser {
+		resolved := RegRead(UserEnvPath, env_name, RegRead(SysEnvPath, env_name, default))
+	} else {
+		resolved := RegRead(SysEnvPath, env_name, default)
+	}
+	Found := RegExMatch(resolved, ENV_VAR_REGEX, &match)
+
 	While Found > 0 and match.Count > 0 {
-		normal := EnvGet(match[1])
-		resolved := match[0]
-		if resolve_user {
-			resolved := RegRead(UserEnvPath, match[1], RegRead(SysEnvPath, match[1], normal))
-		} else {
-			resolved := RegRead(SysEnvPath, match[1], normal)
-		}
+		resolveTemp := resolve_env_variable(match[1], resolveUser)
+		resolved := StrReplace(resolved, match[0], resolveTemp)
+		Found := RegExMatch(resolved, ENV_VAR_REGEX, &match, match.Pos + StrLen(resolved))
+	}
+	return resolved
+}
+
+resolve_env_variables(env_value, resolveUser := false) {
+	Found := RegExMatch(env_value, ENV_VAR_REGEX, &match)
+	While Found > 0 and match.Count > 0 {
+		resolved := resolve_env_variable(match[1], resolveUser)
 		env_value := StrReplace(env_value, match[0], resolved)
-		Found := RegExMatch(env_value, regex, &match, match.Pos + StrLen(resolved))
+		Found := RegExMatch(env_value, ENV_VAR_REGEX, &match, match.Pos + StrLen(resolved))
 	}
 	return env_value
 }
@@ -75,12 +91,10 @@ reset_env_from_registry() {
 		EnvSet(A_LoopRegName, env_value)
 	}
 
-	; sys_path := resolve_env_variables(RegRead(SysEnvPath, "Path"))
-	sys_path := RegRead(SysEnvPath, "Path")
-	cu_path := resolve_env_variables(sys_path . ";" . RegRead(UserEnvPath, "Path"), true)
-	; new_path := sys_path . ";" . cu_path
-	OutputDebug("Path=" . cu_path . "`n")
-	EnvSet("Path", cu_path)
+	sysPath := RegRead(SysEnvPath, "Path")
+	path := resolve_env_variables(sysPath . ";" . RegRead(UserEnvPath, "Path"), true)
+	OutputDebug("Path=" . path . "`n")
+	EnvSet("Path", path)
 }
 
 ; Debug var for interactive sanity checking
