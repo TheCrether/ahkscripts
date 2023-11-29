@@ -75,11 +75,12 @@ reset_env_from_registry() {
 		EnvSet(A_LoopRegName, env_value)
 	}
 
-	sys_path := resolve_env_variables(RegRead(SysEnvPath, "Path"))
-	cu_path := resolve_env_variables(RegRead(UserEnvPath, "Path"))
-	new_path := sys_path . ";" . cu_path
-	OutputDebug("Path=" . new_path . "`n")
-	EnvSet("Path", new_path)
+	; sys_path := resolve_env_variables(RegRead(SysEnvPath, "Path"))
+	sys_path := RegRead(SysEnvPath, "Path")
+	cu_path := resolve_env_variables(sys_path . ";" . RegRead(UserEnvPath, "Path"), true)
+	; new_path := sys_path . ";" . cu_path
+	OutputDebug("Path=" . cu_path . "`n")
+	EnvSet("Path", cu_path)
 }
 
 ; Debug var for interactive sanity checking
