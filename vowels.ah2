@@ -25,6 +25,8 @@ Hotstring(replacement) {
 	if ih.EndReason = "EndKey" {
 		if ih.EndKey = "Backspace" {
 			Send(oldVal)
+		} else {
+			Send("{" . ih.EndKey . "}")
 		}
 		Return
 	}
