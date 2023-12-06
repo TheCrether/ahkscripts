@@ -196,7 +196,7 @@ class WinHook
 	{
 		static Hooks := ""
 		static Events := ""
-		static Add(Fn, wTitle := "", wClass := "", wExe := "", Event := 0) {
+		static Add(Fn, wTitle := "", wClass := "", wExe := "", Event := 0, excludeTitle := "") {
 			if !WinHook.Shell.Hooks {
 				WinHook.Shell.Hooks := [], WinHook.Shell.Events := Map()
 				DllCall("RegisterShellHookWindow", "UInt", A_ScriptHwnd)
@@ -206,7 +206,7 @@ class WinHook
 			; if !IsObject(Fn) {
 			; 	Fn := Func(Fn)
 			; }
-			WinHook.Shell.Hooks.Push({ Func: Fn, Title: wTitle, Class: wClass, Exe: wExe, Event: Event })
+			WinHook.Shell.Hooks.Push({ Func: Fn, Title: wTitle, Class: wClass, Exe: wExe, Event: Event, excludeTitle: excludeTitle })
 			WinHook.Shell.Events[Event] := true
 			; return WinHook.Shell.Hooks.MaxIndex()
 		}
@@ -252,8 +252,12 @@ class WinHook
 					Return
 				}
 				for key, Hook in WinHook.Shell.Hooks {
-					if ((Hook.Title = "" or InStr(wTitle, Hook.Title)) and (Hook.Class = wClass or Hook.Class = "") and (Hook.Exe = wExe or Hook.Exe = "") and (Hook.Event = Event or Hook.Event = 0)) {
-						return Hook.Func.Call(Hwnd, wTitle, wClass, wExe, Event)
+					if ((Hook.Title = "" or InStr(wTitle, Hook.Title)) and
+						(Hook.Class = wClass or Hook.Class = "") and
+						(Hook.Exe = wExe or Hook.Exe = "") and
+						(Hook.Event = Event or Hook.Event = 0) and
+						( not RegExMatch(wTitle, hook.excludeTitle))) {
+							return Hook.Func.Call(Hwnd, wTitle, wClass, wExe, Event)
 					}
 				}
 			}

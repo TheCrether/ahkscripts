@@ -295,18 +295,18 @@ MoveToDesktopHook(desktop, Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 defaultMoveLock := A_Temp . "\ahkscripts.default-move.done"
 hooks := []
 
-AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map()) {
+AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map(), excludeTitle := "") {
 	if Type(hosts) = "String" {
 		if hosts = ""
 			Return
 		hosts := [hosts]
 	}
 	if hosts.Length == 0 {
-		hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
+		hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
 	}
 	for host in hosts {
 		if InStr(A_ComputerName, host) {
-			hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents })
+			hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
 			break
 		}
 	}
@@ -333,9 +333,9 @@ SetupDefaultMoveHooks() {
 	}
 
 	for hook in hooks {
-		WinHook.Shell.Add(MoveToDesktopHook.Bind(hook.desktop), hook.wTitle, hook.wClass, hook.wExe, 1)
+		WinHook.Shell.Add(MoveToDesktopHook.Bind(hook.desktop), hook.wTitle, hook.wClass, hook.wExe, 1, hook.excludeTitle)
 		for extraEvent, Fn in hook.extraEvents {
-			WinHook.Shell.Add(Fn, hook.wTitle, hook.wClass, hook.wExe, extraEvent)
+			WinHook.Shell.Add(Fn, hook.wTitle, hook.wClass, hook.wExe, extraEvent, hook.excludeTitle)
 		}
 	}
 }
@@ -350,7 +350,7 @@ AddDefaultMoveHook(2, "", "", "Spotify.exe")
 AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
 AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IMD")
 AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "IMD")
-AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD")
+AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "Nachricht")
 ;WORK end
 ;own pcs
 AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", "CRETHER")
