@@ -183,7 +183,7 @@ GenerateDynamicHotkeys() {
 
 	; dynamic creation of hotkeys for number of desktops
 	dCount := DllCall(GetDesktopCountProc, "Int")
-	OutputDebug(dCount)
+	; OutputDebug(dCount)
 	i := 0
 	while i < dCount && i < 10 { ; limit to 9 desktops, as no one probably needs more than that and because I do not want to implement that now lol
 		key := "#" . i + 1
@@ -306,7 +306,8 @@ defaultMoveLock := A_Temp . "\ahkscripts.default-move.done"
 hooks := []
 
 AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map(), excludeTitle := "") {
-	AddHook(MoveToDesktopHook.Bind(desktop), wTitle, wClass, wExe, hosts, extraEvents, excludeTitle)
+	hook := AddHook(MoveToDesktopHook.Bind(desktop), wTitle, wClass, wExe, hosts, extraEvents, excludeTitle)
+	hook.desktop := desktop
 }
 
 AddHook(fn, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map(), excludeTitle := "") {
@@ -324,6 +325,7 @@ AddHook(fn, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := 
 			break
 		}
 	}
+	return hooks[hooks.Length]
 }
 
 SetupWindowHooks() {
@@ -331,15 +333,15 @@ SetupWindowHooks() {
 		for hook in hooks {
 			title := ""
 			if hook.wTitle {
-				title := hook.wTitle . " "
+				title := hook.wTitle
 			}
 			if hook.wClass {
-				title := Trim(title) . " ahk_class " . hook.wClass . " "
+				title .= " ahk_class " . hook.wClass
 			}
 			if hook.wExe {
-				title := Trim(title) . " ahk_exe " . hook.wExe . " "
+				title .= " ahk_exe " . hook.wExe . " "
 			}
-			if hwnd := WinExist(Trim(title), , ,) {
+			if hwnd := WinExist(Trim(title), , ,) and hook.HasProp("desktop") {
 				MoveWindowToDesktop(hwnd, hook.desktop)
 			}
 		}
@@ -358,7 +360,7 @@ DebugWindowEvent(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 	OutputDebug(Format("a{1}`n{2}`n{3}`n{4}`n{5}", Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event))
 }
 
-AddDefaultMoveHook(2, "", "", "Discord.exe")
+AddDefaultMoveHook(2, "Discord", "Chrome_WidgetWin_1", "Discord.exe")
 AddDefaultMoveHook(2, "", "", "Spotify.exe")
 ; WORK
 AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
@@ -376,7 +378,7 @@ AddDefaultMoveHook(0, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "CRETHER")
 ;own pcs end
 
 ; sleep because somehow discord often starts at the same time as this, and the default move doesn't work XD
-Sleep(1000)
+Sleep(250)
 SetupWindowHooks()
 #Include <logoff_shutdown_hook>
 onLogOff() {

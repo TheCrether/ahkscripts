@@ -128,3 +128,12 @@ ReplaceVariables(text, replaceMap := Map(), allowGlobalVariables := true) {
 }
 
 f := ReplaceVariables
+
+OutputWindow(hwnd) {
+	title := WinGetTitle("ahk_id " . hwnd)
+	cla := WinGetClass("ahk_id " . hwnd)
+	pname := WinGetProcessName("ahk_id " . hwnd)
+	text := "hwnd: " . hwnd . "`nt: " . title . "`nclass: " . cla . "`nexe: " . pname
+	; MsgBox(text)
+	OutputDebug(text . "`n====")
+}
