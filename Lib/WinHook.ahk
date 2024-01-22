@@ -252,12 +252,14 @@ class WinHook
 					Return
 				}
 				for key, Hook in WinHook.Shell.Hooks {
-					if ((Hook.Title = "" or InStr(wTitle, Hook.Title)) and
+					if (
+						(Hook.Title = "" or InStr(wTitle, Hook.Title) or RegExMatch(wTitle, hook.Title)) and
 						(Hook.Class = wClass or Hook.Class = "") and
 						(Hook.Exe = wExe or Hook.Exe = "") and
 						(Hook.Event = Event or Hook.Event = 0) and
-						( not RegExMatch(wTitle, hook.excludeTitle))) {
-							return Hook.Func.Call(Hwnd, wTitle, wClass, wExe, Event)
+						( not RegExMatch(wTitle, hook.excludeTitle))
+					) {
+						Hook.Func.Call(Hwnd, wTitle, wClass, wExe, Event)
 					}
 				}
 			}

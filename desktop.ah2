@@ -292,27 +292,41 @@ MoveToDesktopHook(desktop, Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 	MoveWindowToDesktop(Win_Hwnd, desktop)
 }
 
+GeneralHook(Action, Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
+	Action := StrLower(Action)
+	Switch Action, "Off" {
+		Case "focus":
+			WinActivate("ahk_id " . Win_Hwnd)
+		default:
+			Notification("Action '" . Action . "' is not a general hook`nWindow: " . Win_Title)
+	}
+}
+
 defaultMoveLock := A_Temp . "\ahkscripts.default-move.done"
 hooks := []
 
 AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map(), excludeTitle := "") {
+	AddHook(MoveToDesktopHook.Bind(desktop), wTitle, wClass, wExe, hosts, extraEvents, excludeTitle)
+}
+
+AddHook(fn, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map(), excludeTitle := "") {
 	if Type(hosts) = "String" {
 		if hosts = ""
 			Return
 		hosts := [hosts]
 	}
 	if hosts.Length == 0 {
-		hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
+		hooks.Push({ fn: fn, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
 	}
 	for host in hosts {
 		if InStr(A_ComputerName, host) {
-			hooks.Push({ desktop: desktop, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
+			hooks.Push({ fn: fn, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
 			break
 		}
 	}
 }
 
-SetupDefaultMoveHooks() {
+SetupWindowHooks() {
 	if not FileExist(defaultMoveLock) {
 		for hook in hooks {
 			title := ""
@@ -333,7 +347,7 @@ SetupDefaultMoveHooks() {
 	}
 
 	for hook in hooks {
-		WinHook.Shell.Add(MoveToDesktopHook.Bind(hook.desktop), hook.wTitle, hook.wClass, hook.wExe, 1, hook.excludeTitle)
+		WinHook.Shell.Add(hook.fn, hook.wTitle, hook.wClass, hook.wExe, 1, hook.excludeTitle)
 		for extraEvent, Fn in hook.extraEvents {
 			WinHook.Shell.Add(Fn, hook.wTitle, hook.wClass, hook.wExe, extraEvent, hook.excludeTitle)
 		}
@@ -351,6 +365,8 @@ AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
 AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IMD")
 AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "IMD")
 AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "(Nachricht|Message|Besprechung|Meeting)")
+
+AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting)", "", "OUTLOOK.EXE", "IMD")
 ;WORK end
 ;own pcs
 AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", "CRETHER")
@@ -359,7 +375,9 @@ AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "CRETHER")
 AddDefaultMoveHook(0, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "CRETHER")
 ;own pcs end
 
-SetupDefaultMoveHooks()
+; sleep because somehow discord often starts at the same time as this, and the default move doesn't work XD
+Sleep(1000)
+SetupWindowHooks()
 #Include <logoff_shutdown_hook>
 onLogOff() {
 	try {
