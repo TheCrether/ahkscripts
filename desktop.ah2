@@ -366,9 +366,9 @@ AddDefaultMoveHook(2, "", "", "Spotify.exe")
 AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
 AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IMD")
 AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "IMD")
-AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "(Nachricht|Message|Besprechung|Meeting)")
+AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "(Nachricht|Message|Besprechung|Meeting|Erinnerung)")
 
-AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting)", "", "OUTLOOK.EXE", "IMD")
+AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting|Erinnerung)", "", "OUTLOOK.EXE", "IMD")
 ;WORK end
 ;own pcs
 AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", "CRETHER")
