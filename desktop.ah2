@@ -328,9 +328,12 @@ AddHook(fn, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := 
 	return hooks[hooks.Length]
 }
 
-SetupWindowHooks() {
-	if not FileExist(defaultMoveLock) {
+ExecDefaultMoveHooks(force, menu*) {
+	if force or not FileExist(defaultMoveLock) {
 		for hook in hooks {
+			if not hook.HasProp("desktop") {
+				continue
+			}
 			title := ""
 			if hook.wTitle {
 				title := hook.wTitle
@@ -341,12 +344,23 @@ SetupWindowHooks() {
 			if hook.wExe {
 				title .= " ahk_exe " . hook.wExe . " "
 			}
-			if hwnd := WinExist(Trim(title), , ,) and hook.HasProp("desktop") {
-				MoveWindowToDesktop(hwnd, hook.desktop)
+			list := WinGetList(Trim(title))
+			for i in list {
+				OutputWindow(i)
+			}
+			try {
+				if hwnd := WinGetID(Trim(title)) {
+					MoveWindowToDesktop(hwnd, hook.desktop)
+				}
 			}
 		}
 		FileAppend("done", defaultMoveLock)
 	}
+}
+
+SetupWindowHooks() {
+	ExecDefaultMoveHooks(false)
+	A_TrayMenu.Add("Execute default hooks", ExecDefaultMoveHooks.Bind(true))
 
 	for hook in hooks {
 		WinHook.Shell.Add(hook.fn, hook.wTitle, hook.wClass, hook.wExe, 1, hook.excludeTitle)
