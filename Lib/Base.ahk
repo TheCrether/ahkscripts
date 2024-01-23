@@ -133,7 +133,7 @@ OutputWindow(hwnd) {
 	title := WinGetTitle("ahk_id " . hwnd)
 	cla := WinGetClass("ahk_id " . hwnd)
 	pname := WinGetProcessName("ahk_id " . hwnd)
-	text := "hwnd: " . hwnd . "`nt: " . title . "`nclass: " . cla . "`nexe: " . pname
+	text := Format("hwnd: {1}`nt: {2}`nclass: {3}`nexe: {4}", hwnd, title, cla, pname)
 	; MsgBox(text)
 	OutputDebug(text . "`n====")
 }

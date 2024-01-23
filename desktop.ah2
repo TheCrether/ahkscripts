@@ -371,7 +371,7 @@ SetupWindowHooks() {
 }
 
 DebugWindowEvent(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
-	OutputDebug(Format("a{1}`n{2}`n{3}`n{4}`n{5}", Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event))
+	OutputDebug(Format("hwnd: {1}`ntitle: {2}`nClass: {3}`nExe: {4}`nEvent: {5}`n", Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event))
 }
 
 AddDefaultMoveHook(2, "Discord", "Chrome_WidgetWin_1", "Discord.exe")
