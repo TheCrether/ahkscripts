@@ -82,7 +82,7 @@ GoToDesktopNumber(num) {
 	try {
 		activeHwnd := WinGetID("A")
 	}
-	if (activeHwnd = "") {
+	if (activeHwnd != "") {
 		activeWindowByDesktop[current] := activeHwnd
 	}
 
@@ -94,7 +94,7 @@ GoToDesktopNumber(num) {
 	; Try to avoid flashing task bar buttons, deactivate the current window if it is not pinned
 	isPinned := 0
 	try {
-		if (activeHwnd = "") {
+		if (activeHwnd != "") {
 			isPinned := DllCall(IsPinnedProc, "UInt", activeHwnd)
 		}
 	}
