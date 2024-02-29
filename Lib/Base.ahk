@@ -135,5 +135,5 @@ OutputWindow(hwnd) {
 	pname := WinGetProcessName("ahk_id " . hwnd)
 	text := Format("hwnd: {1}`nt: {2}`nclass: {3}`nexe: {4}", hwnd, title, cla, pname)
 	; MsgBox(text)
-	OutputDebug(text . "`n====")
+	OutputDebug(text . "`n====`n")
 }

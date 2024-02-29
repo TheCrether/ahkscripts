@@ -318,24 +318,35 @@ AddDefaultMoveHook(desktop, wTitle := "", wClass := "", wExe := "", hosts := [],
 }
 
 AddHook(fn, wTitle := "", wClass := "", wExe := "", hosts := [], extraEvents := Map(), excludeTitle := "") {
+	hook := {
+		fn: fn,
+		wTitle: wTitle,
+		wClass: wClass,
+		wExe: wExe,
+		extraEvents: extraEvents,
+		excludeTitle: excludeTitle
+	}
 	if Type(hosts) = "String" {
-		if hosts = ""
-			Return
-		hosts := [hosts]
+		hosts := Trim(hosts)
+		if hosts = "" {
+			hosts := []
+		} else {
+			hosts := [hosts]
+		}
 	}
 	if hosts.Length == 0 {
-		hooks.Push({ fn: fn, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
+		hooks.Push(hook)
 	}
 	for host in hosts {
 		if InStr(A_ComputerName, host) {
-			hooks.Push({ fn: fn, wTitle: wTitle, wClass: wClass, wExe: wExe, extraEvents: extraEvents, excludeTitle: excludeTitle })
+			hooks.Push(hook)
 			break
 		}
 	}
-	return hooks[hooks.Length]
+	return hook
 }
 
-ExecDefaultMoveHooks(force, menu*) {
+ExecDefaultMoveHooks(force, ctxMenuArgs*) {
 	if force or not FileExist(defaultMoveLock) {
 		for hook in hooks {
 			if not hook.HasProp("desktop") {
@@ -386,7 +397,7 @@ AddDefaultMoveHook(2, "", "", "Spotify.exe")
 ; WORK
 AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
 AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IMD")
-AddDefaultMoveHook(1, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "IMD")
+AddDefaultMoveHook(1, "3CX.*", , "msedge.exe", "IMD")
 AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "(Nachricht|Message|Besprechung|Meeting|Erinnerung)")
 
 AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting|Erinnerung)", "", "OUTLOOK.EXE", "IMD")
