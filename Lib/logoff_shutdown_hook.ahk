@@ -7,10 +7,11 @@ SetupShutdownLogoffHook(Fn, events := "both") {
 	On_WM_QUERYENDSESSION(wParam, lParam, *)
 	{
 		ENDSESSION_LOGOFF := 0x80000000
-		if (lParam & ENDSESSION_LOGOFF)  ; User is logging off.
+		if (lParam & ENDSESSION_LOGOFF) { ; User is logging off.
 			EventType := "logoff"
-		else  ; System is either shutting down or restarting.
+		} else { ; System is either shutting down or restarting.
 			EventType := "shutdown"
+		}
 
 		if events = EventType or events = "both" {
 			Fn()

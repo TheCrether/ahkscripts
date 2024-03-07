@@ -72,10 +72,12 @@ resolve_env_variables(env_value, resolveUser := false) {
 ;;
 reset_env_from_registry() {
 	Loop Reg SysEnvPath {
-		if (A_LoopRegType != "REG_SZ" && A_LoopRegType != "REG_EXPAND_SZ")
+		if (A_LoopRegType != "REG_SZ" && A_LoopRegType != "REG_EXPAND_SZ") {
 			continue
-		if A_LoopRegName == "USERNAME"
+		}
+		if A_LoopRegName == "USERNAME" {
 			continue
+		}
 		env_value := RegRead()
 		env_value := resolve_env_variables(env_value, False)
 		; OutputDebug(A_LoopRegName . "=" . env_value . "`n")
@@ -83,8 +85,9 @@ reset_env_from_registry() {
 	}
 
 	Loop Reg UserEnvPath {
-		if (A_LoopRegType != "REG_SZ" && A_LoopRegType != "REG_EXPAND_SZ")
+		if (A_LoopRegType != "REG_SZ" && A_LoopRegType != "REG_EXPAND_SZ") {
 			continue
+		}
 		env_value := RegRead()
 		env_value := resolve_env_variables(env_value, True)
 		; OutputDebug(A_LoopRegName . "=" . env_value . "`n")

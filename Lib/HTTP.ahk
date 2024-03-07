@@ -20,8 +20,9 @@ DoRequest(url, method := "GET", body := "", applicationType := "application/json
 		req.open(method, url, false)
 		req.send()
 	}
-	if req.status != 200
+	if req.status != 200 {
 		throw Error(req.status ' - ' req.statusText, -1)
+	}
 
 	return req.responseText
 }
