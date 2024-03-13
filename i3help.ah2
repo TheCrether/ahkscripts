@@ -3,6 +3,7 @@
 
 #Include <Base>
 #Include <reload_env_on_change>
+#Include <ImagePut>
 SetTitleMatchMode(2)
 setupReloadOnEnvChange()
 
@@ -45,21 +46,32 @@ SetIcon(".\icons\i3help.ico")
 	}
 }
 
-tryToActivate(title, desktop := -1) {
-	if desktop > 0 {
-		if !WinExist(title) {
-			ChangeDesktop(desktop)
-			Sleep(100)
-		}
+; tryToActivate(title, desktop := -1) {
+tryToActivate(title, regex := false, detectHidden := false) {
+	; if desktop > 0 {
+	; 	if !WinExist(title) {
+	; 		ChangeDesktop(desktop)
+	; 		Sleep(100)
+	; 	}
+	; }
+	beforeMatchMode := A_TitleMatchMode
+	beforeHidden := A_DetectHiddenWindows
+	if regex {
+		SetTitleMatchMode("RegEx")
+	}
+	if detectHidden {
+		DetectHiddenWindows(true)
 	}
 	try {
 		WinActivate(title)
 	}
+	SetTitleMatchMode(beforeMatchMode)
+	DetectHiddenWindows(beforeHidden)
 }
 
-#a:: tryToActivate("Discord", 2)
+#a:: tryToActivate(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", true, true)
 
-#s:: tryToActivate("ahk_exe Spotify.exe", 2)
+#s:: tryToActivate("ahk_class Chrome_WidgetWin_1 ahk_exe Spotify.exe", false, true)
 
 PrintScreen:: Send("#+s")
 
@@ -126,12 +138,19 @@ PrintScreen:: Send("#+s")
 	}
 }
 
-#Include <WinHook>
+; #HotIf WinActive('ahk_exe explorer.exe')
+$^v:: {
+	clipboard := ClipboardAll()
+	try {
+		t := ImagePut.ImageType(clipboard) ; this throws an error if it isn't an image
+		if InStr(t, "Clipboard") {
+			ImagePutExplorer(clipboard)
+		}
+		OutputDebug(t)
+	} catch {
+		Send("^v")
+	} finally {
+	}
 
-FortiTray(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
-	; MsgBox(Format("{1}`n{2}`n{3}`n{4}`n{5}", Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event))
-	Sleep(100)
-	tryToActivate("ahk_id " . Win_Hwnd)
 }
-
-WinHook.Shell.Add(FortiTray, "Security Alert", , "FortiTray.exe", 1)
+; #HotIf
