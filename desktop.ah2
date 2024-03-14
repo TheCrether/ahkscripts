@@ -59,7 +59,7 @@ MoveWindowToDesktop(hwnd, number, moveWith := false) {
 			GoToDesktopNumber(number)
 		}
 
-		WinActivate("ahk_class Shell_TrayWnd")
+		tryActivate("ahk_class Shell_TrayWnd")
 	}
 }
 
@@ -99,9 +99,7 @@ GoToDesktopNumber(num) {
 		}
 	}
 	if (isPinned != 1) {
-		try {
-			WinActivate("ahk_class Shell_TrayWnd")
-		}
+		tryActivate("ahk_class Shell_TrayWnd")
 	}
 
 	; Change desktop
@@ -137,9 +135,7 @@ VWMess(wParam, lParam, msg, hwnd) { ; wParam is the old desktop and lParam is th
 	isOnDesktop := DllCall(IsWinOnCurrVirtualDesktopProc, "Int", oldHwnd, "Int")
 	winClass := WinGetClass("A")
 	if (isOnDesktop == 1 && isPinned != 1 && winClass == "Shell_TrayWnd" && oldHwnd != -1) {
-		try {
-			WinActivate("ahk_id " . oldHwnd)
-		}
+		tryActivate("ahk_id " . oldHwnd)
 	}
 }
 
@@ -303,7 +299,7 @@ GeneralHook(Action, Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 	Action := StrLower(Action)
 	Switch Action, "Off" {
 		Case "focus":
-			WinActivate("ahk_id " . Win_Hwnd)
+			tryActivate("ahk_id " . Win_Hwnd)
 		default:
 			Notification("Action '" . Action . "' is not a general hook`nWindow: " . Win_Title)
 	}

@@ -34,7 +34,7 @@ SetIcon(".\icons\i3help.ico")
 }
 
 #+p:: {
-	WinActivate("ahk_class Shell_TrayWnd")
+	tryActivate("ahk_class Shell_TrayWnd")
 	Send("!{F4}")
 }
 
@@ -46,32 +46,13 @@ SetIcon(".\icons\i3help.ico")
 	}
 }
 
-; tryToActivate(title, desktop := -1) {
-tryToActivate(title, regex := false, detectHidden := false) {
-	; if desktop > 0 {
-	; 	if !WinExist(title) {
-	; 		ChangeDesktop(desktop)
-	; 		Sleep(100)
-	; 	}
-	; }
-	beforeMatchMode := A_TitleMatchMode
-	beforeHidden := A_DetectHiddenWindows
-	if regex {
-		SetTitleMatchMode("RegEx")
-	}
-	if detectHidden {
-		DetectHiddenWindows(true)
-	}
-	try {
-		WinActivate(title)
-	}
-	SetTitleMatchMode(beforeMatchMode)
-	DetectHiddenWindows(beforeHidden)
+#+x:: {
+	Run(A_ScriptDir . "\UX\search-windows.ah2")
 }
 
-#a:: tryToActivate(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", true, true)
+#a:: tryActivate(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", true, true)
 
-#s:: tryToActivate("ahk_class Chrome_WidgetWin_1 ahk_exe Spotify.exe", false, true)
+#s:: tryActivate("ahk_class Chrome_WidgetWin_1 ahk_exe Spotify.exe", false, true)
 
 PrintScreen:: Send("#+s")
 
@@ -88,7 +69,7 @@ PrintScreen:: Send("#+s")
 	Run("wt") ; create new tab in terminal, if no terminal is opened yet, open one
 	WinWait("ahk_exe WindowsTerminal.exe")
 	Sleep(400)
-	tryToActivate("ahk_exe WindowsTerminal.exe")
+	tryActivate("ahk_exe WindowsTerminal.exe")
 }
 
 #t:: {
@@ -152,8 +133,6 @@ $^v:: {
 	} catch {
 		OutputDebug("not an image")
 		Send("^v")
-	} finally {
 	}
-
 }
 #HotIf

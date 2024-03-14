@@ -137,3 +137,21 @@ OutputWindow(hwnd) {
 	; MsgBox(text)
 	OutputDebug(text . "`n====`n")
 }
+
+tryActivate(title, regex := false, detectHidden := false) {
+	beforeMatchMode := A_TitleMatchMode
+	beforeHidden := A_DetectHiddenWindows
+	if regex {
+		SetTitleMatchMode("RegEx")
+	}
+	if detectHidden {
+		DetectHiddenWindows(true)
+	}
+	try {
+		WinActivate(title)
+	} catch {
+		OutputDebug(Format("(regex:{1})(detectHidden:{2}) can't find window with: {3}`n", regex, detectHidden, title))
+	}
+	SetTitleMatchMode(beforeMatchMode)
+	DetectHiddenWindows(beforeHidden)
+}

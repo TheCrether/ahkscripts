@@ -414,18 +414,20 @@ class ImagePut {
       if not IsObject(image)
          goto string
 
-      if (image.base.HasProp("__class") && image.base.__class == "ClipboardAll")
-      or (image.HasProp("prototype") && image.prototype.HasProp("__class") && image.prototype.__class == "ClipboardAll")
-      {  ; A "clipboardpng" is a pointer to a PNG stream saved as the "png" clipboard format.
+      if image.HasProp("prototype") && image.prototype.HasProp("__class") && image.prototype.__class == "ClipboardAll"
+      or type(image) == "ClipboardAll" && this.IsClipboard(image.ptr, image.size)
+         ; A "clipboardpng" is a pointer to a PNG stream saved as the "png" clipboard format.
          if DllCall("IsClipboardFormatAvailable", "uint", DllCall("RegisterClipboardFormat", "str", "png", "uint"))
             return "ClipboardPng"
 
          ; A "clipboard" is a handle to a GDI bitmap saved as CF_BITMAP.
-         if DllCall("IsClipboardFormatAvailable", "uint", 2)
+         else if DllCall("IsClipboardFormatAvailable", "uint", 2)
             return "Clipboard"
 
-         throw Error("Clipboard format not supported.")
-      }
+         else throw Error("Clipboard format not supported.")
+
+
+
 
       array:
       ; A "safearray" is a pointer to a SafeArray COM Object.
@@ -445,8 +447,11 @@ class ImagePut {
 
       ; A "object" has a pBitmap property that points to an internal GDI+ bitmap.
       if image.HasProp("pBitmap")
-         try if !DllCall("gdiplus\GdipGetImageType", "ptr", image.pBitmap, "ptr*", &type:=0) && (type == 1)
+         try if !DllCall("gdiplus\GdipGetImageType", "ptr", image.pBitmap, "ptr*", &_type:=0) && (_type == 1)
             return "Object"
+
+      if not image.HasProp("ptr")
+         goto end
 
       ; Check if image is a pointer. If not, crash and do not recover.
       ("POINTER IS BAD AND PROGRAM IS CRASH") && NumGet(image.ptr, "char")
@@ -457,16 +462,13 @@ class ImagePut {
 
       ; A "buffer" is an object with a pointer to bytes and properties to determine its 2-D shape.
       if image.HasProp("ptr")
-         and (image.HasProp("width") && image.HasProp("height")
-         or image.HasProp("stride") && image.HasProp("height")
-         or image.HasProp("size") && (image.HasProp("stride") || image.HasProp("width") || image.HasProp("height")))
+         and ( image.HasProp("width") && image.HasProp("height")
+            or image.HasProp("stride") && image.HasProp("height")
+            or image.HasProp("size") && (image.HasProp("stride") || image.HasProp("width") || image.HasProp("height")))
          return "Buffer"
-
-      if image.HasProp("ptr") {
-         image := image.ptr
-         goto pointer
-      }
-      goto end
+      
+      image := image.ptr
+      goto pointer
 
       string:
       if (image == "")
@@ -535,13 +537,13 @@ class ImagePut {
       ; An "hIcon" is a handle to a GDI icon.
       if DllCall("DestroyIcon", "ptr", DllCall("CopyIcon", "ptr", image, "ptr"))
          return "HIcon"
-
-      ; A "bitmap" is a pointer to a GDI+ Bitmap.
-      try if !DllCall("gdiplus\GdipGetImageType", "ptr", image, "ptr*", &type:=0) && (type == 1)
-         return "Bitmap"
-
+      
       ; Check if image is a pointer. If not, crash and do not recover.
       ("POINTER IS BAD AND PROGRAM IS CRASH") && NumGet(image, "char")
+
+      ; A "bitmap" is a pointer to a GDI+ Bitmap. GdiplusStartup exception is caught above.
+      try if !DllCall("gdiplus\GdipGetImageType", "ptr", image, "ptr*", &_type:=0) && (_type == 1)
+         return "Bitmap"
 
       ; Note 1: All GDI+ functions add 1 to the reference count of COM objects on 64-bit systems.
       ; Note 2: GDI+ pBitmaps that are queried cease to stay pBitmaps.
@@ -964,6 +966,15 @@ class ImagePut {
       return pBitmap
    }
 
+   static IsClipboard(ptr, size) {
+      pos := 0
+      while (pos < size)
+         if (offset := NumGet(ptr + pos + 4, "uint"))
+            pos += offset + 8
+         else break
+      return pos + 4 == size && !NumGet(ptr + pos, "uint") ; 4 byte null terminator
+   }
+
    static IsImage(ptr, size) {
       ; Shortest possible image is 24 bytes.
       if (size < 24)
@@ -1034,27 +1045,25 @@ class ImagePut {
                Sleep (2**(A_Index-1) * 30)
             else throw Error("Clipboard could not be opened.")
 
-      if DllCall("IsClipboardFormatAvailable", "uint", 8) {
+      ; Check for CF_DIB to retrieve transparent pixels when possible.
+      if DllCall("IsClipboardFormatAvailable", "uint", 8)
          if !(handle := DllCall("GetClipboardData", "uint", 8, "ptr"))
             throw Error("Shared clipboard data has been deleted.")
-         DllCall("CloseClipboard")
-      }
 
+      ; Adjust Scan0 for top-down or bottom-up bitmaps.
       ptr := DllCall("GlobalLock", "ptr", handle, "ptr")
-      pBits := ptr + 40
-      ; DllCall("gdiplus\GdipCreateBitmapFromGdiDib", "ptr", ptr, "ptr", pBits, "ptr*", &pBitmap:=0)
-
-      width := NumGet(ptr, 4, "int")
-      height := NumGet(ptr, 8, "int")
-      bpp := NumGet(ptr, 14, "ushort")
+      width := NumGet(ptr + 4, "int")
+      height := NumGet(ptr + 8, "int")
+      bpp := NumGet(ptr + 14, "ushort")
       stride := ((height < 0) ? 1 : -1) * (width * bpp + 31) // 32 * 4
+      pBits := ptr + 40
       Scan0 := (height < 0) ? pBits : pBits - stride*(height-1)
 
-      ; Create a pBitmap that owns its memory.
+      ; Create a GDI+ Bitmap that owns its memory.
       DllCall("gdiplus\GdipCreateBitmapFromScan0"
                , "int", width, "int", height, "int", 0, "uint", 0x26200A, "ptr", 0, "ptr*", &pBitmap:=0)
 
-      ; Create a Scan0 buffer pointing to pBits.
+      ; Describe the current buffer holding the pixel data.
       Rect := Buffer(16, 0)                  ; sizeof(Rect) = 16
          NumPut(  "uint",   width, Rect,  8) ; Width
          NumPut(  "uint",  height, Rect, 12) ; Height
@@ -1062,17 +1071,16 @@ class ImagePut {
          NumPut(   "int",     stride, BitmapData,  8) ; Stride
          NumPut(   "ptr",      Scan0, BitmapData, 16) ; Scan0
 
-      ; Use LockBits to create a writable buffer that converts the current pixel format to ARGB.
+      ; Use LockBits to copy pixel data from an external buffer into the internal GDI+ Bitmap.
       DllCall("gdiplus\GdipBitmapLockBits"
                ,    "ptr", pBitmap
                ,    "ptr", Rect
                ,   "uint", 6            ; ImageLockMode.UserInputBuffer | ImageLockMode.WriteOnly
-               ,    "int", 0x26200A     ; Format32bppArgb
-               ,    "ptr", BitmapData)  ; Contains the pointer (Scan0) to the first scanline.
-
-      ; Convert the pARGB pixels copied into the device independent bitmap (hbm) to ARGB.
+               ,    "int", 0x26200A     ; Format32bppArgb (external buffer)
+               ,    "ptr", BitmapData)  ; Contains the pointer to the external buffer.
       DllCall("gdiplus\GdipBitmapUnlockBits", "ptr", pBitmap, "ptr", BitmapData)
 
+      DllCall("CloseClipboard")
       return pBitmap
    }
 
@@ -1100,13 +1108,13 @@ class ImagePut {
       if !(handle := DllCall("GetClipboardData", "uint", png, "ptr"))
          throw Error("Shared clipboard PNG has been deleted.")
 
-      DllCall("CloseClipboard")
-
       ; Create a new stream from the clipboard data.
       size := DllCall("GlobalSize", "ptr", handle, "uptr")
       DllCall("ole32\CreateStreamOnHGlobal", "ptr", handle, "int", False, "ptr*", &PngStream:=0, "hresult")
       DllCall("ole32\CreateStreamOnHGlobal", "ptr", 0, "int", True, "ptr*", &stream:=0, "hresult")
       DllCall("shlwapi\IStream_Copy", "ptr", PngStream, "ptr", stream, "uint", size, "hresult")
+
+      DllCall("CloseClipboard")
       return stream
    }
 
@@ -1475,6 +1483,12 @@ class ImagePut {
 
       ; Get the handle to the window.
       image := WinExist(image)
+
+      ; Test whether keystrokes can be sent to this window using a reserved virtual key code.
+      try PostMessage WM_KEYDOWN := 0x100, 0x88,,, image
+      catch OSError
+         throw Error("Administrator privileges are required to capture the window.")
+      PostMessage WM_KEYUP := 0x101, 0x88, 0xC0000000,, image
 
       ; Restore the window if minimized! Must be visible for capture.
       if DllCall("IsIconic", "ptr", image)
@@ -3850,12 +3864,24 @@ class ImagePut {
             SetTimer Reset_Tooltip, -7000
          }
 
+         ; WM_MOUSEWHEEL - Zoom in and out.
          if (uMsg = 0x020A) {
+            uMsg := 0x8003
+            Sleep 100 ; Debounce or block subsequent WM_MOUSEWHEEL messages.
+         }
+
+         if (uMsg = 0x8003) {
             ; Convert from unsigned int to signed shorts.
             wBuf := Buffer(4)
             NumPut("uint", wParam, wBuf)
             keystate := NumGet(wBuf, 0, "short")
             wheeldelta := NumGet(wBuf, 2, "short")
+
+            ; Convert from unsigned int to signed shorts.
+            xy := Buffer(4)
+            NumPut("uint", lParam, xy)
+            x := NumGet(xy, 0, "short")
+            y := NumGet(xy, 2, "short")
 
             sdc := DllCall("GetWindowLong", "ptr", child, "int", 2*A_PtrSize, "ptr")
             sbm := DllCall("GetCurrentObject", "ptr", sdc, "uint", 7)
@@ -3883,7 +3909,8 @@ class ImagePut {
 
             obj.scale := scale
             s := obj.scales[scale]
-
+            x := Ceil(x * s) - x
+            y := Ceil(y * s) - y
             w := Ceil(width * s)
             h := Ceil(height * s)
 
@@ -3899,6 +3926,11 @@ class ImagePut {
 
             DllCall("SetStretchBltMode", "ptr", hdc, "int", 3) ; Nearest Neighbor
             DllCall("StretchBlt", "ptr", hdc, "int", 0, "int", 0, "int", w, "int", h, "ptr", sdc, "int", 0, "int", 0, "int", width, "int", height, "uint", 0xCC0020) ; SRCCOPY | CAPTUREBLT
+
+            pptDst := Buffer(8, 0)
+            NumPut("int", x, pptDst, 0)
+            NumPut("int", y, pptDst, 4)
+
             DllCall("UpdateLayeredWindow"
                      ,    "ptr", child                    ; hWnd
                      ,    "ptr", 0                        ; hdcDst
@@ -4288,6 +4320,28 @@ class ImagePut {
       return this.BitmapToFile(pBitmap, directory)
    }
 
+   static GetCurrentExplorerTab(hwnd) {
+      ; script from Lexikos: https://www.autohotkey.com/boards/viewtopic.php?f=83&t=109907
+      ; modified for this by: @TheCrether
+      activeTab := 0
+      try activeTab := ControlGetHwnd("ShellTabWindowClass1", hwnd) ; File Explorer (Windows 11)
+      catch
+         try activeTab := ControlGetHwnd("TabWindowClass1", hwnd) ; IE
+      for w in ComObject("Shell.Application").Windows {
+         if w.hwnd != hwnd
+            continue
+         if activeTab { ; The window has tabs, so make sure this is the right one.
+            static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+            shellBrowser := ComObjQuery(w, IID_IShellBrowser, IID_IShellBrowser)
+            ComCall(3, shellBrowser, "uint*", &thisTab := 0)
+            if thisTab != activeTab
+               continue
+         }
+         return w
+      }
+	   return false
+   }
+
    static StreamToExplorer(stream, default := "") {
 
       ; Default directory to desktop.
@@ -4301,9 +4355,15 @@ class ImagePut {
 
       ; Get path of active window.
       else if (hwnd := WinExist("ahk_class ExploreWClass")) || (hwnd := WinExist("ahk_class CabinetWClass")) {
-         for window in ComObject("Shell.Application").Windows {
-            if (window.hwnd == hwnd) {
-               try directory := window.Document.Folder.Self.Path
+         ; script from Lexikos: https://www.autohotkey.com/boards/viewtopic.php?f=83&t=109907
+         ; modified for this by: @TheCrether
+         tab := this.GetCurrentExplorerTab(hwnd)
+         if tab {
+            switch Type(tab.Document) {
+               case "ShellFolderView":
+                  directory := tab.Document.Folder.Self.Path
+               default: ; case "HTMLDocument"
+                  directory := tab.LocationURL
             }
          }
       }
