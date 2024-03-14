@@ -81,3 +81,9 @@ CheckForGitUpdate() {
 
 CheckForGitUpdate()
 SetTimer(CheckForGitUpdate, 1000 * 60 * 60 * 12)
+
+CheckForGitUpdateFromCtxMenu(*) {
+	CheckForGitUpdate()
+}
+
+A_TrayMenu.Add("Check for updates manually", CheckForGitUpdateFromCtxMenu)
