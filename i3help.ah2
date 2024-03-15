@@ -93,20 +93,23 @@ PrintScreen:: Send("#+s")
 }
 
 #+a:: {
+	x := -1, y := -1
+	beforeCoordMode := CoordMode("Mouse", "Screen")
 	if IsWindows11 {
 		primary := MonitorGetPrimary()
-		bottom := -1
-		right := -1
-		MonitorGet(primary, , , &right, &bottom)
-
-		bottomClick := bottom - 10
-		rightClick := right - 20
-		beforeCoordMode := CoordMode("Mouse", "Screen")
-		Click(rightClick . " " . bottomClick)
-		CoordMode("Mouse", beforeCoordMode)
-		return
+		MonitorGet(primary, , , &x, &y)
+		y -= 10
+		x -= 20
+	} else {
+		winX := -1, winY := -1
+		WinGetPos(&winX, &winY, , , "ahk_class Shell_TrayWnd")
+		ControlGetPos(&x, &y, , , "TrayButton2", "ahk_class Shell_TrayWnd")
+		x += winX + 5
+		y += winY + 5
 	}
-	ControlClick("TrayButton2", "ahk_class Shell_TrayWnd")
+	Click(x . " " . y)
+	CoordMode("Mouse", beforeCoordMode)
+	; ControlClick("TrayButton2", "ahk_class Shell_TrayWnd")
 }
 
 #m:: {
