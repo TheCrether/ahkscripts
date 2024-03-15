@@ -1,6 +1,7 @@
 #Requires AutoHotkey v2
 #SingleInstance Force
 
+Exit(*) => ExitApp()
 OutputWindowText(hwnd) {
 	title := WinGetTitle("ahk_id " . hwnd)
 	cla := WinGetClass("ahk_id " . hwnd)
@@ -11,14 +12,6 @@ OutputWindowText(hwnd) {
 	text := Format("hwnd: {1}`nt: {2}`nclass: {3}`nexe: {4}", hwnd, title, cla, pname)
 	return text
 }
-
-DetectHiddenWindows(1)
-before := A_TitleMatchMode
-SetTitleMatchMode("RegEx")
-myGui := Gui("AlwaysOnTop +MinSize1000x20")
-editControl := myGui.Add("Edit", "vMyEdit w1000")
-editControl.OnEvent("Change", QueryWindows)
-
 QueryWindows(*) {
 	global editControl, text
 	list := WinGetList(editControl.Value)
@@ -31,11 +24,17 @@ QueryWindows(*) {
 		text.Redraw()
 	}
 }
-Exit(*) {
-	ExitApp()
-}
+
+DetectHiddenWindows(1)
+before := A_TitleMatchMode
+SetTitleMatchMode("RegEx")
+
+myGui := Gui("AlwaysOnTop +MinSize1000x20")
+editControl := myGui.Add("Edit", "vMyEdit w1000")
+editControl.OnEvent("Change", QueryWindows)
 text := myGui.Add("Edit", "w1000 r80 HScroll")
 exitBtn := myGui.Add("button", "w80", "Exit")
 exitBtn.OnEvent("Click", Exit)
 myGui.Show
+
 SetTitleMatchMode(before)
