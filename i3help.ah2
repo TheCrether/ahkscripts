@@ -122,12 +122,22 @@ PrintScreen:: Send("#+s")
 	}
 }
 
+; better check if an image is in the clipboard
+isImageInClipboard := false
+ClipboardChanged(ct) {
+	global isImageInClipboard
+	isImageInClipboard := ct == 2
+}
+OnClipboardChange(ClipboardChanged)
+
 #HotIf WinActive('ahk_exe explorer.exe')
 $^v:: {
+	if not isImageInClipboard {
+		return
+	}
 	try {
 		ImagePutExplorer(ClipboardAll)
 	} catch {
-		OutputDebug("not an image")
 		Send("^v")
 	}
 }
