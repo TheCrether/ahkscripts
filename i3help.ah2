@@ -124,9 +124,8 @@ PrintScreen:: Send("#+s")
 
 #HotIf WinActive('ahk_exe explorer.exe')
 $^v:: {
-	clipboard := ClipboardAll()
 	try {
-		ImagePutExplorer(clipboard)
+		ImagePutExplorer(ClipboardAll)
 	} catch {
 		OutputDebug("not an image")
 		Send("^v")

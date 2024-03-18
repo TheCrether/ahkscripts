@@ -119,13 +119,13 @@ class ExUtils {
 $#^l:: {
 	tab := ExUtils.GetActiveTab()
 	; OutputDebug(tab.selectedItems[1])
-	tab.selectedItems := "asdf"
+	; tab.selectedItems := "asdf"
 	; OutputDebug(ExUtils.GetCurrentPath())
 	; tab := ExUtils.GetActiveTab()
 	; items := []
-	; for item in tab.Document.SelectedItems {
-	; 	items.Push(item)
-	; }
+	for item in tab.SelectedItems {
+		OutputDebug(item.Path)
+	}
 	; OutputDebug(tab.Document.PopupItemMenu(items[1]) . "`n")
 }
 #HotIf
