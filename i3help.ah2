@@ -126,13 +126,7 @@ PrintScreen:: Send("#+s")
 $^v:: {
 	clipboard := ClipboardAll()
 	try {
-		t := ImagePut.ImageType(clipboard) ; this throws an error if it isn't an image
-		OutputDebug(t)
-		if InStr(t, "Clipboard") {
-			ImagePutExplorer(clipboard)
-		} else {
-			Send("^v")
-		}
+		ImagePutExplorer(clipboard)
 	} catch {
 		OutputDebug("not an image")
 		Send("^v")
