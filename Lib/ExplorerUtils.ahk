@@ -31,7 +31,7 @@ class ExUtils {
 			get {
 				items := []
 				for item in this.tab.Document.SelectedItems {
-					items.Push(item.Path)
+					items.Push(item)
 				}
 				return items
 			}

@@ -141,4 +141,18 @@ $^v:: {
 		Send("^v")
 	}
 }
+
+#Include <ExplorerUtils>
+$^+c:: {
+	; get paths of selected items without quotes
+	items := ExUtils.SelectedItems()
+	str := ""
+	if items.Length == 0 {
+		str := ExUtils.GetCurrentPath()
+	}
+	for item in items {
+		str .= (str ? '`n' : '') . item.Path
+	}
+	A_Clipboard := str
+}
 #HotIf
