@@ -126,8 +126,8 @@ shortcuts[name] := filePath
 shortcutMenu.Add() ; add separator
 shortcutMenu.Add(name, OpenShortcut.Bind(""))
 
-ReloadProc(name, pos, menu) {
-	Reload
+ReloadProc(*) {
+	Reload()
 }
 shortcutMenu.Add("reload", ReloadProc)
 

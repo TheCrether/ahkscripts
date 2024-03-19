@@ -122,6 +122,8 @@ PrintScreen:: Send("#+s")
 	}
 }
 
+#Include <ExplorerUtils>
+
 ; better check if an image is in the clipboard
 isImageInClipboard := false
 ClipboardChanged(ct) {
@@ -142,7 +144,7 @@ $^v:: {
 	}
 }
 
-#Include <ExplorerUtils>
+#HotIf WinActive('ahk_exe explorer.exe')
 $^+c:: {
 	; get paths of selected items without quotes
 	items := ExUtils.SelectedItems()
@@ -154,5 +156,7 @@ $^+c:: {
 		str .= (str ? '`n' : '') . item.Path
 	}
 	A_Clipboard := str
+	ToolTip("copied " . str)
+	SetTimer(() => ToolTip(), -2000)
 }
 #HotIf
