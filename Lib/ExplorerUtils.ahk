@@ -19,46 +19,130 @@ class ExUtils {
 	;		FolderItems3: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-object
 	;		FolderItem: https://learn.microsoft.com/en-us/windows/win32/shell/folderitem
 
-	class Tab {
-		tab := ""
+	class Explorer {
+		_webBrowser := ""
 
-
-		__New(tab) {
-			this.tab := tab
+		__New(webBrowser) {
+			this._webBrowser := webBrowser
 		}
 
+		activeTab => ExUtils.Tab(ExUtils.GetActiveTab(this._webBrowser.hwnd)) ; TODO test
+
+		NewTab(path) {
+			; TODO
+			; Navigate? Navigate2? wihh _blank?
+		}
+	}
+
+	class Tab {
+		_tab := ""
+
+		__New(tab) {
+			this._tab := tab
+		}
+
+		folder => ExUtils.Folder(this._tab.Document.Folder)
+
 		selectedItems {
-			get {
-				items := []
-				for item in this.tab.Document.SelectedItems {
-					items.Push(item)
-				}
-				return items
-			}
+			get => ExUtils.FolderItems(this._tab.Document.SelectedItems)
 			set {
 				; TODO implement selecting items
 				; value
 			}
 		}
 
+		items => this.folder.items
+
 		path {
 			get {
-				switch Type(this.tab.Document) {
+				switch Type(this._tab.Document) {
 					case "ShellFolderView":
-						return this.tab.Document.Folder.Self.Path
+						return this.folder.path
 					default: ; case "HTMLDocument"
-						return this.tab.LocationURL
+						return this._tab.LocationURL
 				}
 			}
 			set {
 				; TODO implement navigating
+				; this._tab.Navigate(value)
+				this._tab.Navigate2(value) ; check if this works on w11
 			}
 		}
+
+		explorer => ExUtils.Explorer(this._tab)
+	}
+
+	class Folder {
+		_folder := ""
+
+		__New(folder) {
+			this._folder := folder
+		}
+
+		items => ExUtils.FolderItems(this._folder.Items)
+
+		path => this._folder.Self.Path
 	}
 
 	class FolderItems {
 		; TODO
-		obj := ""
+		_folderItems := ""
+
+		__New(folderItems) {
+			this._folderItems := folderItems
+		}
+
+		__Item[i] {
+			get => ExUtils.FolderItem(this._folderItems.Item(i - 1))
+		}
+
+		__Enum(n) {
+			index := 1 ; start at 1 because __Item is implemented to start at 1
+			end := this._folderItems.Count
+
+			switch n {
+				case 1: return (&item) => ((index <= end) && (  ; guard
+					item := this[index],                         ; yield
+					index += 1,                                  ; do block
+					True                                         ; continue?
+				))
+
+				case 2: return (&item, &path) => ((index <= end) && (
+					item := this[index],
+					path := item.path,
+					index += 1,
+					True
+				))
+			}
+		}
+	}
+
+	class FolderItem {
+		folderItem := ""
+
+		__New(folderItem) {
+			this.folderItem := folderItem
+		}
+
+		; TODO implement properties
+
+		path => this.folderItem.Path
+		isFolder => this.folderItem.IsFolder
+		isLink => this.folderItem.IsLink
+		type => this.folderItem.Type
+		parent => ExUtils.Folder(this.folderItem.Parent)
+		items {
+			get {
+				if this.isFolder {
+					return ExUtils.Folder(this.folderItem.GetFolder).items
+				}
+				throw TargetError("not a folder")
+			}
+		}
+	}
+
+	static GetCurrentExplorer(hwnd := WinExist("A")) {
+		return this.GetActiveTab().explorer
 	}
 
 	static GetActiveTab(hwnd := WinExist("A")) {
@@ -118,14 +202,28 @@ class ExUtils {
 #HotIf WinActive('ahk_exe explorer.exe')
 $#^l:: {
 	tab := ExUtils.GetActiveTab()
+	for item in tab.SelectedItems {
+		; par := item.parent
+		; ExUtils._msgInfo(item.folderItem)
+		if item.isFolder {
+			for i2 in item.items {
+				OutputDebug(i2.path)
+			}
+		}
+	}
+	; tab.path := "C:\temp"
+	; f := tab.selectedItems._folderItems
+	; a := f.Item(2)
+	; OutputDebug(a.Path)
+	; OutputDebug("asdf")
 	; OutputDebug(tab.selectedItems[1])
 	; tab.selectedItems := "asdf"
 	; OutputDebug(ExUtils.GetCurrentPath())
 	; tab := ExUtils.GetActiveTab()
 	; items := []
-	for item in tab.SelectedItems {
-		OutputDebug(item.Path)
-	}
+	; for item in tab.SelectedItems {
+	; 	OutputDebug(item.Path)
+	; }
 	; OutputDebug(tab.Document.PopupItemMenu(items[1]) . "`n")
 }
 #HotIf
