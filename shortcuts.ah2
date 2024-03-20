@@ -3,6 +3,7 @@
 
 #Include <Base>
 #Include <Jsons>
+#Include <ExplorerUtils>
 
 SetIcon(".\icons\shortcuts.ico")
 
@@ -209,7 +210,7 @@ RunFile(path) {
 RunPath(path, notificationOnError := true) {
 	path := ReplaceVariables(path)
 	if DirExist(path) {
-		Run("C:\Windows\explorer.exe " . path)
+		ShellRun("explorer.exe", path, path)
 		Return true
 	}
 
@@ -263,25 +264,24 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 	}
 
 	if IsWindows11 {
-		Send("#e")
-		WinWaitActive("ahk_exe explorer.exe")
-		Sleep(200)
-		Loop folders.Length {
-			folder := folders[A_Index]
-			if A_Index > 1 {
-				Send("^t")
+		for i, folder in folders {
+			if i == 1 {
+				RunPath(folder)
 				Sleep(500)
+				SplitPath(folder, &fn)
+				WinWaitActive(fn . " ahk_exe explorer.exe")
+				continue
 			}
-			Send("^l")
-			Sleep(300)
-			SendText(folder)
-			Sleep(400)
-			Send("{Enter}")
-			Sleep(300)
+
+			Send("^t")
+			Sleep(250)
+
+			tab := ExUtils.GetActiveTab()
+			tab.Path := folder ; TODO test
 		}
 	} else {
 		for folder in folders {
-			ShellRun("explorer.exe", folder, folder)
+			RunPath(folder)
 		}
 	}
 
