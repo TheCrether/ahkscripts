@@ -20,13 +20,16 @@ class ExUtils {
 	;		FolderItem: https://learn.microsoft.com/en-us/windows/win32/shell/folderitem
 
 	class Explorer {
+		; TODO properties
+
 		_webBrowser := ""
 
 		__New(webBrowser) {
 			this._webBrowser := webBrowser
 		}
+		path => this.activeTab.path
 
-		activeTab => ExUtils.Tab(ExUtils.GetActiveTab(this._webBrowser.hwnd)) ; TODO test
+		activeTab => ExUtils.GetActiveTab(this._webBrowser.hwnd)
 
 		NewTab(path) {
 			; TODO
@@ -35,6 +38,8 @@ class ExUtils {
 	}
 
 	class Tab {
+		; TODO properties
+
 		_tab := ""
 
 		__New(tab) {
@@ -63,9 +68,7 @@ class ExUtils {
 				}
 			}
 			set {
-				; TODO implement navigating
-				; this._tab.Navigate(value)
-				this._tab.Navigate2(value) ; check if this works on w11
+				this._tab.Navigate2(value) ; works on w11 too
 			}
 		}
 
@@ -73,6 +76,8 @@ class ExUtils {
 	}
 
 	class Folder {
+		; TODO properties
+
 		_folder := ""
 
 		__New(folder) {
@@ -85,7 +90,6 @@ class ExUtils {
 	}
 
 	class FolderItems {
-		; TODO
 		_folderItems := ""
 
 		__New(folderItems) {
@@ -98,7 +102,7 @@ class ExUtils {
 
 		__Enum(n) {
 			index := 1 ; start at 1 because __Item is implemented to start at 1
-			end := this._folderItems.Count
+			end := this.count
 
 			switch n {
 				case 1: return (&item) => ((index <= end) && (  ; guard
@@ -115,6 +119,8 @@ class ExUtils {
 				))
 			}
 		}
+
+		count => this._folderItems.Count
 	}
 
 	class FolderItem {
@@ -193,25 +199,27 @@ class ExUtils {
 			)
 		OutputDebug(text . "`n")
 	}
-
-	; TODO w11 add tab with path?
-	; TODO wrap all the different things in classes?
 }
 
 ; debugging purposes
 #HotIf WinActive('ahk_exe explorer.exe')
 $#^l:: {
 	tab := ExUtils.GetActiveTab()
-	for item in tab.SelectedItems {
-		; par := item.parent
-		; ExUtils._msgInfo(item.folderItem)
-		if item.isFolder {
-			for i2 in item.items {
-				OutputDebug(i2.path)
-			}
-		}
-	}
+	; for item in tab.SelectedItems {
+	; 	; par := item.parent
+	; 	; ExUtils._msgInfo(item.folderItem)
+	; 	if item.isFolder {
+	; 		for i2 in item.items {
+	; 			OutputDebug(i2.path)
+	; 		}
+	; 	}
+	; }
 	; tab.path := "C:\temp"
+	explorer := ExUtils.GetCurrentExplorer()
+	; explorer._webBrowser.Navigate2("C:\temp\dlm", 65536, "_blank")
+	OutputDebug(explorer.activeTab.path)
+	Sleep(2000)
+	OutputDebug(explorer.activeTab.path)
 	; f := tab.selectedItems._folderItems
 	; a := f.Item(2)
 	; OutputDebug(a.Path)

@@ -156,7 +156,7 @@ $^+c:: {
 		str .= (str ? '`n' : '') . item.Path
 	}
 	A_Clipboard := str
-	ToolTip("copied " . str)
+	ToolTip("copied:`n" . str)
 	SetTimer(() => ToolTip(), -2000)
 }
 #HotIf
