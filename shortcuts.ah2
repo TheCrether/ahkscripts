@@ -264,20 +264,17 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 	}
 
 	if IsWindows11 {
+		explorerHwnd := -1
 		for i, folder in folders {
-			if i == 1 {
+			if i == 1 { ; TODO test out
 				RunPath(folder)
 				Sleep(500)
 				SplitPath(folder, &fn)
-				WinWaitActive(fn . " ahk_exe explorer.exe")
+				explorerHwnd := WinWaitActive(fn . " ahk_exe explorer.exe")
 				continue
 			}
 
-			Send("^t")
-			Sleep(250)
-
-			tab := ExUtils.GetActiveTab()
-			tab.Path := folder ; TODO test
+			ExUtils.GetCurrentExplorer(explorerHwnd).NewTab(folder)
 		}
 	} else {
 		for folder in folders {
