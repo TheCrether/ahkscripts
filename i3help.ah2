@@ -135,8 +135,10 @@ OnClipboardChange(ClipboardChanged)
 #HotIf WinActive('ahk_exe explorer.exe')
 $^v:: {
 	if not isImageInClipboard {
+		Send("^v")
 		return
 	}
+
 	try {
 		ImagePutExplorer(ClipboardAll)
 	} catch {
