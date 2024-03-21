@@ -20,36 +20,38 @@ class ExUtils {
 	;		FolderItem: https://learn.microsoft.com/en-us/windows/win32/shell/folderitem
 
 	class Explorer {
-		; TODO properties
-
 		_webBrowser := ""
 
 		__New(webBrowser) {
 			this._webBrowser := webBrowser
 		}
-		Path => this.ActiveTab.path
 
+		/** @type {String} */
+		Path => this.ActiveTab.path
+		/** @type {ExUtils.Tab} */
 		ActiveTab => ExUtils.GetActiveTab(this._webBrowser.hwnd)
 
 		NewTab(path) {
-			; TODO
+			; TODO NewTab
 			; Navigate? Navigate2? wihh _blank?
 		}
 	}
 
 	class Tab {
-		; TODO properties
-
 		_tab := ""
 
 		__New(tab) {
 			this._tab := tab
 		}
 
+		/** @type {ExUtils.Explorer} */
 		Explorer => ExUtils.Explorer(this._tab)
-		Items => this.Folder.items
+		/** @type {ExUtils.FolderItems} */
+		Items => this.Folder.Items
+		/** @type {ExUtils.Folder} */
 		Folder => ExUtils.Folder(this._tab.Document.Folder)
 
+		/** @type {ExUtils.FolderItems} */
 		SelectedItems {
 			get => ExUtils.FolderItems(this._tab.Document.SelectedItems)
 			set {
@@ -58,6 +60,7 @@ class ExUtils {
 			}
 		}
 
+		/** @type {String} */
 		Path {
 			get {
 				switch Type(this._tab.Document) {
@@ -79,20 +82,31 @@ class ExUtils {
 	}
 
 	class Folder {
-		; TODO properties
-
 		_folder := ""
 
 		__New(folder) {
 			this._folder := folder
 		}
 
+		/** @type {ExUtils.FolderItems} */
 		Items => ExUtils.FolderItems(this._folder.Items)
+
+		/** @type {String} */
 		Path => this.FolderItem.Path
+
+		/** @type {ExUtils.Folder} */
 		Parent => ExUtils.Folder(this._folder.ParentFolder)
+
+		/** @type {Integer} */
 		OfflineStatus => this._folder.OfflineStatus
+
+		/** @type {ExUtils.FolderItem} */
 		FolderItem => ExUtils.FolderItem(this._folder.Self)
+
+		/** @type {Integer} */
 		IsLink => this.FolderItem.IsLink
+
+		/** @type {Integer} */
 		ModifyDate => this.FolderItem.ModifyDate
 
 		CopyHere(item, options := 0) {
@@ -111,7 +125,7 @@ class ExUtils {
 		}
 
 		NewFolder(name, options := 0) {
-			this._folder.NewFolder(name) ; TODO check
+			this._folder.NewFolder(name, options)
 		}
 
 		Synchronize() {
@@ -126,6 +140,7 @@ class ExUtils {
 			this._folderItems := folderItems
 		}
 
+		/** @type {Integer} */
 		Length => this._folderItems.Count
 
 		__Item[i] {
@@ -160,15 +175,30 @@ class ExUtils {
 			this._folderItem := folderItem
 		}
 
+		/** @type {String} */
 		Path => this._folderItem.Path
+
+		/** @type {Integer} */
 		IsFolder => this._folderItem.IsFolder
+
+		/** @type {Integer} */
 		IsLink => this._folderItem.IsLink
+
+		/** @type {String} */
 		Type => this._folderItem.Type
+
+		/** @type {ExUtils.Folder} */
 		Parent => ExUtils.Folder(this._folderItem.Parent)
+
+		/** @type {ExUtils.FolderItems} */
 		Items => this.Folder.Items
+
 		ModifyTime => this._folderItem.ModifyDate
+
+		/** @type {Integer} */
 		Size => this._folderItem.Size
 
+		/** @type {ExUtils.Folder} */
 		Folder {
 			get {
 				if !this.isFolder {
@@ -224,7 +254,7 @@ class ExUtils {
 		return tab.SelectedItems
 	}
 
-	static PathFromURL(url) { ; TODO test
+	static PathFromURL(url) {
 		VarSetStrCapacity(&fPath, Sz := 2084)
 		DllCall("shlwapi\PathCreateFromUrl", "Str", url, "Str", fPath, "UIntP", Sz, "UInt", 0)
 		return fPath
@@ -246,9 +276,12 @@ class ExUtils {
 ; debugging purposes
 #HotIf WinActive('ahk_exe explorer.exe')
 $#^l:: {
-	; folder := ExUtils.GetCurrentFolder()
+	; folder.NewFolder("hallo")
 	; OutputDebug(folder.Parent.Path)
-	; tab := ExUtils.GetActiveTab()
+	tab := ExUtils.GetActiveTab()
+	; for item in tab.Items {
+	; 	OutputDebug(item.IsFolder)
+	; }
 	; tab._tab.GetClassInfo(&test)
 	; ExUtils._msgInfo(test)
 	; for item in tab.SelectedItems {
@@ -263,7 +296,7 @@ $#^l:: {
 	; 	}
 	; }
 	; }
-	; tab.path := "C:\temp"
+	tab.path := "C:\temp"
 	; explorer := ExUtils.GetCurrentExplorer()
 	; explorer._webBrowser.Navigate2("C:\temp\dlm", 65536, "_blank")
 	; OutputDebug(explorer.activeTab.path)
