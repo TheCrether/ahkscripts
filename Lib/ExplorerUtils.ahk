@@ -278,7 +278,7 @@ class ExUtils {
 $#^l:: {
 	; folder.NewFolder("hallo")
 	; OutputDebug(folder.Parent.Path)
-	tab := ExUtils.GetActiveTab()
+	; tab := ExUtils.GetActiveTab()
 	; for item in tab.Items {
 	; 	OutputDebug(item.IsFolder)
 	; }
@@ -296,7 +296,7 @@ $#^l:: {
 	; 	}
 	; }
 	; }
-	tab.path := "C:\temp"
+	; tab.path := "C:\temp"
 	; explorer := ExUtils.GetCurrentExplorer()
 	; explorer._webBrowser.Navigate2("C:\temp\dlm", 65536, "_blank")
 	; OutputDebug(explorer.activeTab.path)
