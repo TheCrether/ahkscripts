@@ -36,5 +36,3 @@ text := myGui.Add("Edit", "w1000 r80 HScroll")
 exitBtn := myGui.Add("button", "w80", "Exit")
 exitBtn.OnEvent("Click", Exit)
 myGui.Show
-
-SetTitleMatchMode(before)
