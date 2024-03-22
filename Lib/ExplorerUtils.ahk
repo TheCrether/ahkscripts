@@ -395,25 +395,33 @@ class ExUtils {
 $#^l:: {
 	; folder.NewFolder("hallo")
 	; OutputDebug(folder.Parent.Path)
-	tab := ExUtils.GetActiveTab()
-	for item in tab.Items {
-		if item.Name == "ImagePut.ahk" {
-			; tab.SelectItem(item, 1 | 4 | 16)
-			; OutputDebug(tab.Folder.GetDetailsOf(item, 0) . '`n--`n')
-			; OutputDebug(tab.Folder.GetDetailsOf(item, 1) . '`n--`n')
-			; OutputDebug(tab.Folder.GetDetailsOf(item, 2) . '`n--`n')
-			; OutputDebug(tab.Folder.GetDetailsOf(item, 3) . '`n--`n')
-			; OutputDebug(tab.Folder.GetDetailsOf(item, 4) . '`n--`n')
-			; OutputDebug(tab.Folder.GetDetailsOf(item, -1) . '`n')
+	; tab := ExUtils.GetActiveTab()
+	; tab._obj.ExecWB(1, 0)
+	; OutputDebug(ControlGetFocus("A"))
+	; MsgBox(ControlGetClassNN(ControlGetFocus("A")))
+	; controls := WinGetControls("A")
+	; for c in controls {
+	; 	OutputDebug(c . '`n')
+	; }
+	; OutputDebug(ControlGetText("Microsoft.UI.Content.DesktopChildSiteBridge2"))
+	; for item in tab.Items {
+	; 	if item.Name == "ImagePut.ahk" {
+	; tab.SelectItem(item, 1 | 4 | 16)
+	; OutputDebug(tab.Folder.GetDetailsOf(item, 0) . '`n--`n')
+	; OutputDebug(tab.Folder.GetDetailsOf(item, 1) . '`n--`n')
+	; OutputDebug(tab.Folder.GetDetailsOf(item, 2) . '`n--`n')
+	; OutputDebug(tab.Folder.GetDetailsOf(item, 3) . '`n--`n')
+	; OutputDebug(tab.Folder.GetDetailsOf(item, 4) . '`n--`n')
+	; OutputDebug(tab.Folder.GetDetailsOf(item, -1) . '`n')
 
-			OutputDebug(tab.Folder.GetDetailsOf(item, "name") . '`n--`n')
-			OutputDebug(tab.Folder.GetDetailsOf(item, "size") . '`n--`n')
-			OutputDebug(tab.Folder.GetDetailsOf(item, "type") . '`n--`n')
-			OutputDebug(tab.Folder.GetDetailsOf(item, "modified") . '`n--`n')
-			OutputDebug(tab.Folder.GetDetailsOf(item, "attributes") . '`n--`n')
-			OutputDebug(tab.Folder.GetDetailsOf(item, "tip") . '`n')
-		}
-	}
+	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "name") . '`n--`n')
+	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "size") . '`n--`n')
+	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "type") . '`n--`n')
+	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "modified") . '`n--`n')
+	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "attributes") . '`n--`n')
+	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "tip") . '`n')
+	; 	}
+	; }
 
 	; tab._obj.GetClassInfo(&test)
 	; ExUtils._msgInfo(test)

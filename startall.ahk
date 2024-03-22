@@ -4,13 +4,13 @@
 ; Always use folder where the script is
 SetWorkingDir(A_ScriptDir)
 
-Run(".\i3help.ah2")
+Run(".\i3help.ahk")
 Sleep(100)
-Run(".\desktop.ah2")
+Run(".\desktop.ahk")
 Sleep(100)
-Run(".\vowels.ah2")
+Run(".\vowels.ahk")
 Sleep(100)
-Run(".\shortcuts.ah2")
+Run(".\shortcuts.ahk")
 Sleep(100)
-Run(".\check_for_updates.ah2")
+Run(".\check_for_updates.ahk")
 ExitApp
