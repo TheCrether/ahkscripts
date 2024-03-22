@@ -266,7 +266,7 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 	if IsWindows11 {
 		explorerHwnd := -1
 		for i, folder in folders {
-			if i == 1 { ; TODO test out
+			if i == 1 {
 				RunPath(folder)
 				Sleep(500)
 				SplitPath(folder, &fn)
