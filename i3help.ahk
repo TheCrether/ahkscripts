@@ -34,8 +34,7 @@ SetIcon(".\icons\i3help.ico")
 }
 
 #+p:: {
-	tryActivate("ahk_class Shell_TrayWnd")
-	Send("!{F4}")
+	ComObject("Shell.Application").ShutdownWindows
 }
 
 #x:: {
@@ -47,7 +46,7 @@ SetIcon(".\icons\i3help.ico")
 }
 
 #+x:: {
-	Run(A_ScriptDir . "\UX\search-windows.ah2")
+	Run(A_ScriptDir . "\UX\search-windows.ahk")
 }
 
 #a:: tryActivate(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", true, true)
