@@ -1,4 +1,5 @@
 #Include ".\UIA\UIA.ahk"
+
 class ExUtils {
 	; Windows Documentation Links in the explorer context:
 	; tab:
@@ -44,7 +45,8 @@ class ExUtils {
 		 */
 		NewTab(path := "") {
 			exEl := UIA.ElementFromHandle(this.HWND)
-			exEl.FindElement([{ AutomationId: "AddButton" }]).Click()
+			exEl.FindElement([{
+				AutomationId: "AddButton" }]).Click()
 
 			if (path != "") {
 				Sleep(250) ; maybe make this a while loop that wait until the specified explorer hwnd has more .Windows elements?
@@ -165,7 +167,7 @@ class ExUtils {
 			; TODO CopyHere test
 			isFolderItem := InStr(ExUtils._typeOf(item), "ExUtils.FolderItem")
 
-			if Type(item) != "String" or isFolderItem {
+			if Type(item) != "String" and !isFolderItem {
 				throw ValueError("item not a string, FolderItem or FolderItems object")
 			}
 
@@ -296,6 +298,11 @@ class ExUtils {
 			return super.__Enum(n)
 		}
 
+		; TODO Clone collection
+		Clone() {
+			; clone := ComObject("Shell.FolderItems3")
+		}
+
 		/**
 		 * filters a FolderItems collection (does not return a new FolderItems object)
 		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-filter
@@ -398,7 +405,6 @@ class ExUtils {
 		 * @param {String | ExUtils.FolderItemVerb} verb the verb to be exectued. Can be the name or the FolderItemVerb object Possible verbs can be retrieved through FolderItem.Verbs
 		 */
 		InvokeVerb(verb := "") {
-			; TODO InvokeVerb test
 			name := verb
 			if ExUtils._typeOf(verb) == "ExUtils.FolderItemVerb" {
 				name := verb.Name
@@ -413,7 +419,6 @@ class ExUtils {
 		 * invokes the "edit" verb on an item
 		 */
 		InvokeEdit() {
-			; TODO InvokeEdit test
 			this.InvokeVerb("edit")
 		}
 
@@ -421,7 +426,6 @@ class ExUtils {
 		 * invokes the "open" verb on an item and opens the default application (or the application select if none is defined)
 		 */
 		Open() {
-			; TODO Open test
 			this.InvokeVerb("open")
 		}
 	}
@@ -634,11 +638,22 @@ class ExUtils {
 }
 
 ; debugging purposes
+; ExUtils.toCopy := ""
 #HotIf WinActive('ahk_exe explorer.exe') and A_ScriptName == "ExplorerUtils.ahk"
 $#^l:: {
 	; folder.NewFolder("hallo")
 	; OutputDebug(folder.Parent.Path)
 	; tab := ExUtils.GetActiveTab()
+	; ExUtils.toCopy := tab.SelectedItems
+	; f := ExUtils.GetCurrentFolder()
+	; selected := tab.SelectedItems
+	; for v in selected.Verbs {
+	; 	OutputDebug(v.Name . '`n')
+	; }
+
+	; selected.InvokeVerbEx("copy")
+	; ExUtils.toCopy := f.Items
+	; OutputDebug(ExUtils.toCopy.Length)
 	; tab._obj.ExecWB(1, 0)
 	; OutputDebug(ControlGetFocus("A"))
 	; MsgBox(ControlGetClassNN(ControlGetFocus("A")))
@@ -648,8 +663,13 @@ $#^l:: {
 	; }
 	; OutputDebug(ControlGetText("Microsoft.UI.Content.DesktopChildSiteBridge2"))
 	; for item in tab.SelectedItems {
-	; 	OutputDebug(item.Name . '`n')
-	; 	OutputDebug(ExUtils._typeOf(item.Verbs[1]))
+	; OutputDebug(item.Name . '`n')
+	; OutputDebug(ExUtils._typeOf(item.Verbs[1]))
+	; for verb in item.Verbs {
+	; 	OutputDebug(verb.Name . '`n')
+	; }
+	; item.InvokeVerb("Copy")
+	; item.Open()
 	; }
 	; tab.SelectItem(item, 1 | 4 | 16)
 	; OutputDebug(tab.Folder.GetDetailsOf(item, 0) . '`n--`n')
@@ -701,5 +721,13 @@ $#^l:: {
 	; 	item.InvokeVerb("edit")
 	; }
 	; OutputDebug(tab.Document.PopupItemMenu(items[1]) . "`n")
+}
+
+$#^v:: {
+	; if ExUtils.toCopy {
+	; 	OutputDebug(ExUtils.toCopy.Length)
+	; 	current := ExUtils.GetCurrentFolder()
+	; 	current.CopyHere(ExUtils.toCopy, 64 | 8)
+	; }
 }
 #HotIf
