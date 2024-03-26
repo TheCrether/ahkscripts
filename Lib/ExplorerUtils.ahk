@@ -41,7 +41,7 @@ class ExUtils {
 		 * Opens a new tab and navigates to a path (if specified).
 		 * 
 		 * Uses UIA to accomplish opening a new tab reliably
-		 * @param {String} path = optional. IF specified, the explorer will try to navigate to the path, otherwise just open a new tab
+		 * @param {String | ExUtils.Folder | ExUtils.FolderItem} path = optional. IF specified, the explorer will try to navigate to the path, otherwise just open a new tab
 		 */
 		NewTab(path := "") {
 			exEl := UIA.ElementFromHandle(this.HWND)
@@ -49,6 +49,12 @@ class ExUtils {
 				AutomationId: "AddButton" }]).Click()
 
 			if (path != "") {
+				if ExUtils._checkObjectType(path, "Folder(Item)?") {
+					path := path.Path
+				}
+				if Type(path) != "String" {
+					throw ValueError("path is not a string")
+				}
 				Sleep(250) ; maybe make this a while loop that wait until the specified explorer hwnd has more .Windows elements?
 				tab := this.ActiveTab
 				tab.Path := path
@@ -72,12 +78,15 @@ class ExUtils {
 		/** @type {ExUtils.Folder} */
 		Folder => ExUtils.Folder(this._obj.Document.Folder)
 
-		/** @type {ExUtils.FolderItems}
+		/**
 		 * you can set ExUtils.FolderItem and ExUtils.FolderItems to select items
+		 * 
+		 * The ComObject in the background will change when the selection changes (even if you save this property, the underlying object will change)
+		 * @type {ExUtils.FolderItem | ExUtils.FolderItems}
 		 */
 		SelectedItems {
 			get => ExUtils.FolderItems(this._obj.Document.SelectedItems)
-			set => this.SelectItem(value)
+			set => this.SelectItem(value, 4)
 		}
 
 		/** @type {String} */
@@ -90,7 +99,16 @@ class ExUtils {
 						return ExUtils.PathFromURL(this._obj.LocationURL)
 				}
 			}
-			set => this._obj.Navigate2(value) ; works on w11 too
+			set {
+				path := value
+				if ExUtils._checkObjectType(value, "Folder(Item)?") {
+					path := value.Path
+				}
+				if Type(path) != "String" {
+					throw ValueError("new path not a string")
+				}
+				this._obj.Navigate2(path) ; works on w11 too
+			}
 		}
 
 		/**
@@ -165,13 +183,13 @@ class ExUtils {
 		 */
 		CopyHere(item, options := 0) {
 			; TODO CopyHere test
-			isFolderItem := InStr(ExUtils._typeOf(item), "ExUtils.FolderItem")
+			check := ExUtils._checkObjectType(item, "FolderItems?")
 
-			if Type(item) != "String" and !isFolderItem {
+			if Type(item) != "String" and !check {
 				throw ValueError("item not a string, FolderItem or FolderItems object")
 			}
 
-			if isFolderItem {
+			if check {
 				item := item._obj
 			}
 
@@ -199,13 +217,13 @@ class ExUtils {
 		 */
 		MoveHere(item, options := 0) {
 			; TODO MoveHere test
-			isFolderItem := InStr(ExUtils._typeOf(item), "ExUtils.FolderItem")
+			check := ExUtils._checkObjectType(item, "FolderItems?")
 
-			if Type(item) != "String" or isFolderItem {
+			if Type(item) != "String" && !check {
 				throw ValueError("item not a string, FolderItem or FolderItems object")
 			}
 
-			if isFolderItem {
+			if check == "ExUtils" {
 				item := item._obj
 			}
 
@@ -215,8 +233,8 @@ class ExUtils {
 		/**
 		 * Retrieves details of a FolderItem
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-getdetailsof
-		 * @param folderItem the FolderItem where information should be retrieved
-		 * @param detail which information/column should be retrieved (iColumn). Can be supplied in number form or as a string.
+		 * @param {ExUtils.FolderItem} folderItem the FolderItem where information should be retrieved
+		 * @param {String | Integer} detail which information/column should be retrieved (iColumn). Can be supplied in number form or as a string.
 		 * 
 		 * possible values:
 		 * 
@@ -230,7 +248,16 @@ class ExUtils {
 		 * @returns {String} the specified detail
 		 */
 		GetDetailsOf(folderItem, detail := 0) {
-			; document the detail (iColumn) options
+			; type checking
+			check := ExUtils._checkObjectType(folderItem, "FolderItem")
+			if !check {
+				throw ValueError("folderItem is not a FolderItem")
+			}
+
+			if Type(detail) != "String" && Type(detail) != "Integer" {
+				throw ValueError("details is not a String or Integer")
+			}
+
 			if Type(detail) == "String" {
 				detail := StrLower(detail)
 			}
@@ -242,6 +269,11 @@ class ExUtils {
 					: (detail == 4) || (detail == "attributes") ? 4 ; retrieve the attrbutes
 					: (detail == -1) || (detail == "tip") ? -1 ; retrieve the info tip information
 					: 0 ; retrieve the name as default
+
+			obj := folderItem
+			if check == "ExUtils" {
+				obj := folderItem._obj
+			}
 
 			return this._obj.GetDetailsOf(folderItem._obj, detail)
 		}
@@ -298,11 +330,6 @@ class ExUtils {
 			return super.__Enum(n)
 		}
 
-		; TODO Clone collection
-		Clone() {
-			; clone := ComObject("Shell.FolderItems3")
-		}
-
 		/**
 		 * filters a FolderItems collection (does not return a new FolderItems object)
 		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-filter
@@ -324,6 +351,13 @@ class ExUtils {
 		 */
 		Filter(flags, filter := "*") {
 			; TODO Filter test
+			if Type(flags) != "Integer" {
+				throw ValueError("flags is not an Integer object")
+			}
+			if Type(filter) != "String" {
+				throw ValueError("filter is not a String object")
+			}
+
 			this._obj.Filter(flags, filter)
 		}
 
@@ -334,13 +368,14 @@ class ExUtils {
 		 * @param {String} args optional. arguments for the verb that is being executed
 		 */
 		InvokeVerbEx(verb, args := "") {
-			; TODO InvokeVerbEx test
-			name := verb
-			if ExUtils._typeOf(verb) == "ExUtils.FolderItemVerb" {
-				name := verb.Name
-			}
-			if Type(name) != "String" {
+			check := ExUtils._checkObjectType(verb, "FolderItemVerb")
+			if !check and Type(name) != "String" {
 				throw ValueError("verb not a String or ExUtils.FolderItemVerb")
+			}
+
+			name := verb
+			if check {
+				name := verb.Name
 			}
 
 			this._obj.InvokeVerbEx(name, args)
@@ -405,12 +440,14 @@ class ExUtils {
 		 * @param {String | ExUtils.FolderItemVerb} verb the verb to be exectued. Can be the name or the FolderItemVerb object Possible verbs can be retrieved through FolderItem.Verbs
 		 */
 		InvokeVerb(verb := "") {
-			name := verb
-			if ExUtils._typeOf(verb) == "ExUtils.FolderItemVerb" {
-				name := verb.Name
+			check := ExUtils._checkObjectType(verb, "FolderItemVerb")
+			if !check and Type(name) != "String" {
+				throw ValueError("verb not a String or FolderItemVerb")
 			}
-			if Type(name) != "String" {
-				throw ValueError("verb not a String or ExUtils.FolderItemVerb")
+
+			name := verb
+			if check {
+				name := verb.Name
 			}
 			this._obj.InvokeVerb(name)
 		}
@@ -478,10 +515,20 @@ class ExUtils {
 		}
 	}
 
+	/**
+	 * Get the current explorer
+	 * @param {Integer} hwnd optional. the handle of an explorer window. Defaults to the current window
+	 * @returns {ExUtils.Explorer} an Explorer object for the current explorer window
+	 */
 	static GetCurrentExplorer(hwnd := WinExist("A")) {
 		return this.GetActiveTab().explorer
 	}
 
+	/**
+	 * Get the active tab
+	 * @param {Integer} hwnd optional. the handle of an explorer window. Defaults to the current window
+	 * @returns {ExUtils.Tab} a Tab object for the active tab
+	 */
 	static GetActiveTab(hwnd := WinExist("A")) {
 		; script from Lexikos: https://www.autohotkey.com/boards/viewtopic.php?f=83&t=109907
 		activeTab := 0
@@ -505,19 +552,38 @@ class ExUtils {
 		throw TargetError("No explorer focused")
 	}
 
+	/**
+	 * Get the current path
+	 * @param {Integer} hwnd optional. the handle of an explorer window. Defaults to the current window
+	 * @returns {String} the current path
+	 */
 	static GetCurrentPath(hwnd := WinExist("A")) {
 		return this.GetActiveTab(hwnd).path
 	}
 
+	/**
+	 * Get the current folder
+	 * @param {Integer} hwnd optional. the handle of an explorer window. Defaults to the current window
+	 * @returns {ExUtils.Folder} a Folder object for the current folder
+	 */
 	static GetCurrentFolder(hwnd := WinExist("A")) {
-		return this.GetActiveTab().Folder
+		return this.GetActiveTab(hwnd).Folder
 	}
 
+	/**
+	 * Copy the current path into the clipboard
+	 * @param {Integer} hwnd optional. the handle of an explorer window. Defaults to the current window
+	 */
 	static CopyCurrentPath(hwnd := WinExist("A")) {
 		path := this.GetCurrentPath(hwnd)
 		A_Clipboard := path
 	}
 
+	/**
+	 * Get the currently selected items
+	 * @param {Integer} hwnd optional. the handle of an explorer window. Defaults to the current window
+	 * @returns {ExUtils.FolderItems} a FolderItems collection
+	 */
 	static SelectedItems(hwnd := WinExist("A")) {
 		tab := this.GetActiveTab(hwnd)
 		return tab.SelectedItems
@@ -565,24 +631,40 @@ class ExUtils {
 
 	/**
 	 * gets the class name of an object
-	 * @param {Object} object the object
+	 * @param {Object} obj the object
 	 * @returns {String} the class name
 	 */
-	static _typeOf(object) {
-		if (comClass := ComObjType(object, "Class")) != "" {
+	static _typeOf(obj) {
+		if (comClass := ComObjType(obj, "Class")) != "" {
 			return comClass
 		}
 		try { ; `object is Object` is not checked because it can be false for prototypes.
-			if ObjHasOwnProp(object, "__Class") {
+			if ObjHasOwnProp(obj, "__Class") {
 				return "Prototype"
 			}
 		}
-		while object := ObjGetBase(object) {
-			if ObjHasOwnProp(object, "__Class") {
-				return object.__Class
+		while obj := ObjGetBase(obj) {
+			if ObjHasOwnProp(obj, "__Class") {
+				return obj.__Class
 			}
 		}
 		return "Object"
+	}
+
+	/**
+	 * 
+	 * @param obj the object to check
+	 * @param objType the name of the type (can be a regex)
+	 * @returns {"ExUtils" | "Com" | false} false if not the correct type, "Com" if it is a ComObject or "ExUtils" if is a wrapped objet
+	 */
+	static _checkObjectType(obj, objType) {
+		_type := ExUtils._typeOf(obj)
+		if _type == RegExMatch(_type, "ExUtils\." . objType . "$") {
+			return "ExUtils"
+		} else if RegExMatch(_type, ".*" . objType . "$") {
+			return "Com"
+		}
+		return false
 	}
 
 	class BaseComObject {
@@ -592,6 +674,10 @@ class ExUtils {
 		 * */
 		_obj := ""
 
+		/**
+		 * constructor a simple com object wrapper
+		 * @param {ComObject} obj the com object to be set as this._ob
+		 */
 		__New(obj) {
 			this._obj := obj
 		}
@@ -612,7 +698,7 @@ class ExUtils {
 
 		/**
 		 * Enumeration method for a collection so you can iterate through the items with a for-loop
-		 * @param n the number of arguments for the enumeration
+		 * @param {Integer} n the number of arguments for the enumeration
 		 * @returns {Enumerator<ComObject> | Enumerator<Integer, ComObject>} returns the collection item for one argument and prepends the index of the collection item for two arguments
 		 */
 		__Enum(n) {
@@ -643,7 +729,8 @@ class ExUtils {
 $#^l:: {
 	; folder.NewFolder("hallo")
 	; OutputDebug(folder.Parent.Path)
-	; tab := ExUtils.GetActiveTab()
+	tab := ExUtils.GetActiveTab()
+	OutputDebug(ExUtils._typeOf(tab.Items[1]._obj))
 	; ExUtils.toCopy := tab.SelectedItems
 	; f := ExUtils.GetCurrentFolder()
 	; selected := tab.SelectedItems
