@@ -4,11 +4,11 @@
 ; Always use folder where the script is
 SetWorkingDir(A_ScriptDir)
 
-Run(".\i3help.ahk")
+Run('*UIAccess "' . A_ScriptDir . '\i3help.ahk"')
 Sleep(100)
-Run(".\desktop.ahk")
+Run('*UIAccess "' . A_ScriptDir . '\desktop.ahk"')
 Sleep(100)
-Run(".\vowels.ahk")
+Run('*UIAccess "' . A_ScriptDir . '\vowels.ahk"')
 Sleep(100)
 Run(".\shortcuts.ahk")
 Sleep(100)
