@@ -155,3 +155,23 @@ tryActivate(title, regex := false, detectHidden := false) {
 	SetTitleMatchMode(beforeMatchMode)
 	DetectHiddenWindows(beforeHidden)
 }
+
+GetMonitorOfWindow(title, &n, &left, &top, &right, &bottom) {
+	count := MonitorGetCount()
+	nTemp := MonitorGetPrimary()
+	MonitorGet(nTemp, &leftTemp, &topTemp, &rightTemp, &bottomTemp)
+	Loop count {
+		MonitorGet(A_Index, &leftTemp, &topTemp, &rightTemp, &bottomTemp)
+		WinGetPos(&x, &y, &w, &h, title)
+		if x >= leftTemp && x < rightTemp && y >= topTemp && y < bottomTemp {
+			nTemp := A_Index
+			break
+		}
+	}
+
+	n := nTemp
+	left := leftTemp
+	top := topTemp
+	right := rightTemp
+	bottom := bottomTemp
+}

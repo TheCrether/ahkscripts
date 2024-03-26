@@ -85,9 +85,20 @@ PrintScreen:: Send("#+s")
 }
 
 !+1:: {
-	; title := WinGetTitle("A")
+	; get the dimensions of the monitor
+	GetMonitorOfWindow("A", &n, &left, &top, &right, &bottom)
+	monHeight := bottom - top
+
+	; Get current window's dimension
 	WinGetPos(&x, &y, &w, &h, "A")
-	WinMove(x, y, 1000, 550, "A")
+
+	; calculate the new height and base the width on the ratio
+	ratio := w / h
+	newWinHeight := Integer(monHeight * 0.38) ; make the window around 38% of the height
+	newWinWidth := Integer(newWinHeight * ratio)
+
+	; resize the window
+	WinMove(x, y, newWinWidth, newWinHeight, "A")
 	WinSetAlwaysOnTop(1, "A")
 }
 
