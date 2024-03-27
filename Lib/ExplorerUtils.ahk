@@ -126,7 +126,8 @@ class ExUtils {
 		/**
 		 * Selects one item or multiple items
 		 * 
-		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/shellfolderview-selectitem
+		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/shellfolderview-selectitem
+		 * 
 		 * @param {ExUtils.FolderItem | ExUtils.FolderItems} item a FolderItem or collection of FolderItems
 		 * @param {Integer} action can be 0 or a combination of what actions should be executed.<br>
 		 * 		example: SelectItem(item, 1 | 8) -> selects the item and ensures that it is displayed in the view
@@ -180,6 +181,7 @@ class ExUtils {
 		 * Copies file(s)/folder(s) to this objects folder
 		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-copyhere
+		 * 
 		 * @param {String | ExUtils.FolderItem | ExUtils.FolderItems} item the item(s) to be copied. Can be a filename or a FolderItem(s) object
 		 * @param {Integer} options the options for the transfer. Can be 0 or a combination of the following integers:<br>
 		 * 	Example: folder.CopyHere(item, 16 | 256) -> Always responds "Yes to All" and show a progress box without file names
@@ -214,6 +216,7 @@ class ExUtils {
 		 * Moves file(s)/folder(s) to this objects folder
 		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-copyhere
+		 * 
 		 * @param {String | ExUtils.FolderItem | ExUtils.FolderItems} item the item(s) to be copied. Can be a filename or a FolderItem(s) object
 		 * @param {Integer} options the options for the transfer. Can be 0 or a combination of the following integers:<br>
 		 * 	Example: folder.MoveHere(item, 16 | 256) -> Always responds "Yes to All" and show a progress box without file names
@@ -265,6 +268,7 @@ class ExUtils {
 		 * Retrieves details of a FolderItem
 		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-getdetailsof
+		 * 
 		 * @param {ExUtils.FolderItem} folderItem the FolderItem where information should be retrieved
 		 * @param {String | Integer} detail which information/column should be retrieved (iColumn). Can be supplied in number form or as a string.
 		 * 
@@ -314,6 +318,7 @@ class ExUtils {
 		 * Creates a new folder with the specified name
 		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-newfolder
+		 * 
 		 * @param {String} name the name of the new folder
 		 * @param {Integer} options an optional parameter which is not currently used by Windows
 		 */
@@ -367,7 +372,7 @@ class ExUtils {
 		/**
 		 * filters a FolderItems collection and return oneself (the filter modifies oneself too)
 		 * 
-		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-filter
+		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-filter
 		 * 
 		 * @param {Integer} flags can be a combination of the following flags:<br>
 		 * 	0x10 = "Windows 7 and later. The calling application is checking for the existence of child items in the folder."<br>
@@ -403,6 +408,7 @@ class ExUtils {
 		 * Executes a FolderItemVerb on a collection of FolderItems (filtered etc.)
 		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems2-invokeverbex
+		 * 
 		 * @param {String | ExUtils.FolderItemVerb} verb the verb that should be executed. Can be a string or a ExUtils.FolderItemVerb object
 		 * @param {String} args optional. arguments for the verb that is being executed
 		 */
@@ -474,10 +480,13 @@ class ExUtils {
 		}
 
 		/**
-		 * Invokes the specified verb on the folder item
+		 * Invokes the specified verb on the folder item.
+		 * 
+		 * Examples for standard verbs: copy, edit, open. Can be the name or the FolderItemVerb object Possible verbs can be retrieved through FolderItem.Verbs
 		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitem-invokeverb
-		 * @param {String | ExUtils.FolderItemVerb} verb the verb to be exectued. Can be the name or the FolderItemVerb object Possible verbs can be retrieved through FolderItem.Verbs
+		 * 
+		 * @param {String | ExUtils.FolderItemVerb} verb the verb to be exectued.
 		 */
 		InvokeVerb(verb := "") {
 			check := ExUtils._checkObjectType(verb, "FolderItemVerb")
