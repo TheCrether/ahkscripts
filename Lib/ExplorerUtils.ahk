@@ -20,6 +20,9 @@ class ExUtils {
 	;		FolderItems2: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems2-object
 	;		FolderItems3: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-object
 	;		FolderItem: https://learn.microsoft.com/en-us/windows/win32/shell/folderitem
+	; tab.Document.Folder.Items[i].Verbs / tab.Document.SelectedItems[i].Verbs:
+	;		FolderItemVerbs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitemverbs
+	;		FolderItemVerb: https://learn.microsoft.com/en-us/windows/win32/shell/folderitemverb
 
 	class Explorer extends ExUtils.BaseComObject {
 		/**
@@ -45,8 +48,7 @@ class ExUtils {
 		 */
 		NewTab(path := "") {
 			exEl := UIA.ElementFromHandle(this.HWND)
-			exEl.FindElement([{
-				AutomationId: "AddButton" }]).Click()
+			exEl.FindElement([{ AutomationId: "AddButton" }]).Click()
 
 			if (path != "") {
 				if ExUtils._checkObjectType(path, "Folder(Item)?") {
@@ -113,11 +115,13 @@ class ExUtils {
 
 		/**
 		 * Selects one item or multiple items
+		 * 
 		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/shellfolderview-selectitem
 		 * @param {ExUtils.FolderItem | ExUtils.FolderItems} item a FolderItem or collection of FolderItems
 		 * @param {Integer} action can be 0 or a combination of what actions should be executed.<br>
 		 * 		example: SelectItem(item, 1 | 8) -> selects the item and ensures that it is displayed in the view
-		 * 		you can combine the following integers to (de-)select item(s):
+		 * 
+		 * you can combine the following integers to (de-)select item(s):
 		 * 
 		 * 			0 = "Deselect the item(s),"
 		 * 			1 = "Select the item(s) (default),"
@@ -164,6 +168,7 @@ class ExUtils {
 
 		/**
 		 * Copies file(s)/folder(s) to this objects folder
+		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-copyhere
 		 * @param {String | ExUtils.FolderItem | ExUtils.FolderItems} item the item(s) to be copied. Can be a filename or a FolderItem(s) object
 		 * @param {Integer} options the options for the transfer. Can be 0 or a combination of the following integers:<br>
@@ -182,7 +187,6 @@ class ExUtils {
 		 * 		8192 = "Do not copy connected files as a group. Only copy the specified files."
 		 */
 		CopyHere(item, options := 0) {
-			; TODO CopyHere test
 			check := ExUtils._checkObjectType(item, "FolderItems?")
 
 			if Type(item) != "String" and !check {
@@ -198,6 +202,7 @@ class ExUtils {
 
 		/**
 		 * Moves file(s)/folder(s) to this objects folder
+		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-copyhere
 		 * @param {String | ExUtils.FolderItem | ExUtils.FolderItems} item the item(s) to be copied. Can be a filename or a FolderItem(s) object
 		 * @param {Integer} options the options for the transfer. Can be 0 or a combination of the following integers:<br>
@@ -216,7 +221,6 @@ class ExUtils {
 		 * 		8192 = "Do not move connected files as a group. Only copy the specified files."
 		 */
 		MoveHere(item, options := 0) {
-			; TODO MoveHere test
 			check := ExUtils._checkObjectType(item, "FolderItems?")
 
 			if Type(item) != "String" && !check {
@@ -231,7 +235,25 @@ class ExUtils {
 		}
 
 		/**
+		 * gets an item in the folder by its name
+		 * 
+		 * throws an exception if the item can't be found
+		 * @param itemName the name of the item in the folder
+		 * @returns {ExUtils.FolderItem} the FolderItem
+		 */
+		GetItem(itemName) {
+			for item in this.Items {
+				if (item.Name == itemName) {
+					return item
+				}
+			}
+
+			throw TargetError("Item " . itemName . " could not be found in " . this.Path)
+		}
+
+		/**
 		 * Retrieves details of a FolderItem
+		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-getdetailsof
 		 * @param {ExUtils.FolderItem} folderItem the FolderItem where information should be retrieved
 		 * @param {String | Integer} detail which information/column should be retrieved (iColumn). Can be supplied in number form or as a string.
@@ -280,6 +302,7 @@ class ExUtils {
 
 		/**
 		 * Creates a new folder with the specified name
+		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder-newfolder
 		 * @param {String} name the name of the new folder
 		 * @param {Integer} options an optional parameter which is not currently used by Windows
@@ -290,6 +313,7 @@ class ExUtils {
 
 		/**
 		 * Synchronizes all offline files in the folder
+		 * 
 		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/folder2-synchronize
 		 */
 		Synchronize() {
@@ -332,8 +356,9 @@ class ExUtils {
 
 		/**
 		 * filters a FolderItems collection (does not return a new FolderItems object)
+		 * 
 		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-filter
-		 * @param {Integer} flags can a combination of the following flags:<br>
+		 * @param {Integer} flags can be a combination of the following flags:<br>
 		 * 	0x10 = "Windows 7 and later. The calling application is checking for the existence of child items in the folder."<br>
 		 *  0x20 = "Include items that are folders in the enumeration."<br>
 		 *  0x40 = "Include items that are not folders in the enumeration."<br>
@@ -363,6 +388,7 @@ class ExUtils {
 
 		/**
 		 * Executes a FolderItemVerb on a collection of FolderItems (filtered etc.)
+		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems2-invokeverbex
 		 * @param {String | ExUtils.FolderItemVerb} verb the verb that should be executed. Can be a string or a ExUtils.FolderItemVerb object
 		 * @param {String} args optional. arguments for the verb that is being executed
@@ -436,6 +462,7 @@ class ExUtils {
 
 		/**
 		 * Invokes the specified verb on the folder item
+		 * 
 		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitem-invokeverb
 		 * @param {String | ExUtils.FolderItemVerb} verb the verb to be exectued. Can be the name or the FolderItemVerb object Possible verbs can be retrieved through FolderItem.Verbs
 		 */
@@ -509,6 +536,8 @@ class ExUtils {
 
 		/**
 		 * Executes a verb on the FolderItem associated with the verb
+		 * 
+		 * MS docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitemverb-doit
 		 */
 		Dolt() {
 			this._obj.Dolt()
@@ -593,7 +622,7 @@ class ExUtils {
 	 * Converts an URL into a filepath
 	 * 
 	 * example: file:///C:/temp -> C:\temp
-	 * @param url the URL to be convreted into a filepath
+	 * @param {String} url the URL to be convreted into a filepath
 	 */
 	static PathFromURL(url) {
 		VarSetStrCapacity(&fPath, Sz := 2084)
@@ -601,16 +630,66 @@ class ExUtils {
 		return fPath
 	}
 
-	static GetFolder(path) {
-		; https://learn.microsoft.com/en-us/windows/win32/shell/ishelldispatch-namespace
-		obj := ComObject("Shell.Application") ; TODO wrap in IShellDispatch?
-		return ExUtils.Folder(obj.NameSpace(path)) ; TODO detail special folders https://learn.microsoft.com/en-us/windows/win32/api/shldisp/ne-shldisp-shellspecialfolderconstants
+	/**
+	 * Converts a filepath to an URL
+	 * 
+	 * example: C:\temp -> file:///C:/temp
+	 * @param {String} fPath the filepath to be converted into an URL
+	 */
+	static URLFromPath(fPath) {
+		VarSetStrCapacity(&url, Sz := 2084)
+		DllCall("shlwapi\UrlCreateFromPath", "Str", fPath, "Str", url, "UIntP", Sz, "UInt", 0)
+		return url
 	}
 
-	; options https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/ns-shlobj_core-browseinfoa
-	static GetFolderByDialog(ownerHwnd := 0, title := "Select a folder", options := 0x10 | 0x40, rootFolder := A_Desktop) {
-		obj := ComObject("Shell.Application") ; TODO wrap in IShellDispatch
-		return ExUtils.Folder(obj.BrowseForFolder(ownerHwnd, title, options, rootFolder))
+	/**
+	 * get a Folder object by it's path
+	 * 
+	 * throws a TargetError if the folder can't be found
+	 * @param {String} path the path to get a Folder object. Can be one of the special folders: https://learn.microsoft.com/en-us/windows/win32/api/shldisp/ne-shldisp-shellspecialfolderconstants
+	 * @returns {ExUtils.Folder} the Folder object
+	 */
+	static GetFolder(path) {
+		; https://learn.microsoft.com/en-us/windows/win32/shell/ishelldispatch-namespace
+		shell := ComObject("Shell.Application") ; TODO wrap in IShellDispatch?
+		obj := shell.NameSpace(path)
+		if !obj {
+			throw TargetError("no folder could be found at this path")
+		}
+
+		return ExUtils.Folder(obj)
+	}
+
+	/**
+	 * get a FolderItem by its path
+	 * 
+	 * throws a TargetError if the folder or the item can't be found
+	 * @param {String} path the path of the item
+	 * @returns {ExUtils.FolderItem} the FolderItem object
+	 */
+	static GetFolderItem(path) {
+		SplitPath(path, &itemname, &dir)
+		return ExUtils.GetFolder(path).GetItem(itemname)
+	}
+
+	/**
+	 * get a Folder object through a file dialog
+	 * 
+	 * throws a TargetError if no folder was selected
+	 * @param {Integer} ownerHwnd the handle to the parent window of the dialog box. can be 0 (no parent)
+	 * @param {String} title the title of the select dialog
+	 * @param {Number} options can be a combination of the `ulFlags` field of the BrowseInfoA structure: https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/ns-shlobj_core-browseinfoa
+	 * @param {String} rootFolder the folder where to start from and from where the user can not navigate higher than the specified folder. Defaults to the list of drives<br>(special constants: https://learn.microsoft.com/en-us/windows/win32/api/shldisp/ne-shldisp-shellspecialfolderconstants)
+	 * @returns {ExUtils.Folder} the Folder object
+	 */
+	static GetFolderByDialog(ownerHwnd := 0, title := "Select a folder", options := 0x10 | 0x40, rootFolder := "ssfDRIVES") {
+		shell := ComObject("Shell.Application") ; TODO wrap in IShellDispatch
+		obj := shell.BrowseForFolder(ownerHwnd, title, options, rootFolder)
+		if !obj {
+			throw TargetError("no folder was selected")
+		}
+
+		return ExUtils.Folder(obj)
 	}
 
 	/**
@@ -653,8 +732,8 @@ class ExUtils {
 
 	/**
 	 * 
-	 * @param obj the object to check
-	 * @param objType the name of the type (can be a regex)
+	 * @param {Object} obj the object to check
+	 * @param {String} objType the name of the type (can be a regex string)
 	 * @returns {"ExUtils" | "Com" | false} false if not the correct type, "Com" if it is a ComObject or "ExUtils" if is a wrapped objet
 	 */
 	static _checkObjectType(obj, objType) {
@@ -722,99 +801,3 @@ class ExUtils {
 		}
 	}
 }
-
-; debugging purposes
-; ExUtils.toCopy := ""
-#HotIf WinActive('ahk_exe explorer.exe') and A_ScriptName == "ExplorerUtils.ahk"
-$#^l:: {
-	; folder.NewFolder("hallo")
-	; OutputDebug(folder.Parent.Path)
-	tab := ExUtils.GetActiveTab()
-	OutputDebug(ExUtils._typeOf(tab.Items[1]._obj))
-	; ExUtils.toCopy := tab.SelectedItems
-	; f := ExUtils.GetCurrentFolder()
-	; selected := tab.SelectedItems
-	; for v in selected.Verbs {
-	; 	OutputDebug(v.Name . '`n')
-	; }
-
-	; selected.InvokeVerbEx("copy")
-	; ExUtils.toCopy := f.Items
-	; OutputDebug(ExUtils.toCopy.Length)
-	; tab._obj.ExecWB(1, 0)
-	; OutputDebug(ControlGetFocus("A"))
-	; MsgBox(ControlGetClassNN(ControlGetFocus("A")))
-	; controls := WinGetControls("A")
-	; for c in controls {
-	; 	OutputDebug(c . '`n')
-	; }
-	; OutputDebug(ControlGetText("Microsoft.UI.Content.DesktopChildSiteBridge2"))
-	; for item in tab.SelectedItems {
-	; OutputDebug(item.Name . '`n')
-	; OutputDebug(ExUtils._typeOf(item.Verbs[1]))
-	; for verb in item.Verbs {
-	; 	OutputDebug(verb.Name . '`n')
-	; }
-	; item.InvokeVerb("Copy")
-	; item.Open()
-	; }
-	; tab.SelectItem(item, 1 | 4 | 16)
-	; OutputDebug(tab.Folder.GetDetailsOf(item, 0) . '`n--`n')
-	; OutputDebug(tab.Folder.GetDetailsOf(item, 1) . '`n--`n')
-	; OutputDebug(tab.Folder.GetDetailsOf(item, 2) . '`n--`n')
-	; OutputDebug(tab.Folder.GetDetailsOf(item, 3) . '`n--`n')
-	; OutputDebug(tab.Folder.GetDetailsOf(item, 4) . '`n--`n')
-	; OutputDebug(tab.Folder.GetDetailsOf(item, -1) . '`n')
-
-	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "name") . '`n--`n')
-	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "size") . '`n--`n')
-	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "type") . '`n--`n')
-	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "modified") . '`n--`n')
-	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "attributes") . '`n--`n')
-	; 		OutputDebug(tab.Folder.GetDetailsOf(item, "tip") . '`n')
-	; 	}
-	; }
-
-	; tab._obj.GetClassInfo(&test)
-	; ExUtils._msgInfo(test)
-	; for item in tab.SelectedItems {
-	; par := item.parent
-	; ExUtils._msgInfo(item._obj.Parent)
-	; for item2 in item.Parent.Items {
-	; 	OutputDebug(item2.Parent.Path)
-	; }
-	; if item.isFolder {
-	; 	for i2 in item.items {
-	; 		OutputDebug(i2.path)
-	; 	}
-	; }
-	; }
-	; tab.path := "C:\temp"
-	; explorer := ExUtils.GetCurrentExplorer()
-	; explorer._obj.Navigate2("C:\temp\dlm", 65536, "_blank")
-	; OutputDebug(explorer.activeTab.path)
-	; Sleep(2000)
-	; OutputDebug(explorer.activeTab.path)
-	; f := tab.selectedItems._obj
-	; a := f.Item(2)
-	; OutputDebug(a.Path)
-	; OutputDebug("asdf")
-	; OutputDebug(tab.selectedItems[1])
-	; tab.selectedItems := "asdf"
-	; OutputDebug(ExUtils.GetCurrentPath())
-	; tab := ExUtils.GetActiveTab()
-	; items := []
-	; for item in tab.SelectedItems {
-	; 	item.InvokeVerb("edit")
-	; }
-	; OutputDebug(tab.Document.PopupItemMenu(items[1]) . "`n")
-}
-
-$#^v:: {
-	; if ExUtils.toCopy {
-	; 	OutputDebug(ExUtils.toCopy.Length)
-	; 	current := ExUtils.GetCurrentFolder()
-	; 	current.CopyHere(ExUtils.toCopy, 64 | 8)
-	; }
-}
-#HotIf
