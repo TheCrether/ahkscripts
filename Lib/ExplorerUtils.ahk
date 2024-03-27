@@ -1,5 +1,10 @@
 #Include ".\UIA\UIA.ahk"
 
+global IsWindows11 := 0
+if InStr(ExUtils._getCommandOutput('powershell -WindowStyle Hidden -Command "(Get-WmiObject Win32_OperatingSystem).Caption"'), "Windows 11") {
+	IsWindows11 := 1
+}
+
 class ExUtils {
 	; Windows Documentation Links in the explorer context:
 	; tab:
@@ -47,6 +52,11 @@ class ExUtils {
 		 * @param {String | ExUtils.Folder | ExUtils.FolderItem} path = optional. IF specified, the explorer will try to navigate to the path, otherwise just open a new tab
 		 */
 		NewTab(path := "") {
+			global IsWindows11
+			if !IsWindows11 {
+				throw TargetError("you are not on a windows 11 machine")
+			}
+
 			exEl := UIA.ElementFromHandle(this.HWND)
 			exEl.FindElement([{ AutomationId: "AddButton" }]).Click()
 
@@ -800,4 +810,33 @@ class ExUtils {
 			}
 		}
 	}
+
+	/**
+	 * Executes a command and returns the command output
+	 * @param {String} cmd the command to execute
+	 * @returns {String} the command output
+	 */
+	static _getCommandOutput(cmd) {
+		before := A_DetectHiddenWindows
+		DetectHiddenWindows(1)
+		pid := 0
+		Run(A_ComSpec, , "Hide", &pid)
+		WinWait("ahk_pid " . pid)
+		DllCall("AttachConsole", "UInt", pid)
+		WshShell := ComObject("Wscript.Shell")
+		exec := WshShell.Exec(cmd)
+		output := exec.StdOut.ReadAll()
+		DllCall("FreeConsole")
+		ProcessClose(pid)
+		DetectHiddenWindows(before)
+		return output
+	}
 }
+
+; debugging purposes
+; ExUtils.toCopy := ""
+#HotIf WinActive('ahk_exe explorer.exe') and A_ScriptName == "ExplorerUtils.ahk"
+$#^l:: {
+	ExUtils.GetCurrentExplorer().NewTab("C:\temp")
+}
+#HotIf
