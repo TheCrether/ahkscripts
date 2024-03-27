@@ -113,7 +113,7 @@ class ExUtils {
 			}
 			set {
 				path := value
-				if ExUtils._checkObjectType(value, "Folder(Item)?") {
+				if ExUtils._checkObjectType(path, "Folder(Item)?") {
 					path := value.Path
 				}
 				if Type(path) != "String" {
@@ -365,9 +365,10 @@ class ExUtils {
 		}
 
 		/**
-		 * filters a FolderItems collection (does not return a new FolderItems object)
+		 * filters a FolderItems collection and return oneself (the filter modifies oneself too)
 		 * 
 		 * MS Docs: https://learn.microsoft.com/en-us/windows/win32/shell/folderitems3-filter
+		 * 
 		 * @param {Integer} flags can be a combination of the following flags:<br>
 		 * 	0x10 = "Windows 7 and later. The calling application is checking for the existence of child items in the folder."<br>
 		 *  0x20 = "Include items that are folders in the enumeration."<br>
@@ -383,9 +384,10 @@ class ExUtils {
 		 *  0x10000 = "Windows 7 and later. Include hidden system items in the enumeration. This value does not include hidden non-system items. (To include hidden non-system items, use SHCONTF_INCLUDEHIDDEN.)""
 		 * 
 		 * @param {String} filter the wildcard filter to be applied (ex: *.txt)
+		 * @returns {ExUtils.FolderItems}
 		 */
 		Filter(flags, filter := "*") {
-			; TODO Filter test
+			; TODO find out why filter does not work
 			if Type(flags) != "Integer" {
 				throw ValueError("flags is not an Integer object")
 			}
@@ -394,6 +396,7 @@ class ExUtils {
 			}
 
 			this._obj.Filter(flags, filter)
+			return this
 		}
 
 		/**
@@ -478,7 +481,7 @@ class ExUtils {
 		 */
 		InvokeVerb(verb := "") {
 			check := ExUtils._checkObjectType(verb, "FolderItemVerb")
-			if !check and Type(name) != "String" {
+			if !check and Type(verb) != "String" {
 				throw ValueError("verb not a String or FolderItemVerb")
 			}
 
@@ -586,8 +589,6 @@ class ExUtils {
 			}
 			return this.Tab(w)
 		}
-		; TODO think what might be the best: false, traytip, error?
-		; return false
 		throw TargetError("No explorer focused")
 	}
 
@@ -832,11 +833,3 @@ class ExUtils {
 		return output
 	}
 }
-
-; debugging purposes
-; ExUtils.toCopy := ""
-#HotIf WinActive('ahk_exe explorer.exe') and A_ScriptName == "ExplorerUtils.ahk"
-$#^l:: {
-	ExUtils.GetCurrentExplorer().NewTab("C:\temp")
-}
-#HotIf
