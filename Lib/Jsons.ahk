@@ -111,7 +111,7 @@ class Jsons {
 						continue
 					}
 				} else { ; number | true | false | null
-					val := SubStr(src, pos, i := RegExMatch(src, "[\]\},\s]|$", , pos) - pos)
+					val := SubStr(src, pos, i := RegExMatch(src, "[\]\},\s]|$", &_, pos) - pos)
 
 					if IsInteger(val)
 						val += 0

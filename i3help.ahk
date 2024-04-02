@@ -39,7 +39,7 @@ SetIcon(".\icons\i3help.ico")
 
 #x:: {
 	if (A_AhkPath != "") {
-		SplitPath(A_AhkPath, , &ahk_dir)
+		SplitPath(A_AhkPath, &_, &ahk_dir)
 		ahk_dir := StrReplace(ahk_dir, "\v2", "")
 		Run(ahk_dir . "\UX\WindowSpy.ahk")
 	}
@@ -107,13 +107,13 @@ PrintScreen:: Send("#+s")
 	beforeCoordMode := CoordMode("Mouse", "Screen")
 	if IsWindows11 {
 		primary := MonitorGetPrimary()
-		MonitorGet(primary, , , &x, &y)
+		MonitorGet(primary, &_, &_, &x, &y)
 		y -= 10
 		x -= 20
 	} else {
 		winX := -1, winY := -1
-		WinGetPos(&winX, &winY, , , "ahk_class Shell_TrayWnd")
-		ControlGetPos(&x, &y, , , "TrayButton2", "ahk_class Shell_TrayWnd")
+		WinGetPos(&winX, &winY, &_, &_, "ahk_class Shell_TrayWnd")
+		ControlGetPos(&x, &y, &_, &_, "TrayButton2", "ahk_class Shell_TrayWnd")
 		x += winX + 5
 		y += winY + 5
 	}
