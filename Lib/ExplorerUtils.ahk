@@ -414,7 +414,7 @@ class ExUtils {
 		 */
 		InvokeVerbEx(verb, args := "") {
 			check := ExUtils._checkObjectType(verb, "FolderItemVerb")
-			if !check and Type(name) != "String" {
+			if !check and Type(verb) != "String" {
 				throw ValueError("verb not a String or ExUtils.FolderItemVerb")
 			}
 

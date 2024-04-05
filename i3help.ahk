@@ -133,6 +133,7 @@ PrintScreen:: Send("#+s")
 }
 
 #Include <ExplorerUtils>
+setupReloadPaths(A_ScriptDir . '\Lib\ExplorerUtils.ahk')
 
 ; better check if an image is in the clipboard
 isImageInClipboard := false
@@ -156,7 +157,6 @@ $^v:: {
 	}
 }
 
-#HotIf WinActive('ahk_exe explorer.exe')
 $^+c:: {
 	; get paths of selected items without quotes
 	items := ExUtils.SelectedItems()
@@ -170,5 +170,12 @@ $^+c:: {
 	A_Clipboard := str
 	ToolTip("copied:`n" . str)
 	SetTimer(() => ToolTip(), -2000)
+}
+
+$^e:: {
+	items := ExUtils.SelectedItems()
+	for item in items {
+		item.InvokeVerb("edit")
+	}
 }
 #HotIf
