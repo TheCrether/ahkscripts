@@ -179,3 +179,40 @@ $^e:: {
 	}
 }
 #HotIf
+
+pathActions := Map(
+	"backlash (\)", [true, false],
+	"slash (/)", [false, false],
+	"file:///...", [false, true],
+	"obsidian file:///", [true, true],
+)
+pathMenu := Menu()
+
+for action in pathActions {
+	pathMenu.Add(action, PathAction)
+}
+
+PathAction(name, *) {
+	action := pathActions[name]
+
+	str := ""
+
+	paths := StrSplit(A_Clipboard, "`n")
+	for path in paths {
+		path := StrReplace(path, '`r', '')
+		str .= (str ? '`n' : '') . ConvertPath(path, action*)
+	}
+
+	A_Clipboard := str
+	ToolTip("converted path(s) to:`n" . str)
+	SetTimer(() => ToolTip(), -2000)
+}
+
+$^!v:: {
+	clipboard := A_Clipboard
+	if Type(clipboard) != "String" or !Trim(clipboard) {
+		return
+	}
+
+	pathMenu.Show()
+}

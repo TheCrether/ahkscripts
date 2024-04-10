@@ -268,7 +268,7 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 		for i, folder in folders {
 			if i == 1 {
 				RunPath(folder)
-				Sleep(500)
+				Sleep(100)
 				SplitPath(folder, &fn)
 				explorerHwnd := WinWaitActive(fn . " ahk_exe explorer.exe")
 				continue

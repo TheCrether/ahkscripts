@@ -175,3 +175,26 @@ GetMonitorOfWindow(title, &n, &left, &top, &right, &bottom) {
 	right := rightTemp
 	bottom := bottomTemp
 }
+
+NormalizePath(path) {
+	cc := DllCall("GetFullPathName", "str", path, "uint", 0, "ptr", 0, "ptr", 0, "uint")
+	buf := Buffer(cc * 2)
+	DllCall("GetFullPathName", "str", path, "uint", cc, "ptr", buf, "ptr", 0)
+	return StrGet(buf)
+}
+
+ConvertPath(path, backslash := false, fileProtocol := false) {
+	path := Trim(path, ' `t`'"')
+	path := StrReplace(path, "file:///", "")
+	path := StrReplace(path, "`r", "")
+	path := NormalizePath(path)
+
+	if !backslash {
+		path := RegExReplace(path, "\\", "/")
+	}
+
+	if fileProtocol {
+		path := "file:///" . path
+	}
+	return path
+}
