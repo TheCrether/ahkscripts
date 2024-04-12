@@ -176,25 +176,47 @@ GetMonitorOfWindow(title, &n, &left, &top, &right, &bottom) {
 	bottom := bottomTemp
 }
 
+/**
+ * Normalize a path to a windows path (with no trailing '\' at the end)
+ * @param path the path to normalize
+ * @returns {String} the normalized path
+ */
 NormalizePath(path) {
 	cc := DllCall("GetFullPathName", "str", path, "uint", 0, "ptr", 0, "ptr", 0, "uint")
 	buf := Buffer(cc * 2)
 	DllCall("GetFullPathName", "str", path, "uint", cc, "ptr", buf, "ptr", 0)
-	return StrGet(buf)
+	str := StrGet(buf)
+	if SubStr(str, -1, 1) == "\" {
+		str := SubStr(str, 1, -1)
+	}
+	return str
 }
 
-ConvertPath(path, backslash := false, fileProtocol := false) {
+
+/**
+ * Convert a path
+ * @param path the path to be converted
+ * @param {true|false|String} backslash if this is true -> separator = '\', if false -> separator = '/', if it's string, replace with that string
+ * @param {String} prefix prefix for the path after conversion
+ * @param {String} suffix suffix for the path after conversion
+ * @returns {String} the converted string with the prefix/suffix if given
+ */
+ConvertPath(path, backslash := false, prefix := '', suffix := '') {
 	path := Trim(path, ' `t`'"')
-	path := StrReplace(path, "file:///", "")
+	if (InStr(path, "vscode://")) {
+		path := RegExReplace(path, "vscode://\w+/", "")
+	}
+	path := RegExReplace(path, "\w{2,}://+", "")
 	path := StrReplace(path, "`r", "")
 	path := NormalizePath(path)
 
-	if !backslash {
-		path := RegExReplace(path, "\\", "/")
+	if Type(backslash) == "String" {
+		path := StrReplace(path, "\", backslash)
+	} else if !backslash {
+		path := StrReplace(path, "\", "/")
 	}
 
-	if fileProtocol {
-		path := "file:///" . path
-	}
+	path := prefix . path . suffix
+
 	return path
 }

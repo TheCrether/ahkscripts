@@ -181,10 +181,12 @@ $^e:: {
 #HotIf
 
 pathActions := Map(
-	"backlash (\)", [true, false],
-	"slash (/)", [false, false],
-	"file:///...", [false, true],
-	"obsidian file:///", [true, true],
+	"1 backlash (\)", [true],
+	"2 slash (/)", [false],
+	"3 escaped backslash (\\)", ["\\"],
+	"4 file:///...", [false, "file:///"],
+	"5 obsidian file:///", [true, "file:///"],
+	"6 vscode://file", [false, "vscode://file/"]
 )
 pathMenu := Menu()
 
