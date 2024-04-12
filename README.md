@@ -96,7 +96,30 @@ Example JSON:
 
 ### `i3help.ahk`
 
-It has the general shortcuts that I use like media control, focusing windows, setting windows to be always-on-top. Example: `Win + a` to activate Discord
+It has the general shortcuts that I use like media control, focusing windows, setting windows to be always-on-top.
+
+- `Ctrl + Alt + p` - play/pause
+- `Ctrl + Alt + Left/Right` & `Ctrl + AltGr + Left/Right` - previous/next song
+- `Win + q` & `Win + Shift + q` - close active window (sends `Alt + F4`)
+- `Win + Shift + p` - trigger Windows power menu
+- `Win + x` - open AHK WindowSpy for window information
+- `Win + Shift + x` - open my own gui for searching windows informations through WinGetList with the standard ahk filters
+- `Win + a` - Activate Discord
+- `Win + s` - Activate Spotify
+- `Win + Enter` & `Win + Alt + t` - Open Windows Terminal
+- `Win + t` - Set windows to AlwaysOnTop
+- `Win + Shift + 1` - resize window to a little less than 40% screen height and scale the width proportionally
+- `Win + Shift + a` - click the notificiation icon at the bottom right (on W10 and W11)
+- `Win + m` - (un-)minimize a window
+- `Ctrl + Alt + v` - open a context menu for transforming somewhat valid file paths in the clipboard to:
+  - with backlashes/slashes/custom separator
+  - add a prefix/suffix
+
+#### In the Windows explorer
+
+- `Ctrl + v` - can paste an image into the currently open explorer window (active tab on W11)
+- `Ctrl + Shift + c` - copy the path(s) of the currently selected item(s)
+- `Ctrl + Shift + e` - edit the currently selected item(s)
 
 ### `startall.ahk`
 
@@ -106,9 +129,9 @@ Starts my AutoHotkey scripts at once (useful for autostart)
 
 Has the hotstrings for when I use the US keyboard layout (most of the time now) instead of the German keyboard layout.
 
-converts stuff like: `ae` to `ä` with the specified hot strings triggers at the top
+converts stuff like: `ae-` to `ä` with the specified hot strings triggers at the top
 
-## `winhook.ahk`
+## `Lib/winhook.ahk`
 
 This script comes from the AutoHotkey forums. It's a really cool script for listening to all kinds of window messages.
 [Forum Link][2]
