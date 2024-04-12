@@ -10,8 +10,71 @@ SetIcon(path) {
 	}
 }
 
-Notification(Text := '', Title := A_ScriptName, Options := 0) {
+notificationHandlers := Map()
+
+NINF_KEY := 1
+
+WM_USER := 0x0400
+NIN_BALLOONHIDE := WM_USER + 3
+NIN_BALLOONSHOW := WM_USER + 2
+NIN_BALLOONTIMEOUT := WM_USER + 4
+NIN_BALLOONHIDE := WM_USER + 3
+NIN_BALLOONUSERCLICK := WM_USER + 5
+NIN_SELECT := WM_USER + 0
+NIN_KEYSELECT := NIN_SELECT | NINF_KEY
+NIN_POPUPCLOSE := WM_USER + 7
+NIN_POPUPOPEN := WM_USER + 6
+
+SetNotificationHandler(action := NIN_BALLOONUSERCLICK, function := () => {}) {
+	global notificationHandlers
+	notificationHandlers.Set(action, function)
+}
+RemoveNotificationHandler(action := NIN_BALLOONUSERCLICK) {
+	global notificationHandlers
+	notificationHandlers.Delete(action)
+}
+
+/**
+ * NotificationHandler
+ * @param wParam ?
+ * @param lParam the kind of action
+ * @param msg which event was activated (ex.: 0x404 -> a notification event)
+ * @param hwnd the hwnd of the owner of the event
+ */
+NotificationHandler(wParam, lParam, msg, hwnd) {
+	global notificationHandlers
+	; from: https://docs.rs/winapi/latest/i686-pc-windows-msvc/winapi/um/shellapi/index.html
+	; lParam:
+	;		WM_USER = 0x400 = 1024
+	; 	NIN_BALLOONHIDE = WM_USER + 3 = 0x403 = 1027
+	; 	NIN_BALLOONSHOW = WM_USER + 2 = 0x402 = 1026
+	; 	NIN_BALLOONTIMEOUT = WM_USER + 4 = 0x404 = 1028
+	; 	NIN_BALLOONHIDE = WM_USER + 3 = 0x403 = 1027
+	; 	NIN_BALLOONUSERCLICK = WM_USER + 5 = 0x405 = 1029
+	; 	NIN_KEYSELECT = NIN_SELECT | NINF_KEY = 0x401 = 1025
+	; 	NIN_POPUPCLOSE = WM_USER + 7 = 0x407 = 1031
+	; 	NIN_POPUPOPEN = WM_USER + 6 = 0x406 = 1030
+	; 	NIN_SELECT = WM_USER + 0 = 0x400 = 1024
+
+	if hwnd != A_ScriptHwnd {
+		return
+	}
+	OutputDebug(wParam . ' ' . lParam . ' ' . msg)
+
+	f := notificationHandlers.Get(lParam, false)
+
+	if !!f {
+		f()
+	}
+}
+
+; listen to notifications
+OnMessage(0x404, NotificationHandler)
+
+Notification(Text := '', Title := A_ScriptName, Options := 0, OnSelected := () => {}) {
 	TrayTip(Text, Title, Options)
+
+	SetNotificationHandler(NIN_BALLOONUSERCLICK, OnSelected)
 }
 
 reloadPaths := Map()
