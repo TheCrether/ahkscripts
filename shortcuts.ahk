@@ -301,5 +301,10 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 }
 
 #+e:: {
+	global shortcutMenu
+	if (!shortcutMenu) {
+		Notification("Shortcut menu is not ready yet")
+		return
+	}
 	shortcutMenu.Show()
 }
