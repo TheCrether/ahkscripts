@@ -402,7 +402,7 @@ AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting|Erinn
 AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", "CRETHER")
 AddDefaultMoveHook(0, "", "", "Element.exe", "CRETHER")
 AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "CRETHER")
-AddDefaultMoveHook(0, "3CX - Alle Gruppen - 3CX", , "msedge.exe", "CRETHER")
+AddDefaultMoveHook(0, "3CX.*", , "msedge.exe", "CRETHER")
 ;own pcs end
 
 ; sleep because somehow discord often starts at the same time as this, and the default move doesn't work XD

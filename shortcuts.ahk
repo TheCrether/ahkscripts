@@ -4,6 +4,7 @@
 #Include <Base>
 #Include <Jsons>
 #Include <ExplorerUtils>
+#Include <reload_env_on_change>
 
 SetIcon(".\icons\shortcuts.ico")
 
@@ -25,8 +26,11 @@ setupReloadPaths(filePath)
 
 ; Variables for use in templates
 A_ahkscripts := A_ScriptDir
+EnvSet("A_ahkscripts", A_ahkscripts)
 A_ahkscripts_slash := StrReplace(A_ScriptDir, "\", "/")
+EnvSet("A_ahkscripts_slash", A_ahkscripts_slash)
 A_Home := home
+EnvSet("A_Home", A_Home)
 
 jsonFile := FileRead(filePath)
 json := Jsons.Load(&jsonFile)
