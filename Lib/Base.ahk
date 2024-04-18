@@ -223,11 +223,18 @@ tryGetID(title, regex := false, detectHidden := false) {
 }
 
 tryActivate(title, regex := false, detectHidden := false) {
+	beforeHidden := A_DetectHiddenWindows
+	if detectHidden {
+		DetectHiddenWindows(true)
+	}
+
 	try {
 		WinActivate(tryGetID(title, regex, detectHidden))
 	} catch {
 		OutputDebug(Format("(regex:{1})(detectHidden:{2}) can't find window with: {3}`n", regex, detectHidden, title))
 	}
+
+	DetectHiddenWindows(beforeHidden)
 }
 
 GetMonitorOfWindow(title, &n, &left, &top, &right, &bottom) {

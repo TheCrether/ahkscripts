@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2
 #SingleInstance Force
-; sh-name:RDP IMD-IBIS23
+DetectHiddenWindows(true)
 
 tryGetID(title, regex := false, detectHidden := false) {
 	beforeMatchMode := A_TitleMatchMode

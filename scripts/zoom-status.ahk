@@ -1,5 +1,6 @@
 #Requires AutoHotkey v2
 #SingleInstance Force
+DetectHiddenWindows(true)
 
 tryGetID(title, regex := false, detectHidden := false) {
 	beforeMatchMode := A_TitleMatchMode
