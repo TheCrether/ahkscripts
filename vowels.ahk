@@ -6,9 +6,7 @@ InstallKeybdHook()
 
 ; Always use folder where the script is
 SetWorkingDir(A_ScriptDir)
-try {
-	TraySetIcon(".\icons\vowels.ico")
-}
+SetIcon(".\icons\vowels.ico")
 
 ; https://www.compart.com/de/unicode/block
 
