@@ -97,8 +97,12 @@ PrintScreen:: Send("#+s")
 	newWinHeight := Integer(monHeight * 0.38) ; make the window around 38% of the height
 	newWinWidth := Integer(newWinHeight * ratio)
 
+	; also calculate the position
+	newX := right - newWinWidth - 25
+	newY := bottom - newWinHeight - 25
+
 	; resize the window
-	WinMove(x, y, newWinWidth, newWinHeight, "A")
+	WinMove(newX, newY, newWinWidth, newWinHeight, "A")
 	WinSetAlwaysOnTop(1, "A")
 }
 
