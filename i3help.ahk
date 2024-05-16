@@ -155,28 +155,29 @@ $^v:: {
 			return
 		}
 
-		firstTwoLines := StrSplit(A_Clipboard, '\n', 'r', 2)
-		; TODO loop over all lines and check if they are valid files/dirs right?
-		; since a copy of multiple files is just a row of file paths no?
-		if (firstTwoLines.Length == 1) || (firstTwoLines.Length == 2 && firstTwoLines[2].Length == 0) {
-			path := Trim(firstTwoLines[1])
-			if path.Length == 0 {
-				Send("^v")
-				return
+		isValidFilePaths := true
+		Loop Parse A_Clipboard, "`n", "`r" {
+			path := Trim(A_LoopField)
+			try {
+				if path.Length > 0 && !FileExist(path) {
+					isValidFilePaths := false
+					break
+				}
+			} catch {
+				isValidFilePaths := false
+				break
 			}
-
-			path := ConvertPath(firstTwoLines[1], true)
-			if DirExist(path) or FileExist(path) {
-				Send("^v")
-			} else {
-				; TODO paste file paste.txt
-				currentPath := ExUtils.GetCurrentPath()
-			}
-
-			return
 		}
 
-		Send("^v") ; send Ctrl+V here if all else fails
+		if isValidFilePaths {
+			Send("^v")
+			return
+		} else {
+			current := ExUtils.GetCurrentPath()
+			path := GetNewFilePath(current, 'paste.txt')
+			FileAppend(A_Clipboard, path, "UTF-8")
+			return
+		}
 	} catch {
 		Send("^v")
 	}

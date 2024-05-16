@@ -258,7 +258,7 @@ GetMonitorOfWindow(title, &n, &left, &top, &right, &bottom) {
 }
 
 /**
- * Normalize a path to a windows path (with no trailing '\' at the end)
+ * Normalize a path to a windows path (with no trailing '\\' at the end)
  * @param path the path to normalize
  * @returns {String} the normalized path
  */
@@ -277,7 +277,7 @@ NormalizePath(path) {
 /**
  * Convert a path
  * @param path the path to be converted
- * @param {true|false|String} backslash if this is true -> separator = '\', if false -> separator = '/', if it's string, replace with that string
+ * @param {true|false|String} backslash if this is true -> separator = '\\', if false -> separator = '/', if it's string, replace with that string
  * @param {String} prefix prefix for the path after conversion
  * @param {String} suffix suffix for the path after conversion
  * @returns {String} the converted string with the prefix/suffix if given
@@ -300,4 +300,30 @@ ConvertPath(path, backslash := false, prefix := '', suffix := '') {
 	path := prefix . path . suffix
 
 	return path
+}
+
+/**
+ * get a file path that does not exist in a directory by counting up an index
+ * @param base the directory to where a path will be searched in
+ * @param filename a filename without a index. example: paste.txt
+ * @returns {String} a path to a non-existent file
+ */
+GetNewFilePath(base, filename) {
+	base := NormalizePath(base)
+	filename := Trim(filename)
+	split := StrSplit(filename, '.')
+	nameNoExt := split[1]
+
+	Loop {
+		path := base . '\' . nameNoExt
+		if A_Index > 1 {
+			path .= '-' . A_index - 1
+		}
+		if split.Length > 1 {
+			path .= '.' . split[2]
+		}
+		if !FileExist(path) {
+			return path
+		}
+	}
 }
