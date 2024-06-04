@@ -141,43 +141,23 @@ setupReloadPaths(A_ScriptDir . '\Lib\ExplorerUtils.ahk')
 
 ; better check if an image is in the clipboard
 isImageInClipboard := false
+inClipboard := 0
 ClipboardChanged(ct) {
-	global isImageInClipboard
+	global isImageInClipboard, inClipboard
+	inClipboard := ct
 	isImageInClipboard := ct == 2
 }
 OnClipboardChange(ClipboardChanged)
 
 #HotIf WinActive('ahk_exe explorer.exe')
 $^v:: {
+	if not isImageInClipboard {
+		Send("^v")
+		return
+	}
+
 	try {
-		if isImageInClipboard {
-			ImagePutExplorer(ClipboardAll)
-			return
-		}
-
-		isValidFilePaths := true
-		Loop Parse A_Clipboard, "`n", "`r" {
-			path := Trim(A_LoopField)
-			try {
-				if path.Length > 0 && !FileExist(path) {
-					isValidFilePaths := false
-					break
-				}
-			} catch {
-				isValidFilePaths := false
-				break
-			}
-		}
-
-		if isValidFilePaths {
-			Send("^v")
-			return
-		} else {
-			current := ExUtils.GetCurrentPath()
-			path := GetNewFilePath(current, 'paste.txt')
-			FileAppend(A_Clipboard, path, "UTF-8")
-			return
-		}
+		ImagePutExplorer(ClipboardAll)
 	} catch {
 		Send("^v")
 	}
@@ -202,6 +182,16 @@ $^e:: {
 	items := ExUtils.SelectedItems()
 	for item in items {
 		item.InvokeVerb("edit")
+	}
+}
+
+$^+v:: {
+	global inClipboard
+	; check if text in clipboard
+	if inClipboard == 1 {
+		current := ExUtils.GetCurrentPath()
+		path := GetNewFilePath(current, 'paste.txt')
+		FileAppend(A_Clipboard, path, "UTF-8")
 	}
 }
 #HotIf
