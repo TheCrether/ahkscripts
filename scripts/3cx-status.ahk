@@ -35,6 +35,7 @@ GetHandle(title, activate := false) {
 
 	if activate {
 		WinActivate("ahk_id " . id)
+		Sleep(100)
 	}
 
 	return UIA.ElementFromHandle(id)
@@ -57,7 +58,7 @@ DoClick(e) {
 	Sleep(200)
 }
 
-status := "Available" ; Available, Busy, Do not disturb, Away, Out of Office
+status := "Verfügbar" ; Verfügbar, Abwesend, Nicht Stören, Homeoffice, Business Trip
 if A_Args.Length > 0 {
 	status := A_Args[1]
 } else {
