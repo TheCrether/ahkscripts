@@ -13,8 +13,8 @@ hwnd += 0x1000 << 32
 
 if (!IsWindows11 and not FileExist(".\Lib\VirtualDesktopAccessor.dll")) or
 	(IsWindows11 and not FileExist(".\Lib\VirtualDesktopAccessor11.dll")) {
-		MsgBox("I couldn't find a VirtualDesktopAccessor.dll in the Lib directory! `n Exiting!")
-		ExitApp()
+	MsgBox("I couldn't find a VirtualDesktopAccessor.dll in the Lib directory! `n Exiting!")
+	ExitApp()
 }
 
 hDesktopDLL := ""
@@ -263,8 +263,8 @@ scrRotate(param := "") {
 	mode := (param = 0) || (param = 12) || (param = 360) || (param = "t") ? 0 ; normal horizontal
 		: (param = 9) || (param = 90) || (param = "r") ? 1 ; 90° counterclockwise
 			: (param = 6) || (param = 180) || (param = "b") ? 2 ; 180° counterclockwise
-			: (param = 3) || (param = 270) || (param = "l") ? 3 ; 270° counterclockwise
-			: (param = "default") || (param = "d") ? 0 : 0 ; normal horizontal
+				: (param = 3) || (param = 270) || (param = "l") ? 3 ; 270° counterclockwise
+					: (param = "default") || (param = "d") ? 0 : 0 ; normal horizontal
 	DEVMODE := Buffer(220, 0)
 	NumPut("short", 220, DEVMODE, 68)										; dmSize
 	DllCall("EnumDisplaySettingsW", "ptr", 0, "int", -1, "ptr", DEVMODE)
@@ -399,10 +399,10 @@ AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "(Nachricht|Message|Bespre
 AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting|Erinnerung)", "", "OUTLOOK.EXE", "IMD")
 ;WORK end
 ;own pcs
-AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", "CRETHER")
-AddDefaultMoveHook(0, "", "", "Element.exe", "CRETHER")
-AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "CRETHER")
-AddDefaultMoveHook(0, "3CX.*", , "msedge.exe", "CRETHER")
+AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", ["CRETHER", "LAPTOP"])
+AddDefaultMoveHook(0, "", "", "Element.exe", ["CRETHER", "LAPTOP"])
+AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", ["CRETHER", "LAPTOP"])
+AddDefaultMoveHook(0, "3CX.*", , "msedge.exe", ["CRETHER", "LAPTOP"])
 ;own pcs end
 
 ; sleep because somehow discord often starts at the same time as this, and the default move doesn't work XD

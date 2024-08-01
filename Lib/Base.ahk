@@ -59,7 +59,7 @@ NotificationHandler(wParam, lParam, msg, hwnd) {
 	if hwnd != A_ScriptHwnd {
 		return
 	}
-	OutputDebug(wParam . ' ' . lParam . ' ' . msg)
+	; OutputDebug(wParam . ' ' . lParam . ' ' . msg)
 
 	f := notificationHandlers.Get(lParam, false)
 
