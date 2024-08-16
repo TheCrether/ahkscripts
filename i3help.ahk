@@ -234,3 +234,9 @@ $^!v:: {
 
 	pathMenu.Show()
 }
+
+#HotIf IsWindows11
+#k:: {
+	Run("ms-settings:bluetooth")
+}
+#HotIf
