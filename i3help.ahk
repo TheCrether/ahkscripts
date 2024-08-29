@@ -50,8 +50,9 @@ SetIcon(".\icons\i3help.ico")
 }
 
 #a:: tryActivate(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", true, true)
-
 #s:: tryActivate("ahk_class Chrome_WidgetWin_1 ahk_exe Spotify.exe", false, true)
+#b:: tryActivate("Arc ahk_exe Arc.exe", false, true)
+#o:: tryActivate(".* - Obsidian .* ahk_exe Obsidian.exe", true, true)
 
 PrintScreen:: Send("#+s")
 
