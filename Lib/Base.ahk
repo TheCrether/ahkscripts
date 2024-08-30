@@ -201,7 +201,7 @@ OutputWindow(hwnd) {
 	OutputDebug(text . "`n====`n")
 }
 
-tryGetID(title, regex := false, detectHidden := false) {
+tryGetID(title, regex := false, detectHidden := false, excludeTitle := "") {
 	beforeMatchMode := A_TitleMatchMode
 	beforeHidden := A_DetectHiddenWindows
 	if regex {
@@ -213,7 +213,7 @@ tryGetID(title, regex := false, detectHidden := false) {
 
 	id := ""
 	try {
-		id := WinGetID(title)
+		id := WinGetID(title, , excludeTitle)
 	}
 
 	SetTitleMatchMode(beforeMatchMode)
@@ -222,14 +222,14 @@ tryGetID(title, regex := false, detectHidden := false) {
 	return id
 }
 
-tryActivate(title, regex := false, detectHidden := false) {
+tryActivate(title, regex := false, detectHidden := false, excludeTitle := "") {
 	beforeHidden := A_DetectHiddenWindows
 	if detectHidden {
 		DetectHiddenWindows(true)
 	}
 
 	try {
-		WinActivate(tryGetID(title, regex, detectHidden))
+		WinActivate(tryGetID(title, regex, detectHidden, excludeTitle))
 	} catch {
 		OutputDebug(Format("(regex:{1})(detectHidden:{2}) can't find window with: {3}`n", regex, detectHidden, title))
 	}
