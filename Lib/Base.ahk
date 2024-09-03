@@ -222,19 +222,31 @@ tryGetID(title, regex := false, detectHidden := false, excludeTitle := "") {
 	return id
 }
 
+/**
+ * 
+ * @param title the title of the window
+ * @param {true|false} regex if regex should be enabled
+ * @param {true|false} detectHidden if hidden windows should be detected (also works for windows on different desktops)
+ * @param {String} excludeTitle title that should be excluded
+ * @returns {Integer} the hwnd of the window or false if it could not be found/focused
+ */
 tryActivate(title, regex := false, detectHidden := false, excludeTitle := "") {
 	beforeHidden := A_DetectHiddenWindows
 	if detectHidden {
 		DetectHiddenWindows(true)
 	}
 
+	id := false
 	try {
-		WinActivate(tryGetID(title, regex, detectHidden, excludeTitle))
+		id := tryGetID(title, regex, detectHidden, excludeTitle)
+		WinActivate(id)
 	} catch {
 		OutputDebug(Format("(regex:{1})(detectHidden:{2}) can't find window with: {3}`n", regex, detectHidden, title))
+		id := false
 	}
 
 	DetectHiddenWindows(beforeHidden)
+	return id
 }
 
 GetMonitorOfWindow(title, &n, &left, &top, &right, &bottom) {
