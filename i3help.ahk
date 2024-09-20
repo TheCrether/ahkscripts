@@ -51,7 +51,19 @@ SetIcon(".\icons\i3help.ico")
 
 #a:: tryActivate(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", true, true)
 #s:: tryActivate("ahk_class Chrome_WidgetWin_1 ahk_exe Spotify.exe", false, true)
-#b:: tryActivate("Arc ahk_exe Arc.exe", true, true, "picture in picture")
+#b:: {
+	processName := WinGetProcessName("A")
+	if processName == "Arc.exe" {
+		title := WinGetTitle("A")
+		if InStr(title, "picture in picture") {
+			tryActivate("Arc ahk_exe Arc.exe", true, true, "picture in picture")
+		} else {
+			tryActivate("Arc picture in picture", true, true)
+		}
+	} else {
+		tryActivate("Arc ahk_exe Arc.exe", true, true, "picture in picture")
+	}
+}
 #o:: tryActivate(".* - Obsidian .* ahk_exe Obsidian.exe", true, true)
 
 PrintScreen:: Send("#+s")
@@ -72,18 +84,7 @@ PrintScreen:: Send("#+s")
 	tryActivate("ahk_exe WindowsTerminal.exe")
 }
 
-#t:: {
-	WinSetAlwaysOnTop(-1, "A")
-	ExStyle := WinGetExStyle("A")
-	id := WinGetID("A")
-	if (ExStyle & 0x8) { ; 0x8 is WS_EX_TOPMOST.
-		; drawDot(id)
-	} else {
-		OutputDebug("elses")
-		; Gui, Draw%id%:Destroy
-		; WinClose, "Draw%id%"
-	}
-}
+#t:: WinSetAlwaysOnTop(-1, "A")
 
 !+1:: {
 	; get the dimensions of the monitor
