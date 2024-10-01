@@ -339,3 +339,20 @@ GetNewFilePath(base, filename) {
 		}
 	}
 }
+
+/**
+ * get the path to %USERPROFILE%/%HOME%
+ */
+GetUserprofilePath() {
+	home := EnvGet("USERPROFILE")
+	if home == "" {
+		home := EnvGet("HOME")
+	}
+	if home == "" {
+		home := "C:\Users\" . A_UserName
+	}
+
+	home := NormalizePath(home)
+
+	return home
+}

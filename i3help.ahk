@@ -61,10 +61,22 @@ SetIcon(".\icons\i3help.ico")
 			tryActivate("Arc picture in picture", true, true)
 		}
 	} else {
-		tryActivate("Arc ahk_exe Arc.exe", true, true, "picture in picture")
+		focused := tryActivate("Arc ahk_exe Arc.exe", true, true, "picture in picture")
+		if !focused {
+			Run("C:\Program Files\Arc\Arc.exe")
+		}
 	}
 }
-#o:: tryActivate(".* - Obsidian .* ahk_exe Obsidian.exe", true, true)
+#o:: {
+	title := ".* - Obsidian .* ahk_exe Obsidian.exe"
+	id := tryGetID(title, true, true)
+	if id {
+		tryActivate(title, true, true)
+	} else {
+		obsidianShortcut := A_StartMenu . '\Programs\Obsidian.lnk'
+		Run(obsidianShortcut)
+	}
+}
 
 PrintScreen:: Send("#+s")
 
