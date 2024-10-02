@@ -49,33 +49,52 @@ SetIcon(".\icons\i3help.ico")
 	Run(A_ScriptDir . "\UX\search-windows.ahk")
 }
 
-#a:: tryActivate(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", true, true)
-#s:: tryActivate("ahk_class Chrome_WidgetWin_1 ahk_exe Spotify.exe", false, true)
+/**
+ * tries to activate a window and if it cannot find that window it will launch the program specified through `toLaunch`
+ * @param title the title to search for
+ * @param toLaunch the path to a exe, .lnk, anything that can be run if a window with that title can't be found
+ * @param {boolean} regex if the title is a RegEx match
+ * @param {boolean} detectHidden detect hidden windows (also ones on different desktops)
+ * @param {String} excludeTitle a window title that should be excluded from search
+ */
+tryActivateOrLaunch(title, toLaunch, regex := false, detectHidden := false, excludeTitle := "") {
+	id := tryGetID(title, regex, detectHidden, excludeTitle)
+	if id {
+		tryActivate(title, regex, detectHidden, excludeTitle)
+	} else {
+		Run(toLaunch)
+	}
+}
+
+#a:: {
+	discordShortcut := A_StartMenu . '\Programs\Discord Inc\Discord.lnk'
+	tryActivateOrLaunch(".* - Discord ahk_class Chrome_WidgetWin_1 ahk_exe Discord.exe", discordShortcut, true, true)
+}
+
+#s:: {
+	spotifyShortcut := A_StartMenu . '\Programs\Spotify.lnk'
+	tryActivateOrLaunch("ahk_class Chrome_WidgetWin_1 ahk_exe Spotify.exe", spotifyShortcut, false, true)
+}
+
 #b:: {
+	mainWindow := "Arc ahk_exe Arc.exe"
 	processName := WinGetProcessName("A")
 	if processName == "Arc.exe" {
 		title := WinGetTitle("A")
 		if InStr(title, "picture in picture") {
-			tryActivate("Arc ahk_exe Arc.exe", true, true, "picture in picture")
+			tryActivate(mainWindow, true, true, "picture in picture")
 		} else {
 			tryActivate("Arc picture in picture", true, true)
 		}
 	} else {
-		focused := tryActivate("Arc ahk_exe Arc.exe", true, true, "picture in picture")
-		if !focused {
-			Run("C:\Program Files\Arc\Arc.exe")
-		}
+		tryActivateOrLaunch(mainWindow, "C:\Program Files\Arc\Arc.exe", true, true, "picture in picture")
 	}
 }
+
 #o:: {
+	obsidianShortcut := A_StartMenu . '\Programs\Obsidian.lnk'
 	title := ".* - Obsidian .* ahk_exe Obsidian.exe"
-	id := tryGetID(title, true, true)
-	if id {
-		tryActivate(title, true, true)
-	} else {
-		obsidianShortcut := A_StartMenu . '\Programs\Obsidian.lnk'
-		Run(obsidianShortcut)
-	}
+	tryActivateOrLaunch(title, obsidianShortcut, true, true)
 }
 
 PrintScreen:: Send("#+s")
