@@ -87,7 +87,7 @@ tryActivateOrLaunch(title, toLaunch, regex := false, detectHidden := false, excl
 			tryActivate("Arc picture in picture", true, true)
 		}
 	} else {
-		tryActivateOrLaunch(mainWindow, "C:\Program Files\Arc\Arc.exe", true, true, "picture in picture")
+		tryActivateOrLaunch(mainWindow, "arc", true, true, "picture in picture")
 	}
 }
 
