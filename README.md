@@ -31,7 +31,7 @@ Additionally, it can restart the explorer with `Win + Shift + r` and can rotate 
 You can also send a message from other AutoHotkey scripts, like this:
 
 ```autohotkey
-desktop := WinExist("desktop.ah2 ahk_class AutoHotkey")
+desktop := WinExist("desktop.ahk ahk_class AutoHotkey")
 PostMessage(0x5555, 0, 1, , "ahk_id " . desktop) ; 0 is to send a change desktop request, 1 is to change it the 2nd desktop (index starts at 0)
 ```
 

@@ -296,7 +296,7 @@ OpenShortcut(parentPath, name, itemPos, menuObj) {
 		for path in nonExist {
 			txt .= Format("`n{1}", path)
 		}
-		MsgBox(txt, Format("shortcuts.ah2 - {1}.{2}", parentPath, name))
+		MsgBox(txt, Format("shortcuts.ahk - {1}.{2}", parentPath, name))
 	}
 }
 
