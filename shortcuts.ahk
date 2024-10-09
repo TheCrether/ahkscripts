@@ -101,8 +101,8 @@ generateSubmenu(prev, shortcuts) {
 		}
 		else if shortcut is Map {
 			newPrev := prev
-			if InStr(prev, ".") {
-				prev .= "."
+			if prev != "" && !RegExMatch(prev, "\\.$") {
+				newPrev .= "."
 			}
 			newPrev .= name
 			submenu.Add(
