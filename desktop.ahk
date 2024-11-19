@@ -393,7 +393,7 @@ AddDefaultMoveHook(2, "", "", "Spotify.exe")
 ; WORK
 AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
 AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IMD")
-AddDefaultMoveHook(1, "3CX", , "msedge.exe", "IMD")
+AddDefaultMoveHook(1, "3CX.*", , "msedge.exe", "IMD")
 AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "(Nachricht|Message|Besprechung|Meeting|Erinnerung)")
 AddDefaultMoveHook(1, "", "TeamsWebView", "ms-teams.exe", "IMD")
 
