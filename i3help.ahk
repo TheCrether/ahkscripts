@@ -77,17 +77,22 @@ tryActivateOrLaunch(title, toLaunch, regex := false, detectHidden := false, excl
 }
 
 #b:: {
-	mainWindow := "Arc ahk_exe Arc.exe"
-	processName := WinGetProcessName("A")
-	if processName == "Arc.exe" {
-		title := WinGetTitle("A")
-		if InStr(title, "picture in picture") {
-			tryActivate(mainWindow, true, true, "picture in picture")
+	zenShortcut := A_ProgramsCommon . '\Zen Browser.lnk'
+	mainWindow := "ahk_class MozillaWindowClass ahk_exe zen.exe"
+	try processName := WinGetProcessName("A")
+	if processName == "zen.exe" {
+		try title := WinGetTitle("A")
+		if !title {
+			return
+		}
+
+		if InStr(title, "Picture-in-Picture") {
+			tryActivate("ahk_class MozillaWindowClass ahk_exe zen.exe", true, true)
 		} else {
-			tryActivate("Arc picture in picture", true, true)
+			tryActivate("ahk_class MozillaDialogClass ahk_exe zen.exe", true, true)
 		}
 	} else {
-		tryActivateOrLaunch(mainWindow, "arc", true, true, "picture in picture")
+		tryActivateOrLaunch(mainWindow, zenShortcut, true, true)
 	}
 }
 

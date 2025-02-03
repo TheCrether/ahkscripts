@@ -12,7 +12,7 @@ hwnd := WinExist("ahk_pid " . DllCall("GetCurrentProcessId", "Uint"))
 hwnd += 0x1000 << 32
 
 if (!IsWindows11 and not FileExist(".\Lib\VirtualDesktopAccessor.dll")) or
-(IsWindows11 and not FileExist(".\Lib\VirtualDesktopAccessor11.dll")) {
+	(IsWindows11 and not FileExist(".\Lib\VirtualDesktopAccessor11.dll")) {
 	MsgBox("I couldn't find a VirtualDesktopAccessor.dll in the Lib directory! `n Exiting!")
 	ExitApp()
 }
@@ -245,7 +245,6 @@ RestartExplorer(WaitSecs := 10) { ; requires OS Vista+    ; v2.10 by SKAN on CSC
 
 #^r::
 {
-	global GenerateDynamicHotkeys
 	GenerateDynamicHotkeys()
 }
 
@@ -262,9 +261,9 @@ scrRotate(param := "") {
 	}
 	mode := (param = 0) || (param = 12) || (param = 360) || (param = "t") ? 0 ; normal horizontal
 		: (param = 9) || (param = 90) || (param = "r") ? 1 ; 90° counterclockwise
-			: (param = 6) || (param = 180) || (param = "b") ? 2 ; 180° counterclockwise
-				: (param = 3) || (param = 270) || (param = "l") ? 3 ; 270° counterclockwise
-					: (param = "default") || (param = "d") ? 0 : 0 ; normal horizontal
+		: (param = 6) || (param = 180) || (param = "b") ? 2 ; 180° counterclockwise
+		: (param = 3) || (param = 270) || (param = "l") ? 3 ; 270° counterclockwise
+		: (param = "default") || (param = "d") ? 0 : 0 ; normal horizontal
 	DEVMODE := Buffer(220, 0)
 	NumPut("short", 220, DEVMODE, 68)										; dmSize
 	DllCall("EnumDisplaySettingsW", "ptr", 0, "int", -1, "ptr", DEVMODE)
