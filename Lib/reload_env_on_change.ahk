@@ -17,7 +17,7 @@
 ;;;
 SysEnvPath := "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
 UserEnvPath := "HKEY_CURRENT_USER\Environment"
-ENV_VAR_REGEX := "%([a-zA-Z0-9_()\{\}\[\]\$*+\-\/`"#',;.@!?]+)%"
+ENV_VAR_REGEX := "%([a-zA-Z0-9_\(\)\{\}\[\]\$*+\-\/`"#',;.@!?]+)%"
 
 setupReloadOnEnvChange() {
 	OnMessage((WM_SETTINGCHANGE := 0x1A), recv_WM_SETTINGCHANGE)
@@ -46,7 +46,11 @@ resolve_env_variable(env_name, resolveUser := false) {
 	} else {
 		resolved := RegRead(SysEnvPath, env_name, default)
 	}
-	Found := RegExMatch(resolved, ENV_VAR_REGEX, &match)
+
+	Found := 0
+	if resolved != default {
+		Found := RegExMatch(resolved, ENV_VAR_REGEX, &match)
+	}
 
 	While Found > 0 and match.Count > 0 {
 		resolveTemp := resolve_env_variable(match[1], resolveUser)
