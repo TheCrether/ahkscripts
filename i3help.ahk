@@ -77,7 +77,7 @@ tryActivateOrLaunch(title, toLaunch, regex := false, detectHidden := false, excl
 }
 
 #b:: {
-	zenShortcut := A_ProgramsCommon . '\Zen Browser.lnk'
+	zenShortcut := A_ProgramsCommon . '\Zen.lnk'
 	mainWindow := "ahk_class MozillaWindowClass ahk_exe zen.exe"
 	try processName := WinGetProcessName("A")
 	if processName == "zen.exe" {

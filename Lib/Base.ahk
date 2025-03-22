@@ -25,7 +25,7 @@ NIN_KEYSELECT := NIN_SELECT | NINF_KEY
 NIN_POPUPCLOSE := WM_USER + 7
 NIN_POPUPOPEN := WM_USER + 6
 
-SetNotificationHandler(action := NIN_BALLOONUSERCLICK, function := () => {}) {
+SetNotificationHandler(action := NIN_BALLOONUSERCLICK, function := 0) {
 	global notificationHandlers
 	notificationHandlers.Set(action, function)
 }
@@ -71,10 +71,12 @@ NotificationHandler(wParam, lParam, msg, hwnd) {
 ; listen to notifications
 OnMessage(0x404, NotificationHandler)
 
-Notification(Text := '', Title := A_ScriptName, Options := 0, OnSelected := () => {}) {
+Notification(Text := '', Title := A_ScriptName, Options := 0, OnSelected := 0) {
 	TrayTip(Text, Title, Options)
 
-	SetNotificationHandler(NIN_BALLOONUSERCLICK, OnSelected)
+	if OnSelected {
+		SetNotificationHandler(NIN_BALLOONUSERCLICK, OnSelected)
+	}
 }
 
 reloadPaths := Map()
