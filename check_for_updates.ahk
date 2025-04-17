@@ -18,6 +18,10 @@ CleanString(str) {
 CheckForGitUpdate() {
 	SetWorkingDir(A_ScriptDir)
 
+	if FileExist(".\.error") {
+		FileDelete(".\.error")
+	}
+
 	httpOriginCode := RunWait("git remote get-url http-origin", , "Hide")
 	if httpOriginCode != 0 {
 		RunWait('git remote add http-origin "https://github.com/TheCrether/ahkscripts"', , "Hide")
@@ -33,7 +37,6 @@ CheckForGitUpdate() {
 		Result := MsgBox("There was an error while checking for updates.`nDo you want to look at the logs?", "ahkscripts", "Y/N")
 		if Result == "Yes" {
 			RunWait(Format('{1} /c "start .error"', A_ComSpec))
-			FileDelete(".\.error")
 			Return
 		} else {
 			FileDelete(".\.error")
