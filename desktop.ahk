@@ -390,20 +390,20 @@ DebugWindowEvent(Win_Hwnd, Win_Title, Win_Class, Win_Exe, Win_Event) {
 AddDefaultMoveHook(2, "Discord", "Chrome_WidgetWin_1", "Discord.exe")
 AddDefaultMoveHook(2, "", "", "Spotify.exe")
 ; WORK
-AddDefaultMoveHook(1, "", "", "Element.exe", "IMD")
-AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IMD")
-AddDefaultMoveHook(1, "3CX.*", , "msedge.exe", "IMD")
-AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IMD", , "(Nachricht|Message|Besprechung|Meeting|Erinnerung)")
-AddDefaultMoveHook(1, "", "TeamsWebView", "ms-teams.exe", "IMD")
+AddDefaultMoveHook(1, "", "", "Element.exe", "IBIS")
+AddDefaultMoveHook(1, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", "IBIS")
+AddDefaultMoveHook(1, "3CX.*", , "msedge.exe", "IBIS")
+AddDefaultMoveHook(1, "", "", "OUTLOOK.EXE", "IBIS", , "(Nachricht|Message|Besprechung|Meeting|Erinnerung)")
+AddDefaultMoveHook(1, "", "TeamsWebView", "ms-teams.exe", "IBIS")
 
-AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting|Erinnerung)", "", "OUTLOOK.EXE", "IMD")
+AddHook(GeneralHook.Bind("focus"), "(Nachricht|Message|Besprechung|Meeting|Erinnerung)", "", "OUTLOOK.EXE", "IBIS")
 ;WORK end
-;own pcs
-AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", ["CRETHER", "LAPTOP"])
-AddDefaultMoveHook(0, "", "", "Element.exe", ["CRETHER", "LAPTOP"])
-AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", ["CRETHER", "LAPTOP"])
-AddDefaultMoveHook(0, "3CX.*", , "msedge.exe", ["CRETHER", "LAPTOP"])
-;own pcs end
+;own pcs / work laptop
+AddDefaultMoveHook(1, "", "TscShellContainerClass", "mstsc.exe", ["CRETHER", "LAPTOP", "HOMEBIRD"])
+AddDefaultMoveHook(0, "", "", "Element.exe", ["CRETHER", "LAPTOP", "HOMEBIRD"])
+AddDefaultMoveHook(0, "", "ZPPTMainFrmWndClassEx", "Zoom.exe", ["CRETHER", "LAPTOP", "HOMEBIRD"])
+AddDefaultMoveHook(0, "3CX.*", , "msedge.exe", ["CRETHER", "LAPTOP", "HOMEBIRD"])
+;own pcs / work laptop end
 
 ; sleep because somehow discord often starts at the same time as this, and the default move doesn't work XD
 Sleep(250)
