@@ -41,22 +41,44 @@ GetHandle(title, activate := false) {
 	return UIA.ElementFromHandle(id)
 }
 
-RegExElement(uiaHandle, lType, match) {
-	Loop {
-		try {
-			e := uiaHandle.FindElement([{ LocalizedType: lType }], , A_Index)
-			if RegExMatch(e.Name, match) {
-				return e
-			}
-		}
-	}
-	return ""
+/**
+ * 
+ * @param {UIA.IUIAutomationElement} uiahandle
+ * @param type
+ * @param match
+ * @returns {String}
+ */
+GetElementByAutomationId(uiaHandle, lType, automationId) {
+	element := ""
+	try element := uiaHandle.FindElement([{ LocalizedType: lType, AutomationId: automationId }])
+	return element
+	; elements := uiaHandle.FindElement([{ LocalizedType: lType }])
+	; Loop {
+	; 	try {
+	; 		e := uiaHandle.FindElement([{ Type: lType }], , A_Index)
+	; 		; if StrLen(e.GetPropertyValue("title")) > 0 {
+	; 		if StrLen(e.Name) > 0 {
+	; 			OutputDebug(e.Name . " " e.GetPropertyValue("title"))
+	; 		}
+	; 		if RegExMatch(e.Name, match) {
+	; 			return e
+	; 		}
+	; 	}
+	; }
+	; return ""
 }
 
 DoClick(e) {
 	e.Click("left")
 	Sleep(200)
 }
+
+statusMapping := Map()
+statusMapping["verfügbar"] := "Available"
+statusMapping["abwesend"] := "Away"
+statusMapping["nicht stören"] := "Outofoffice"
+statusMapping["homeoffice"] := "Custom1"
+statusMapping["business trip"] := "Custom2"
 
 status := "Verfügbar" ; Verfügbar, Abwesend, Nicht Stören, Homeoffice, Business Trip
 if A_Args.Length > 0 {
@@ -69,14 +91,18 @@ if A_Args.Length > 0 {
 	status := res.Value
 }
 
+status := StrLower(status)
+status := statusMapping[status]
+
 uiaHandle := GetHandle("3CX.* ahk_exe msedge.exe", true)
 if !uiaHandle {
 	OutputDebug("main window not found")
 	return
 }
 
+
 e := ""
-try e := uiaHandle.FindElement([{ ClassName: "avatar ms-1" }])
+try e := uiaHandle.FindElement([{ ClassName: "avatar-size-", MatchMode: "substring" }])
 if !e {
 	OutputDebug("profile pic not found")
 	return
@@ -91,7 +117,7 @@ if !dropdown {
 	DoClick(e)
 }
 
-e := RegExElement(uiaHandle, "group", "i).*" . status . ".*")
+e := GetElementByAutomationId(uiaHandle, "group", "menu" . status)
 if !e {
 	OutputDebug("status " . status . " element not found")
 	return
